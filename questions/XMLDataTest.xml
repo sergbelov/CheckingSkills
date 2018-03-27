@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+author		Автор
+theme		Тема теста
+question	Вопрос
+answer_true 	верные ответы
+	at		вариант верного ответа
+answers_false 	ложные ответы
+	af		вариант ложного ответа
+-->
+<Questions>
+	<QuestionBlock>
+		<theme>Тема1</theme>
+		<question>Вопрос 1 Тема 1?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+			<at>Верный ответ 2</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+		</answers_false>
+	</QuestionBlock>
+	<QuestionBlock>
+		<theme>Тема1</theme>
+		<question>Вопрос 2 Тема 1?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+			<at>Верный ответ 2</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+			<af>Ложный ответ 3</af>
+		</answers_false>
+	</QuestionBlock>
+	<QuestionBlock>
+		<theme>Тема1</theme>
+		<question>Вопрос 3 Тема 1?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+			<af>Ложный ответ 3</af>
+		</answers_false>
+	</QuestionBlock>
+	<QuestionBlock>
+		<theme>Тема2</theme>
+		<question>Вопрос 1 Тема 2?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+			<at>Верный ответ 2</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+		</answers_false>
+	</QuestionBlock>
+	<QuestionBlock>
+		<theme>Тема2</theme>
+		<question>Вопрос 2 Тема 2?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+			<at>Верный ответ 2</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+			<af>Ложный ответ 3</af>
+		</answers_false>
+	</QuestionBlock>
+	<QuestionBlock>
+		<theme>Тема2</theme>
+		<question>Вопрос 3 Тема 2?</question>
+		<answer_true>
+			<at>Верный ответ 1</at>
+		</answer_true>
+		<answers_false>
+			<af>Ложный ответ 1</af>
+			<af>Ложный ответ 2</af>
+			<af>Ложный ответ 3</af>
+		</answers_false>
+	</QuestionBlock>
+</Questions>
