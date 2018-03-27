@@ -1,4 +1,7 @@
 /target/
 /.idea/
 *.iml
+/*.txt
 /result/
+/questions/XMLDataTest0.xml
+/questions/XMLDataTest1.xml
