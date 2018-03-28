@@ -14,16 +14,10 @@ public class CheckingSkills {
 
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
 
-    int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов по теме
-    boolean VISIBLE_ANSWERS = false; // отображать подсказки
-    String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
-    String PATH_RESULT = "result\\";
-
     long startTesting; // время начала теста
-    boolean visibleAnswers = VISIBLE_ANSWERS; // отображать подсказки
+    boolean visibleAnswers = false; // отображать подсказки
 
     QuestionsList questionsList;
-    SaveResultTest saveResultTest;
 
     JComboBox cbTheme;
     JLabel lQuestion;
@@ -48,17 +42,13 @@ public class CheckingSkills {
 //        currPath = System.getProperty("user.dir")+"\\";
 //        JOptionPane.showMessageDialog(null, currPath);
 
-        getParameters("CheckingSkills.parameters"); // читаем параметры из файла
 
         // вопросы (читаем из файла FILE_QUESTIONS)
         questionsList = new QuestionsList();
-        questionsList.setMaxQuestionConst(MAX_QUESTION_CONST);
-        questionsList.readQuestionsFromFile(FILE_QUESTIONS);
+//        questionsList.setMaxQuestionConst(MAX_QUESTION_CONST);
+//        questionsList.readQuestionsFromFile(FILE_QUESTIONS);
+        questionsList.readQuestionsFromFile();
         questionsList.saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
-
-        // для записи результатов тестирования
-        saveResultTest = new SaveResultTest();
-//        saveResultTest.save(PATH_RESULT, startTesting, stopTesting, theme);
 
         CheckingSkillsEngine etEngine = new CheckingSkillsEngine(this); // слушатель
 
@@ -166,22 +156,22 @@ public class CheckingSkills {
     /**
      * Начинаем новое тестирование
      */
-    void begin() {
-
+    public void begin() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
             arrRB[i].setEnabled(true);
             arrRB[i].setBackground(defaultBackground);
+            arrRB[i].setSelected(false);
+
             arrCB[i].setEnabled(true);
             arrCB[i].setBackground(defaultBackground);
+            arrCB[i].setSelected(false);
         }
-        bPrevQuestion.setEnabled(false);
-        bNextQuestion.setEnabled(true);
-        bEnd.setEnabled(true);
 
-        visibleAnswers = VISIBLE_ANSWERS;
+        bEnd.setEnabled(true);
+        visibleAnswers = questionsList.isVisibleAnswers();
         questionsList.getQuestionsListNum();        // случайная последовательность вопросов
         refreshQuestion();                          // отображаем вопрос
         startTesting = System.currentTimeMillis();  // время старта
@@ -190,7 +180,7 @@ public class CheckingSkills {
     /**
      * Отобразим текущий вопрос на форме
      */
-    void refreshQuestion() {
+    public void refreshQuestion() {
 
         boolean reply = false;
         int questNum = questionsList.getCurQuestionNum();
@@ -198,8 +188,6 @@ public class CheckingSkills {
         lQuestion.setText("<html>" + questionsList.get(questNum).getQuestion() + "</html>");// вопрос
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton
-
-//        questionsList.get(questNum).answersListShuffle(); // перемешаем ответы
 
         // варианты ответов
         if (questionsList.get(questNum).getType() == 1) {      // RadioButton
@@ -255,37 +243,38 @@ public class CheckingSkills {
             lQuestion.setForeground(blackColor);
         }
 
+        bPrevQuestion.setEnabled(!questionsList.isFirstQuestion()); // первый вопрос
+        bNextQuestion.setEnabled(!questionsList.isLastQuestion()); // последний вопрос
+
         mainFrame.setTitle("Проверка знаний (" + (questionsList.getCurQuestion() + 1) + " из " + questionsList.getMaxQuestion() + ")");
 
         p2.repaint();
     }
 
-
     /**
      * Запомним текущий выбор
      */
-    void rememberStatus(boolean clear) {
+    public void rememberStatus(boolean clear) {
 
         for (int i = 0; i < questionsList.get(questionsList.getCurQuestionNum()).getCountAnswers(); i++) {
-            questionsList.get(questionsList.getCurQuestionNum()).getAnswer(i).setSelected(
-                    arrRB[i].isSelected() | arrCB[i].isSelected());
-        }
+            questionsList
+                    .get(questionsList.getCurQuestionNum())
+                    .getAnswer(i)
+                    .setSelected(arrRB[i].isSelected() | arrCB[i].isSelected());
 
-        if (clear) {
-            for (int i = 0; i < maxAnswer; i++) {
+            if (clear) {
                 arrRB[i].setSelected(false);
                 arrCB[i].setSelected(false);
             }
         }
     }
 
-
     /**
      * Проверка корректности ответов
      *
      * @return
      */
-    int checkAnswers() {
+    public int checkAnswers() {
 
         int countError = 0;
         int correctAnswerProc = 0;
@@ -323,11 +312,7 @@ public class CheckingSkills {
 
         }
 
-        saveResultTest.save(PATH_RESULT,
-                startTesting,
-                System.currentTimeMillis(),
-                questionsList.getCurTheme(),
-                resultTXT);
+        questionsList.saveResultTest(startTesting, resultTXT); // сохраняем результат тестирования
 
         if (countError == 0) {
             if (JOptionPane.showOptionDialog(
@@ -365,33 +350,6 @@ public class CheckingSkills {
                     JOptionPane.WARNING_MESSAGE);
 
             return -1;
-        }
-    }
-
-
-    /**
-     * читаем параметры из файла
-     */
-    private void getParameters(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) { // найден файл с установками
-            try (
-                    InputStream is = new FileInputStream(file)
-            ) {
-                if (is != null) {
-                    Properties pr = new Properties();
-                    pr.load(is);
-
-                    this.MAX_QUESTION_CONST = (int) Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
-                    this.VISIBLE_ANSWERS = (boolean) Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
-                    this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
-                    this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

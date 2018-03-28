@@ -12,9 +12,9 @@ import java.util.*;
  */
 public class Question implements Comparable<Question> {
 
+    private Integer type;               // тип ответа 1-RadioButton; 2-CheckBox
     private String theme;               // тема
     private String question;            // вопрос
-    private Integer type;               // тип ответа 1-RadioButton; 2-CheckBox
     private List<Answer> answersList;   // список вариантов ответа
 
 
@@ -30,6 +30,10 @@ public class Question implements Comparable<Question> {
         this.answersListShuffle();
     }
 
+    public int getType() {
+        return type;
+    }
+
     public String getTheme() {
         return theme;
     }
@@ -38,17 +42,14 @@ public class Question implements Comparable<Question> {
         return question;
     }
 
-    public Answer getAnswer(int i) {
-        return answersList.get(i);
-    }
-
     public int getCountAnswers() {
         return answersList.size();
     }
 
-    public int getType() {
-        return type;
+    public Answer getAnswer(int i) {
+        return answersList.get(i);
     }
+
 
     /**
      * Ответ правильный

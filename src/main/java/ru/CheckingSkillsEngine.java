@@ -89,8 +89,6 @@ public class CheckingSkillsEngine implements ActionListener {
                 parent.questionsList.NextQuestion();
             }
             parent.refreshQuestion();
-            parent.bPrevQuestion.setEnabled(!parent.questionsList.isFirstQuestion()); // первый вопрос
-            parent.bNextQuestion.setEnabled(!parent.questionsList.isLastQuestion()); // последний вопрос
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
             parent.questionsList.setCurTheme(parent.cbTheme.getSelectedIndex());

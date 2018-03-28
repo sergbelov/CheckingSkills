@@ -19,22 +19,29 @@ import org.w3c.dom.Node;
 
 /**
  * @author Белов Сергей
- *
  * Сохранение результата тестирования в XML-файл
- *      path - путь для сохранения
- *      startTesting - начало теста
- *      stopTesting - окончание теста
- *      theme - тема тестирования
- *      resultTXT - результат тестирования
  */
 public class SaveResultTest {
 
-    void save(String path, long startTesting, long stopTesting, String theme, String resultTXT) {
+    /**
+     * Сохранение результата тестирования в XML-файл
+     * @param path          - путь для сохранения
+     * @param startTesting  - время начала теста
+     * @param stopTesting   - время окончания теста
+     * @param theme         - тема
+     * @param resultTXT     - результат тестирования
+     */
+    void save(String path,
+              String fileName,
+              long startTesting,
+              long stopTesting,
+              String theme,
+              String resultTXT) {
 
         File file = new File(path);
         file.mkdirs();
 //        file = new File(path + System.getProperty("user.name") + ".xml"); //
-        file = new File(path + "result.xml"); //
+        file = new File(path + fileName); //
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;

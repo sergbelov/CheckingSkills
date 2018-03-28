@@ -27,26 +27,33 @@ public class QuestionsList {
     private String question; // вопрос
     private List<Answer> answersList = new ArrayList<>(); // список вариантов ответа
 
-    private int maxQuestionConst;       // ограничение на количество задаваемых вопросов (CheckingSkills.parameters)
+    // CheckingSkills.parameters
+    private int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов
+    private boolean VISIBLE_ANSWERS = false; // отображать подсказки
+    private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
+    private String PATH_RESULT = "result\\";
+
     private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
     private int curThemeNum;            // номер текущей темы
     private int curQuestion;            // номер текущего вопроса (порядковый на форме)
     private int[] curQuestionsNumList;  // случайная последовательность номеров по теме
 
+    private SaveResultTest saveResultTest = new SaveResultTest(); // запись результатов тестирования
+
 
     public QuestionsList() {
+        getParameters("CheckingSkills.parameters"); // читаем параметры из файла
     }
 
     /**
      * Читаем вопросы из файла
-     * @param fileNameXML
      */
-    void readQuestionsFromFile(String fileNameXML) {
+    void readQuestionsFromFile() {
 
         themesList.clear();
         questionsList.clear();
 
-        File fileXML = new File(fileNameXML);
+        File fileXML = new File(FILE_QUESTIONS);
         if (!fileXML.exists()) { // файл с вопросами не найден
             JOptionPane.showMessageDialog(
                     null,
@@ -56,8 +63,7 @@ public class QuestionsList {
             dialog.showOpenDialog(null);
             fileXML = dialog.getSelectedFile();
             if (fileXML != null) {
-                fileNameXML = fileXML.getAbsolutePath();
-                fileXML = new File(fileNameXML);
+                fileXML = new File(fileXML.getAbsolutePath());
             }
         }
 
@@ -100,6 +106,7 @@ public class QuestionsList {
 
     /**
      * Парсим данные
+     *
      * @param prefix
      * @param node
      */
@@ -112,13 +119,9 @@ public class QuestionsList {
         } else {
 
             if (text != null
-                && !text.isEmpty()
-                && node.getNodeType() != 8 // не комментарий
-                && !text
-                    .replaceAll("\n","")
-                    .replaceAll("\r","")
-                    .replaceAll("\t","")
-                    .replaceAll(" ", "").isEmpty()) {
+                    && !text.isEmpty()
+                    && node.getNodeType() != 8 // не комментарий
+                    && !formatText(text).isEmpty()) {
 
 //                System.out.println(prefix + " value = \"" + text + "\"");
 
@@ -144,10 +147,10 @@ public class QuestionsList {
                     question = formatText(text);
 
                 } else if (node.getParentNode().getNodeName().equalsIgnoreCase("at")) { // верныый ответ
-                    answersList.add(new Answer(formatText(text),true,false));
+                    answersList.add(new Answer(formatText(text), true, false));
 
                 } else if (node.getParentNode().getNodeName().equalsIgnoreCase("af")) { // ложный ответ
-                    answersList.add(new Answer(formatText(text),false,false));
+                    answersList.add(new Answer(formatText(text), false, false));
                 }
             }
 
@@ -169,29 +172,25 @@ public class QuestionsList {
 
     /**
      * Уберем из строки: переводы строк, табуляции, двойные пробелы
+     *
      * @return
      */
-    private String formatText(String text){
+    private String formatText(String text) {
         if (text != null) {
             return text
                     .replaceAll("\t", " ")
                     .replaceAll("\r", "")
                     .replaceAll("\n", " ")
-                    .replaceAll("[\\s]{2,}", " ");
-        } else{
+                    .replaceAll("[\\s]{2,}", " ")
+                    .trim();
+        } else {
             return text;
         }
     }
 
     /**
-     * Ограничение на количество задаваемых вопросов (CheckingSkills.parameters)
-     */
-    public void setMaxQuestionConst(int maxQuestionConst) {
-        this.maxQuestionConst = maxQuestionConst;
-    }
-
-    /**
      * Максимальное количество задаваемых вопросов с учетом имеющихся по теме
+     *
      * @return
      */
     public int getMaxQuestion() {
@@ -200,6 +199,7 @@ public class QuestionsList {
 
     /**
      * Размер полного списка (все темы)
+     *
      * @return
      */
     public int size() {
@@ -208,6 +208,7 @@ public class QuestionsList {
 
     /**
      * Тема по номеру
+     *
      * @param themeNum
      * @return
      */
@@ -217,6 +218,7 @@ public class QuestionsList {
 
     /**
      * Текущая тема
+     *
      * @return
      */
     public String getCurTheme() {
@@ -225,6 +227,7 @@ public class QuestionsList {
 
     /**
      * Задаем текущую тему
+     *
      * @param themeNum
      */
     public void setCurTheme(int themeNum) {
@@ -233,6 +236,7 @@ public class QuestionsList {
 
     /**
      * Количество вопросов по теме
+     *
      * @param themeNum
      * @return
      */
@@ -242,8 +246,10 @@ public class QuestionsList {
                 .filter((x) -> x.getTheme().equals(themesList.get(themeNum)))
                 .count();
     }
+
     /**
      * Количество вопросов по теме
+     *
      * @param theme
      * @return
      */
@@ -268,6 +274,7 @@ public class QuestionsList {
 
     /**
      * Сисок тем
+     *
      * @return
      */
     public List<String> getThemesList() {
@@ -276,6 +283,7 @@ public class QuestionsList {
 
     /**
      * Вопрос по номеру
+     *
      * @param questionNum
      * @return
      */
@@ -285,6 +293,7 @@ public class QuestionsList {
 
     /**
      * Генерим случайную последовательность номеров по теме
+     *
      * @return
      */
     public void getQuestionsListNum() {
@@ -293,6 +302,14 @@ public class QuestionsList {
 
         // сбрасываем текущий выбор
         if (curQuestionsNumList != null) {
+/*
+            Arrays
+                .stream(curQuestionsNumList)
+                .forEach(n -> {
+                    questionsList.get(n).clearAnswersSelect();
+                    questionsList.get(n).answersListShuffle(); // перемешаем варианты ответов
+                });
+*/
             for (int i = 0; i < curQuestionsNumList.length; i++) {
                 questionsList.get(curQuestionsNumList[i]).clearAnswersSelect();
                 questionsList.get(curQuestionsNumList[i]).answersListShuffle(); // перемешаем варианты ответов
@@ -300,7 +317,7 @@ public class QuestionsList {
         }
 
         // максимально количество задаваемых вопросов (равно количеству вопросов по теме, но не более maxQuestionConst)
-        maxQuestion = Math.min(getCountThemeQuestions(curThemeNum), maxQuestionConst);
+        maxQuestion = Math.min(getCountThemeQuestions(curThemeNum), MAX_QUESTION_CONST);
 
         // выберем maxQuestion случайных вопросов из текущей темы
         Random random = new Random();
@@ -314,6 +331,7 @@ public class QuestionsList {
 
     /**
      * Текущий номер вопроса на форме
+     *
      * @return
      */
     public int getCurQuestion() {
@@ -322,6 +340,7 @@ public class QuestionsList {
 
     /**
      * Текущий номер вопроса в общем списке
+     *
      * @return
      */
     public int getCurQuestionNum() {
@@ -344,6 +363,7 @@ public class QuestionsList {
 
     /**
      * Первый вопрос в списке?
+     *
      * @return
      */
     public boolean isFirstQuestion() {
@@ -352,6 +372,7 @@ public class QuestionsList {
 
     /**
      * Последний вопрос в списке?
+     *
      * @return
      */
     public boolean isLastQuestion() {
@@ -360,7 +381,15 @@ public class QuestionsList {
 
 
     /**
+     * Отображать подсказки
+     */
+    public boolean isVisibleAnswers(){
+        return VISIBLE_ANSWERS;
+    }
+
+    /**
      * Корректность ответов (количество ответов с ошибками)
+     *
      * @return
      */
     public int getCountNotCorrectAnswers() {
@@ -368,17 +397,44 @@ public class QuestionsList {
         int countError = 0;
 
         for (int i = 0; i < curQuestionsNumList.length; i++) {
-            if (!questionsList.get(curQuestionsNumList[i]).isAnswerCorrect()){
-                    countError++;
+            if (!questionsList.get(curQuestionsNumList[i]).isAnswerCorrect()) {
+                countError++;
             }
         }
         return countError;
     }
 
+
+    /**
+     * читаем параметры из файла
+     */
+    private void getParameters(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) { // найден файл с установками
+            try (
+                    InputStream is = new FileInputStream(file)
+            ) {
+                if (is != null) {
+                    Properties pr = new Properties();
+                    pr.load(is);
+
+                    this.MAX_QUESTION_CONST = (int) Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
+                    this.VISIBLE_ANSWERS = (boolean) Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
+                    this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
+                    this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Сохраним вопросы с правильными ответами (сгруппировав по темам)
      */
-    public void saveQuestionsGroupByThemes(final String charset){
+    public void saveQuestionsGroupByThemes(final String charset) {
 
 //        StandardCharsets.US_ASCII.name();
         StringBuilder sbQuestions = new StringBuilder();
@@ -388,12 +444,11 @@ public class QuestionsList {
                 .sorted()
                 .forEach(t -> {
 
-                    try(
-                        FileOutputStream fileOutPutStream = new FileOutputStream(t.replace("\\", "_")+".txt", false);
-                        BufferedWriter bufferWriter = new BufferedWriter(new OutputStreamWriter(fileOutPutStream,
-                                charset != null & charset.length() > 0 ? charset : "Cp1251"));
-                    )
-                    {
+                    try (
+                            FileOutputStream fileOutPutStream = new FileOutputStream(t.replace("\\", "_") + ".txt", false);
+                            BufferedWriter bufferWriter = new BufferedWriter(new OutputStreamWriter(fileOutPutStream,
+                                    charset != null & charset.length() > 0 ? charset : "Cp1251"));
+                    ) {
                         sbQuestions.setLength(0);
                         sbQuestions
                                 .append("##################################################\r\n")
@@ -408,7 +463,7 @@ public class QuestionsList {
                                             .append("==================================================\r\n")
                                             .append(q.getQuestion())
                                             .append("\r\n");
-                                    for (int a = 0; a < q.getCountAnswers(); a++){
+                                    for (int a = 0; a < q.getCountAnswers(); a++) {
                                         if (q.getAnswer(a).isCorrect()) {
                                             sbQuestions
                                                     .append("..................................................\r\n")
@@ -419,12 +474,21 @@ public class QuestionsList {
                                 });
                         bufferWriter.write(sbQuestions.toString());
                         bufferWriter.flush();
-                    }
-                    catch(IOException e){
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                 });
+    }
+
+    public void saveResultTest(long startTesting, String resultTXT) {
+        saveResultTest.save(
+                PATH_RESULT,
+                System.getProperty("user.name") + ".xml", // "result.xml"
+                startTesting,
+                System.currentTimeMillis(),
+                getCurTheme(),
+                resultTXT);
     }
 
 }
