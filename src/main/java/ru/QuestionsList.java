@@ -484,7 +484,8 @@ public class QuestionsList {
     public void saveResultTest(long startTesting, String resultTXT) {
         saveResultTest.save(
                 PATH_RESULT,
-                System.getProperty("user.name") + ".xml", // "result.xml"
+//                System.getProperty("user.name") + ".xml", // "result.xml"
+                "result.xml",
                 startTesting,
                 System.currentTimeMillis(),
                 getCurTheme(),
