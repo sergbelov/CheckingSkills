@@ -46,9 +46,8 @@ public class CheckingSkills {
         // вопросы (читаем из файла FILE_QUESTIONS)
         questionsList = new QuestionsList();
 //        questionsList.setMaxQuestionConst(MAX_QUESTION_CONST);
-//        questionsList.readQuestionsFromFile(FILE_QUESTIONS);
-        questionsList.readQuestionsFromFile();
-        questionsList.saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+//        questionsList.readQuestions(FILE_QUESTIONS);
+        questionsList.readQuestions();
 
         CheckingSkillsEngine etEngine = new CheckingSkillsEngine(this); // слушатель
 
@@ -159,6 +158,11 @@ public class CheckingSkills {
     public void begin() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
+//        questionsList.readQuestions();
+
+//        cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
+//        cbTheme.validate();
+
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
             arrRB[i].setEnabled(true);
@@ -175,6 +179,11 @@ public class CheckingSkills {
         questionsList.getQuestionsListNum();        // случайная последовательность вопросов
         refreshQuestion();                          // отображаем вопрос
         startTesting = System.currentTimeMillis();  // время старта
+
+/*
+        long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        System.out.println(usedBytes);
+*/
     }
 
     /**

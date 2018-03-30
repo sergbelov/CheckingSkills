@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
  * @author Белов Сергей
  * Сохранение результата тестирования в XML-файл
  */
-public class SaveResultTest {
+public class SaveResult {
 
     /**
      * Сохранение результата тестирования в XML-файл
@@ -69,10 +69,10 @@ public class SaveResultTest {
             rootElement.appendChild(getTestResult(doc, startTesting, stopTesting, theme, resultTXT));
             doc.getDocumentElement().normalize();
 
-            //создаем объект TransformerFactory для печати в консоль
+            //создаем объект TransformerFactory для вывода в файл
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
-            // для красивого вывода в консоль
+            // для красивого вывода в файл
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             DOMSource source = new DOMSource(doc);
@@ -108,19 +108,19 @@ public class SaveResultTest {
 //        result.setAttribute("id", id);
 
         // создаем элемент Theme
-        result.appendChild(getLanguageElements(doc, result, "Theme", theme));
+        result.appendChild(getLanguageElement(doc, result, "Theme", theme));
         // создаем элемент StartTesting
-        result.appendChild(getLanguageElements(doc, result, "StartTesting", dateFormat.format(startTesting)));
+        result.appendChild(getLanguageElement(doc, result, "StartTesting", dateFormat.format(startTesting)));
         // создаем элемент StopTesting
-        result.appendChild(getLanguageElements(doc, result, "StopTesting", dateFormat.format(stopTesting)));
+        result.appendChild(getLanguageElement(doc, result, "StopTesting", dateFormat.format(stopTesting)));
         // создаем элемент ResultTXT
-        result.appendChild(getLanguageElements(doc, result, "ResultTXT", resultTXT));
+        result.appendChild(getLanguageElement(doc, result, "ResultTXT", resultTXT));
 
         return result;
     }
 
     // утилитный метод для создание нового узла XML-файла
-    private static Node getLanguageElements(Document doc, Element element, String name, String value) {
+    private static Node getLanguageElement(Document doc, Element element, String name, String value) {
         Element node = doc.createElement(name);
         node.appendChild(doc.createTextNode(value));
         return node;

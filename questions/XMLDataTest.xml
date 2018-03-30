@@ -47,20 +47,6 @@ answers_false 	ложные ответы
 		</answers_false>
 	</QuestionBlock>
 	<QuestionBlock>
-		<theme>Тема1</theme>
-		<question>Вопрос 4 Тема 1?</question>
-		<answer_true>
-			<at>Верный ответ 1</at>
-		</answer_true>
-		<answers_false>
-			<af>Ложный ответ 1</af>
-			<af>Ложный ответ 2</af>
-			<af>Ложный ответ 3</af>
-			<af>Ложный ответ 4</af>
-			<af>Ложный ответ 5</af>
-		</answers_false>
-	</QuestionBlock>
-	<QuestionBlock>
 		<theme>Тема2</theme>
 		<question>Вопрос 1 Тема 2?</question>
 		<answer_true>
@@ -86,7 +72,7 @@ answers_false 	ложные ответы
 		</answers_false>
 	</QuestionBlock>
 	<QuestionBlock>
-		<theme>Тема 2</theme>
+		<theme>Тема2</theme>
 		<question>Вопрос 3 Тема 2?</question>
 		<answer_true>
 			<at>Верный ответ 1</at>
@@ -95,32 +81,6 @@ answers_false 	ложные ответы
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
 			<af>Ложный ответ 3</af>
-		</answers_false>
-	</QuestionBlock>
-	<QuestionBlock>
-		<author>Белов Эмиль 29/03/2018</author>
-		<theme>Анатомия</theme>
-		<question>Скольки камерное сердце у человека</question>
-		<answer_true>
-			<at>4 камерное</at>
-		</answer_true>
-		<answers_false>
-			<af>1 камерное</af>
-			<af>2 камерное</af>
-			<af>3 камерное</af>
-		</answers_false>
-	</QuestionBlock>
-	<QuestionBlock>
-		<author>Белов Эмиль 29/03/2018</author>
-		<theme>Анатомия</theme>
-		<question>Скольки камерный желудок у парнокопытных</question>
-		<answer_true>
-			<at>3 камерный</at>
-			<at>2 камерный</at>
-		</answer_true>
-		<answers_false>
-			<af>1 камерный</af>
-			<af>4 камерный</af>
 		</answers_false>
 	</QuestionBlock>
 </Questions>

@@ -1,17 +1,8 @@
 package ru;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -20,12 +11,8 @@ import java.util.stream.IntStream;
  */
 public class QuestionsList {
 
-    private List<String> themesList = new ArrayList<>();        // полный список тем
-    private List<Question> questionsList = new ArrayList<>();   // полный список вопросов (все темы)
-
-    private String theme;    // тема
-    private String question; // вопрос
-    private List<Answer> answersList = new ArrayList<>(); // список вариантов ответа
+    private List<String> themesList;      // полный список тем
+    private List<Question> questionsList; // полный список вопросов (все темы)
 
     // CheckingSkills.parameters
     private int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов
@@ -38,7 +25,8 @@ public class QuestionsList {
     private int curQuestion;            // номер текущего вопроса (порядковый на форме)
     private int[] curQuestionsNumList;  // случайная последовательность номеров по теме
 
-    private SaveResultTest saveResultTest = new SaveResultTest(); // запись результатов тестирования
+    private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
+    private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
 
 
     public QuestionsList() {
@@ -48,144 +36,22 @@ public class QuestionsList {
     /**
      * Читаем вопросы из файла
      */
-    void readQuestionsFromFile() {
+    public void readQuestions() {
 
-        themesList.clear();
-        questionsList.clear();
+        questionsList = new ArrayList<>(
+                readQuestions.read(FILE_QUESTIONS));
 
-        File fileXML = new File(FILE_QUESTIONS);
-        if (!fileXML.exists()) { // файл с вопросами не найден
-            JOptionPane.showMessageDialog(
-                    null,
-                    "<html>Не найден XML-файл с вопросами<br/>Укажите данный файл...</html>");
+        themesList = new ArrayList<>(
+                questionsList
+                        .stream()
+                        .map(Question::getTheme)
+                        .sorted()
+                        .distinct()
+                        .collect(Collectors.toList()));
 
-            JFileChooser dialog = new JFileChooser();
-            dialog.showOpenDialog(null);
-            fileXML = dialog.getSelectedFile();
-            if (fileXML != null) {
-                fileXML = new File(fileXML.getAbsolutePath());
-            }
-        }
+        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(fileXML);
-            doc.getDocumentElement().normalize();
-            NodeList tags = doc.getChildNodes();  // узел в XML
-
-            // проходим по каждому элементу
-            for (int i = 0; i < tags.getLength(); i++) {
-                Node tag = tags.item(i);
-                getXMLData("", tag);
-            }
-
-        } catch (Exception exc) {
-            //exc.printStackTrace();
-            JOptionPane.showMessageDialog(
-                    null,
-                    exc.getMessage(),
-                    "Ошибка при чтении данных",
-                    JOptionPane.ERROR_MESSAGE);
-
-            System.exit(-1);
-        }
-
-        if (answersList.size() > 0) { // добавим последний вопрос из файла
-            questionsList.add(new Question(
-                    theme,
-                    question,
-                    answersList));
-        }
-
-        Collections.sort(themesList);
-
-//        themesList = new ArrayList<>(getThemesListPrivate()); // список тем
-//        Runtime.getRuntime().gc(); // чистка памяти
-    }
-
-    /**
-     * Парсим данные
-     *
-     * @param prefix
-     * @param node
-     */
-    private void getXMLData(String prefix, Node node) {
-
-        String text = node.getNodeValue();
-
-        if (node != null && text != null && !text.isEmpty() && node.getNodeType() == 8) { // комментарий
-//            System.out.println(text);
-        } else {
-
-            if (text != null
-                    && !text.isEmpty()
-                    && node.getNodeType() != 8 // не комментарий
-                    && !formatText(text).isEmpty()) {
-
-//                System.out.println(prefix + " value = \"" + text + "\"");
-
-                if (node.getParentNode().getNodeName().equalsIgnoreCase("theme")) { // тема
-                    if (answersList.size() > 0) { // в памяти есть ранее прочитанный блок - добавим в список
-                        questionsList.add(new Question(
-                                theme,
-                                question,
-                                answersList));
-
-                        // очистим переменные
-                        theme = null;
-                        question = null;
-                        answersList.clear();
-                    }
-                    theme = formatText(text);
-
-                    if (themesList.indexOf(theme) == -1) {
-                        themesList.add(theme);
-                    }
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("question")) { // вопрос
-                    question = formatText(text);
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("at")) { // верныый ответ
-                    answersList.add(new Answer(formatText(text), true, false));
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("af")) { // ложный ответ
-                    answersList.add(new Answer(formatText(text), false, false));
-                }
-            }
-
-            NamedNodeMap attributes = node.getAttributes();
-            if (attributes != null) {
-                for (int i = 0; i < attributes.getLength(); i++) {
-                    Node attr = attributes.item(i);
-                    System.out.println(prefix + " attr = \"" + attr.getNodeName() + "\"" + " value = \"" + attr.getTextContent().toString() + "\" ");
-                    System.out.println(node.getParentNode());
-                }
-            }
-
-            NodeList children = node.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                getXMLData(prefix + node.getNodeName() + ":", children.item(i));
-            }
-        }
-    }
-
-    /**
-     * Уберем из строки: переводы строк, табуляции, двойные пробелы
-     *
-     * @return
-     */
-    private String formatText(String text) {
-        if (text != null) {
-            return text
-                    .replaceAll("\t", " ")
-                    .replaceAll("\r", "")
-                    .replaceAll("\n", " ")
-                    .replaceAll("[\\s]{2,}", " ")
-                    .trim();
-        } else {
-            return text;
-        }
+//        Collections.sort(themesList);
     }
 
     /**
@@ -259,18 +125,6 @@ public class QuestionsList {
                 .filter((x) -> x.getTheme().equalsIgnoreCase(theme))
                 .count();
     }
-
-/*
-    private List<String> getThemesListPrivate() {
-        return new ArrayList<>(
-                questionsList
-                        .stream()
-                        .map(Question::getTheme)
-                        .sorted()
-                        .distinct()
-                        .collect(Collectors.toList()));
-    }
-*/
 
     /**
      * Сисок тем
@@ -414,15 +268,14 @@ public class QuestionsList {
             try (
                     InputStream is = new FileInputStream(file)
             ) {
-                if (is != null) {
-                    Properties pr = new Properties();
-                    pr.load(is);
+                Properties pr = new Properties();
+                pr.load(is);
 
-                    this.MAX_QUESTION_CONST = (int) Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
-                    this.VISIBLE_ANSWERS = (boolean) Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
-                    this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
-                    this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
-                }
+                this.MAX_QUESTION_CONST = (int) Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
+                this.VISIBLE_ANSWERS = (boolean) Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
+                this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
+                this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -482,7 +335,7 @@ public class QuestionsList {
     }
 
     public void saveResultTest(long startTesting, String resultTXT) {
-        saveResultTest.save(
+        saveResult.save(
                 PATH_RESULT,
 //                System.getProperty("user.name") + ".xml", // "result.xml"
                 "result.xml",
