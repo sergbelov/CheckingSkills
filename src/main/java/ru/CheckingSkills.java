@@ -1,9 +1,6 @@
 package ru;
 
 import java.awt.*;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import javax.swing.*;
 
 /**
@@ -176,7 +173,7 @@ public class CheckingSkills {
 
         bEnd.setEnabled(true);
         visibleAnswers = questionsList.isVisibleAnswers();
-        questionsList.getQuestionsListNum();        // случайная последовательность вопросов
+        questionsList.getRandomQuestions();        // случайная последовательность вопросов
         refreshQuestion();                          // отображаем вопрос
         startTesting = System.currentTimeMillis();  // время старта
 

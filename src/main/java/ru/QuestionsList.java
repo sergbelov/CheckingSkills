@@ -23,7 +23,7 @@ public class QuestionsList {
     private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
     private int curThemeNum;            // номер текущей темы
     private int curQuestion;            // номер текущего вопроса (порядковый на форме)
-    private int[] curQuestionsNumList;  // случайная последовательность номеров по теме
+    private int[] randomQuestionsArr;   // случайная последовательность номеров по теме
 
     private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
@@ -150,23 +150,23 @@ public class QuestionsList {
      *
      * @return
      */
-    public void getQuestionsListNum() {
+    public void getRandomQuestions() {
 
         curQuestion = 0;
 
         // сбрасываем текущий выбор
-        if (curQuestionsNumList != null) {
+        if (randomQuestionsArr != null) {
 /*
             Arrays
-                .stream(curQuestionsNumList)
+                .stream(randomQuestionsArr)
                 .forEach(n -> {
                     questionsList.get(n).clearAnswersSelect();
                     questionsList.get(n).answersListShuffle(); // перемешаем варианты ответов
                 });
 */
-            for (int i = 0; i < curQuestionsNumList.length; i++) {
-                questionsList.get(curQuestionsNumList[i]).clearAnswersSelect();
-                questionsList.get(curQuestionsNumList[i]).answersListShuffle(); // перемешаем варианты ответов
+            for (int i = 0; i < randomQuestionsArr.length; i++) {
+                questionsList.get(randomQuestionsArr[i]).clearAnswersSelect();
+                questionsList.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
             }
         }
 
@@ -175,7 +175,7 @@ public class QuestionsList {
 
         // выберем maxQuestion случайных вопросов из текущей темы
         Random random = new Random();
-        curQuestionsNumList = IntStream
+        randomQuestionsArr = IntStream
                 .generate(() -> random.nextInt(questionsList.size()))
                 .distinct()
                 .filter(n -> questionsList.get(n).getTheme().equals(getTheme(curThemeNum)))
@@ -198,7 +198,7 @@ public class QuestionsList {
      * @return
      */
     public int getCurQuestionNum() {
-        return curQuestionsNumList[curQuestion];
+        return randomQuestionsArr[curQuestion];
     }
 
     /**
@@ -250,8 +250,8 @@ public class QuestionsList {
 
         int countError = 0;
 
-        for (int i = 0; i < curQuestionsNumList.length; i++) {
-            if (!questionsList.get(curQuestionsNumList[i]).isAnswerCorrect()) {
+        for (int i = 0; i < randomQuestionsArr.length; i++) {
+            if (!questionsList.get(randomQuestionsArr[i]).isAnswerCorrect()) {
                 countError++;
             }
         }
@@ -334,11 +334,17 @@ public class QuestionsList {
                 });
     }
 
+    /**
+     * Сохраним результат тестирования
+     *
+     * @param startTesting
+     * @param resultTXT
+     */
     public void saveResultTest(long startTesting, String resultTXT) {
         saveResult.save(
                 PATH_RESULT,
-//                System.getProperty("user.name") + ".xml", // "result.xml"
-                "result.xml",
+                System.getProperty("user.name") + ".xml",
+//                "result.xml",
                 startTesting,
                 System.currentTimeMillis(),
                 getCurTheme(),
