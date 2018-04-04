@@ -65,7 +65,7 @@ public class Question implements Comparable<Question> {
     /**
      * Сбрасываем текущий выбор
      */
-    public void clearAnswersSelect() {
+    public void clearAnswersSelected() {
         answersList
                 .stream()
                 .filter((x) -> x.isSelected())

@@ -21,9 +21,9 @@ public class QuestionsList {
     private String PATH_RESULT = "result\\";
 
     private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
-    private int curThemeNum;            // номер текущей темы
-    private int curQuestion;            // номер текущего вопроса (порядковый на форме)
-    private int[] randomQuestionsArr;   // случайная последовательность номеров по теме
+    private int themeNum;               // номер текущей темы
+    private int questionNumOnForm;      // номер текущего вопроса (порядковый на форме)
+    private int[] randomQuestionsArr;   // случайная последовательность номеров вопросов по теме
 
     private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
@@ -88,7 +88,7 @@ public class QuestionsList {
      * @return
      */
     public String getCurTheme() {
-        return themesList.get(curThemeNum);
+        return themesList.get(themeNum);
     }
 
     /**
@@ -96,9 +96,7 @@ public class QuestionsList {
      *
      * @param themeNum
      */
-    public void setCurTheme(int themeNum) {
-        this.curThemeNum = themeNum;
-    }
+    public void setThemeNum(int themeNum) { this.themeNum = themeNum; }
 
     /**
      * Количество вопросов по теме
@@ -106,7 +104,7 @@ public class QuestionsList {
      * @param themeNum
      * @return
      */
-    public int getCountThemeQuestions(int themeNum) {
+    public int getCountQuestionsInTheme(int themeNum) {
         return (int) questionsList
                 .stream()
                 .filter((x) -> x.getTheme().equals(themesList.get(themeNum)))
@@ -119,7 +117,7 @@ public class QuestionsList {
      * @param theme
      * @return
      */
-    public int getCountThemeQuestions(String theme) {
+    public int getCountQuestionsInTheme(String theme) {
         return (int) questionsList
                 .stream()
                 .filter((x) -> x.getTheme().equalsIgnoreCase(theme))
@@ -131,9 +129,7 @@ public class QuestionsList {
      *
      * @return
      */
-    public List<String> getThemesList() {
-        return themesList;
-    }
+    public List<String> getThemesList() { return themesList; }
 
     /**
      * Вопрос по номеру
@@ -144,41 +140,46 @@ public class QuestionsList {
     public Question get(int questionNum) {
         return questionsList.get(questionNum);
     }
+    /**
+     * Вопрос текущий
+     * @return
+     */
+    public Question getCur() {
+        return questionsList.get(getCurQuestionNum());
+    }
 
     /**
-     * Генерим случайную последовательность номеров по теме
+     * Генерим случайную последовательность номеров по текущей теме
      *
      * @return
      */
-    public void getRandomQuestions() {
+    public void generateRandomQuestionsArr() {
 
-        curQuestion = 0;
+        questionNumOnForm = 0;
 
         // сбрасываем текущий выбор
         if (randomQuestionsArr != null) {
-/*
             Arrays
                 .stream(randomQuestionsArr)
                 .forEach(n -> {
-                    questionsList.get(n).clearAnswersSelect();
+                    questionsList.get(n).clearAnswersSelected(); // сбросим текущий выбор
                     questionsList.get(n).answersListShuffle(); // перемешаем варианты ответов
                 });
-*/
-            for (int i = 0; i < randomQuestionsArr.length; i++) {
-                questionsList.get(randomQuestionsArr[i]).clearAnswersSelect();
-                questionsList.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
-            }
+//            for (int i = 0; i < randomQuestionsArr.length; i++) {
+//                questionsList.get(randomQuestionsArr[i]).clearAnswersSelected(); // сбросим текущий выбор
+//                questionsList.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
+//            }
         }
 
         // максимально количество задаваемых вопросов (равно количеству вопросов по теме, но не более maxQuestionConst)
-        maxQuestion = Math.min(getCountThemeQuestions(curThemeNum), MAX_QUESTION_CONST);
+        maxQuestion = Math.min(getCountQuestionsInTheme(themeNum), MAX_QUESTION_CONST);
 
         // выберем maxQuestion случайных вопросов из текущей темы
         Random random = new Random();
         randomQuestionsArr = IntStream
                 .generate(() -> random.nextInt(questionsList.size()))
                 .distinct()
-                .filter(n -> questionsList.get(n).getTheme().equals(getTheme(curThemeNum)))
+                .filter(n -> questionsList.get(n).getTheme().equals(getTheme(themeNum)))
                 .limit(maxQuestion)
                 .toArray();
     }
@@ -188,8 +189,8 @@ public class QuestionsList {
      *
      * @return
      */
-    public int getCurQuestion() {
-        return curQuestion;
+    public int getQuestionNumOnForm() {
+        return questionNumOnForm;
     }
 
     /**
@@ -198,21 +199,21 @@ public class QuestionsList {
      * @return
      */
     public int getCurQuestionNum() {
-        return randomQuestionsArr[curQuestion];
+        return randomQuestionsArr[questionNumOnForm];
     }
 
     /**
      * Переход к предыдущему вопросу
      */
     public void PrevQuestion() {
-        if (curQuestion > 0) curQuestion--;
+        if (questionNumOnForm > 0) questionNumOnForm--;
     }
 
     /**
      * Переход к следующему вопросу
      */
     public void NextQuestion() {
-        if (curQuestion < maxQuestion - 1) curQuestion++;
+        if (questionNumOnForm < maxQuestion - 1) questionNumOnForm++;
     }
 
     /**
@@ -221,7 +222,7 @@ public class QuestionsList {
      * @return
      */
     public boolean isFirstQuestion() {
-        return curQuestion == 0;
+        return questionNumOnForm == 0;
     }
 
     /**
@@ -230,9 +231,8 @@ public class QuestionsList {
      * @return
      */
     public boolean isLastQuestion() {
-        return curQuestion == (maxQuestion - 1);
+        return questionNumOnForm == (maxQuestion - 1);
     }
-
 
     /**
      * Отображать подсказки
@@ -247,32 +247,28 @@ public class QuestionsList {
      * @return
      */
     public int getCountNotCorrectAnswers() {
-
-        int countError = 0;
-
-        for (int i = 0; i < randomQuestionsArr.length; i++) {
-            if (!questionsList.get(randomQuestionsArr[i]).isAnswerCorrect()) {
-                countError++;
-            }
-        }
-        return countError;
+        return (int) Arrays
+                .stream(randomQuestionsArr)
+                .filter(n -> !questionsList.get(n).isAnswerCorrect())
+                .count();
     }
 
-
     /**
-     * читаем параметры из файла
+     * Читаем параметры из файла
+     *
+     * @param fileName
      */
     private void getParameters(String fileName) {
         File file = new File(fileName);
         if (file.exists()) { // найден файл с установками
             try (
-                    InputStream is = new FileInputStream(file)
+                InputStream is = new FileInputStream(file)
             ) {
                 Properties pr = new Properties();
                 pr.load(is);
 
-                this.MAX_QUESTION_CONST = (int) Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
-                this.VISIBLE_ANSWERS = (boolean) Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
+                this.MAX_QUESTION_CONST = Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
+                this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
                 this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
 
@@ -343,8 +339,8 @@ public class QuestionsList {
     public void saveResultTest(long startTesting, String resultTXT) {
         saveResult.save(
                 PATH_RESULT,
-                System.getProperty("user.name") + ".xml",
-//                "result.xml",
+//                System.getProperty("user.name") + ".xml",
+                "result.xml",
                 startTesting,
                 System.currentTimeMillis(),
                 getCurTheme(),

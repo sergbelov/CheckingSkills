@@ -10,11 +10,9 @@ import javax.swing.*;
 public class CheckingSkills {
 
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
-
-    long startTesting; // время начала теста
-    boolean visibleAnswers = false; // отображать подсказки
-
-    QuestionsList questionsList;
+    private long startTesting; // время начала теста
+    private boolean visibleAnswers = false; // отображать подсказки
+    QuestionsList questionsList = new QuestionsList();; // список вопросов с ответами
 
     JComboBox cbTheme;
     JLabel lQuestion;
@@ -39,14 +37,9 @@ public class CheckingSkills {
 //        currPath = System.getProperty("user.dir")+"\\";
 //        JOptionPane.showMessageDialog(null, currPath);
 
-
-        // вопросы (читаем из файла FILE_QUESTIONS)
-        questionsList = new QuestionsList();
-//        questionsList.setMaxQuestionConst(MAX_QUESTION_CONST);
-//        questionsList.readQuestions(FILE_QUESTIONS);
         questionsList.readQuestions();
 
-        CheckingSkillsEngine etEngine = new CheckingSkillsEngine(this); // слушатель
+        CheckingSkillsListener listener = new CheckingSkillsListener(this); // слушатель
 
         // основная панель
         windowContent = new JPanel();
@@ -54,10 +47,11 @@ public class CheckingSkills {
         BorderLayout bl = new BorderLayout();
         windowContent.setLayout(bl);
 
-        // тема тестирования
+        // тема для тестирования
         cbTheme = new JComboBox();
         cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
-        cbTheme.addActionListener(etEngine);
+        cbTheme.setSelectedIndex(0);
+        cbTheme.addActionListener(listener);
 
         // группа RadioButton
         bGRB = new ButtonGroup();
@@ -75,28 +69,28 @@ public class CheckingSkills {
             // создаем компоненты JRadioButton + слушатель
             arrRB[i] = new JRadioButton();
             arrRB[i].setName("RB" + i);
-            arrRB[i].addActionListener(etEngine);
+            arrRB[i].addActionListener(listener);
             bGRB.add(arrRB[i]);
 
             // создаем компоненты JCheckBox + слушатель
             arrCB[i] = new JCheckBox();
             arrCB[i].setName("CB" + i);
-            arrCB[i].addActionListener(etEngine);
+            arrCB[i].addActionListener(listener);
         }
 
         defaultBackground = arrRB[0].getBackground();
 
         // Создаем кнопки + слушатель
         bPrevQuestion = new JButton("Предыдущий вопрос");
-        bPrevQuestion.addActionListener(etEngine);
+        bPrevQuestion.addActionListener(listener);
         bNextQuestion = new JButton("Следующий вопрос");
-        bNextQuestion.addActionListener(etEngine);
+        bNextQuestion.addActionListener(listener);
         bEnd = new JButton("Завершить");
-        bEnd.addActionListener(etEngine);
+        bEnd.addActionListener(listener);
         bNew = new JButton("Начать заново");
-        bNew.addActionListener(etEngine);
+        bNew.addActionListener(listener);
         bExit = new JButton("Выход");
-        bExit.addActionListener(etEngine);
+        bExit.addActionListener(listener);
 
         // Создаём панель p1 с GridLayout (для темы и вопроса)
         p1 = new JPanel();
@@ -145,8 +139,6 @@ public class CheckingSkills {
         // Задаем размер окна
         mainFrame.setSize(800, 600);
         mainFrame.setVisible(true);
-
-//        begin();
     }
 
     /**
@@ -155,10 +147,14 @@ public class CheckingSkills {
     public void begin() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
-//        questionsList.readQuestions();
-
-//        cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
-//        cbTheme.validate();
+/*
+        String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
+        questionsList.readQuestions(); // читаем вопросы из файла
+        cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
+        cbTheme.validate();
+        cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
+        questionsList.setThemeNum(cbTheme.getSelectedIndex());
+*/
 
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
@@ -173,10 +169,9 @@ public class CheckingSkills {
 
         bEnd.setEnabled(true);
         visibleAnswers = questionsList.isVisibleAnswers();
-        questionsList.getRandomQuestions();        // случайная последовательность вопросов
+        questionsList.generateRandomQuestionsArr(); // случайная последовательность вопросов
         refreshQuestion();                          // отображаем вопрос
         startTesting = System.currentTimeMillis();  // время старта
-
 /*
         long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         System.out.println(usedBytes);
@@ -188,54 +183,53 @@ public class CheckingSkills {
      */
     public void refreshQuestion() {
 
-        boolean reply = false;
-        int questNum = questionsList.getCurQuestionNum();
+        boolean answered = false;
 
-        lQuestion.setText("<html>" + questionsList.get(questNum).getQuestion() + "</html>");// вопрос
+        lQuestion.setText("<html>" + questionsList.getCur().getQuestion() + "</html>");// вопрос
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton
 
         // варианты ответов
-        if (questionsList.get(questNum).getType() == 1) {      // RadioButton
-            for (int i = 0; i < questionsList.get(questNum).getCountAnswers(); i++) {
-                arrRB[i].setText("<html>" + questionsList.get(questNum).getAnswer(i).getAnswer() + "</html>");
-                arrRB[i].setSelected(questionsList.get(questNum).getAnswer(i).isSelected());
+        if (questionsList.getCur().getType() == 1) {      // RadioButton
+            for (int i = 0; i < questionsList.getCur().getCountAnswers(); i++) {
+                arrRB[i].setText("<html>" + questionsList.getCur().getAnswer(i).getAnswer() + "</html>");
+                arrRB[i].setSelected(questionsList.getCur().getAnswer(i).isSelected());
                 p2.add(arrRB[i]);
-                if (questionsList.get(questNum).getAnswer(i).isSelected()) {
-                    reply = true;
+                if (questionsList.getCur().getAnswer(i).isSelected()) {
+                    answered = true;
                 }
 
                 if (visibleAnswers) { // подсказки
-                    if (questionsList.get(questNum).getAnswer(i).isCorrect() & questionsList.get(questNum).getAnswer(i).isSelected()) {
+                    if (questionsList.getCur().getAnswer(i).isCorrect() & questionsList.getCur().getAnswer(i).isSelected()) {
                         arrRB[i].setBackground(greenColor);
                     } // отмечен правильный ответ
-                    else if (questionsList.get(questNum).getAnswer(i).isCorrect()) {
+                    else if (questionsList.getCur().getAnswer(i).isCorrect()) {
                         arrRB[i].setBackground(yellowColor);
                     } // не отмечен правильный вариант
-                    else if (!questionsList.get(questNum).getAnswer(i).isCorrect() & questionsList.get(questNum).getAnswer(i).isSelected()) {
+                    else if (!questionsList.getCur().getAnswer(i).isCorrect() & questionsList.getCur().getAnswer(i).isSelected()) {
                         arrRB[i].setBackground(redColor);
                     } // отмечен не правильный вариант
                     else arrRB[i].setBackground(defaultBackground);
                 }
             }
 
-        } else if (questionsList.get(questNum).getType() == 2) { // CheckBox
-            for (int i = 0; i < questionsList.get(questNum).getCountAnswers(); i++) {
-                arrCB[i].setText("<html>" + questionsList.get(questNum).getAnswer(i).getAnswer() + "</html>");
-                arrCB[i].setSelected(questionsList.get(questNum).getAnswer(i).isSelected());
+        } else if (questionsList.getCur().getType() == 2) { // CheckBox
+            for (int i = 0; i < questionsList.getCur().getCountAnswers(); i++) {
+                arrCB[i].setText("<html>" + questionsList.getCur().getAnswer(i).getAnswer() + "</html>");
+                arrCB[i].setSelected(questionsList.getCur().getAnswer(i).isSelected());
                 p2.add(arrCB[i]);
-                if (questionsList.get(questNum).getAnswer(i).isSelected()) {
-                    reply = true;
+                if (questionsList.getCur().getAnswer(i).isSelected()) {
+                    answered = true;
                 }
 
                 if (visibleAnswers) {
-                    if (questionsList.get(questNum).getAnswer(i).isCorrect() & questionsList.get(questNum).getAnswer(i).isSelected()) {
+                    if (questionsList.getCur().getAnswer(i).isCorrect() & questionsList.getCur().getAnswer(i).isSelected()) {
                         arrCB[i].setBackground(greenColor);
                     } // отмечен правильный ответ
-                    else if (questionsList.get(questNum).getAnswer(i).isCorrect()) {
+                    else if (questionsList.getCur().getAnswer(i).isCorrect()) {
                         arrCB[i].setBackground(yellowColor);
                     } // не отмечен правильный вариант
-                    else if (!questionsList.get(questNum).getAnswer(i).isCorrect() & questionsList.get(questNum).getAnswer(i).isSelected()) {
+                    else if (!questionsList.getCur().getAnswer(i).isCorrect() & questionsList.getCur().getAnswer(i).isSelected()) {
                         arrCB[i].setBackground(redColor);
                     } // отмечен не правильный вариант
                     else arrCB[i].setBackground(defaultBackground);
@@ -243,16 +237,16 @@ public class CheckingSkills {
             }
         }
 
-        if (reply) { // есть вариант ответа
+        if (answered) { // есть вариант ответа
             lQuestion.setForeground(blueColor);
         } else {
             lQuestion.setForeground(blackColor);
         }
 
-        bPrevQuestion.setEnabled(!questionsList.isFirstQuestion()); // первый вопрос
-        bNextQuestion.setEnabled(!questionsList.isLastQuestion()); // последний вопрос
+        bPrevQuestion.setEnabled(!questionsList.isFirstQuestion()); // первый вопрос ?
+        bNextQuestion.setEnabled(!questionsList.isLastQuestion()); // последний вопрос ?
 
-        mainFrame.setTitle("Проверка знаний (" + (questionsList.getCurQuestion() + 1) + " из " + questionsList.getMaxQuestion() + ")");
+        mainFrame.setTitle("Проверка знаний (" + (questionsList.getQuestionNumOnForm() + 1) + " из " + questionsList.getMaxQuestion() + ")");
 
         p2.repaint();
     }
@@ -260,15 +254,15 @@ public class CheckingSkills {
     /**
      * Запомним текущий выбор
      */
-    public void rememberStatus(boolean clear) {
+    public void rememberStatus(boolean isClear) {
 
-        for (int i = 0; i < questionsList.get(questionsList.getCurQuestionNum()).getCountAnswers(); i++) {
+        for (int i = 0; i < questionsList.getCur().getCountAnswers(); i++) {
             questionsList
-                    .get(questionsList.getCurQuestionNum())
+                    .getCur()
                     .getAnswer(i)
                     .setSelected(arrRB[i].isSelected() | arrCB[i].isSelected());
 
-            if (clear) {
+            if (isClear) {
                 arrRB[i].setSelected(false);
                 arrCB[i].setSelected(false);
             }
@@ -282,13 +276,8 @@ public class CheckingSkills {
      */
     public int checkAnswers() {
 
-        int countError = 0;
-        int correctAnswerProc = 0;
         String title, message, resultTXT;
-
-        mainFrame.setTitle("Проверка знаний (" + (questionsList.getCurQuestion() + 1) + " из " + questionsList.getMaxQuestion() + ")");
-
-        countError = questionsList.getCountNotCorrectAnswers();
+        int countError = questionsList.getCountNotCorrectAnswers();
 
         if (countError == 0) { // ошибок нет
             title = "Тестирование завершено";
@@ -297,7 +286,7 @@ public class CheckingSkills {
                     " из " + questionsList.getMaxQuestion() + ")";
 
         } else { // ошибки есть
-            correctAnswerProc = (questionsList.getMaxQuestion() - countError) * 100 / questionsList.getMaxQuestion();
+            int correctAnswerProc = (questionsList.getMaxQuestion() - countError) * 100 / questionsList.getMaxQuestion();
 
             title = "Тестирование завершено с ошибками";
             message = "<html>Имеются ошибки.<br/>" +

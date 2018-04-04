@@ -8,13 +8,13 @@ import javax.swing.*;
  * @author Белов Сергей
  * обработчик событий на форме
  */
-public class CheckingSkillsEngine implements ActionListener {
+public class CheckingSkillsListener implements ActionListener {
 
     Object[] options = { "Да", "Нет" };
     CheckingSkills parent; // ссылка на CheckingSkills
 
     // Конструктор сохраняет ссылку на окно CheckingSkills в переменной класса “parent”
-    CheckingSkillsEngine(CheckingSkills parent){
+    CheckingSkillsListener(CheckingSkills parent){
         this.parent = parent;
     }
 
@@ -91,7 +91,7 @@ public class CheckingSkillsEngine implements ActionListener {
             parent.refreshQuestion();
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
-            parent.questionsList.setCurTheme(parent.cbTheme.getSelectedIndex());
+            parent.questionsList.setThemeNum(parent.cbTheme.getSelectedIndex());
             parent.begin();
         }
     }
