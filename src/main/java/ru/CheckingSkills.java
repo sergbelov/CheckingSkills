@@ -49,8 +49,8 @@ public class CheckingSkills {
 
         // тема для тестирования
         cbTheme = new JComboBox();
-        cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
-        cbTheme.setSelectedIndex(0);
+//        cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
+//        cbTheme.setSelectedIndex(0);
         cbTheme.addActionListener(listener);
 
         // группа RadioButton
@@ -147,14 +147,14 @@ public class CheckingSkills {
     public void begin() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
-/*
         String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
         questionsList.readQuestions(); // читаем вопросы из файла
         cbTheme.setModel(new DefaultComboBoxModel(questionsList.getThemesList().toArray()));
         cbTheme.validate();
-        cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
+        if (curTheme != null && !curTheme.isEmpty()) {
+            cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
+        }
         questionsList.setThemeNum(cbTheme.getSelectedIndex());
-*/
 
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
