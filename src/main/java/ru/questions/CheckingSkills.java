@@ -12,7 +12,7 @@ public class CheckingSkills {
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
     private long startTesting; // время начала теста
     private boolean visibleAnswers = false; // отображать подсказки
-    Questions questions = new Questions();; // список вопросов с ответами
+    Questions questions = new Questions("CheckingSkills.properties");; // список вопросов с ответами
 
     JComboBox cbTheme;
     JLabel lQuestion;

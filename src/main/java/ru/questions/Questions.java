@@ -29,8 +29,8 @@ public class Questions {
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
 
 
-    public Questions() {
-        getProperties("CheckingSkills.properties"); // читаем параметры из файла
+    public Questions(String fileProperties) {
+        getProperties(fileProperties); // читаем параметры из файла
     }
 
     /**
