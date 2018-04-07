@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
  * @author Белов Сергей
  * Список всех вопросов
  */
-public class QuestionsList {
+public class Questions {
 
     private List<String> themesList;      // полный список тем
     private List<Question> questionsList; // полный список вопросов (все темы)
@@ -29,7 +29,7 @@ public class QuestionsList {
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
 
 
-    public QuestionsList() {
+    public Questions() {
         getProperties("CheckingSkills.properties"); // читаем параметры из файла
     }
 
@@ -166,8 +166,8 @@ public class QuestionsList {
                     questionsList.get(n).answersListShuffle(); // перемешаем варианты ответов
                 });
 //            for (int i = 0; i < randomQuestionsArr.length; i++) {
-//                questionsList.get(randomQuestionsArr[i]).clearAnswersSelected(); // сбросим текущий выбор
-//                questionsList.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
+//                questions.get(randomQuestionsArr[i]).clearAnswersSelected(); // сбросим текущий выбор
+//                questions.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
 //            }
         }
 

@@ -84,14 +84,14 @@ public class CheckingSkillsListener implements ActionListener {
             parent.rememberStatus(true); // запомним текущий выбор
 
             if (eventSource == parent.bPrevQuestion) {
-                parent.questionsList.PrevQuestion();
+                parent.questions.PrevQuestion();
             } else if (eventSource == parent.bNextQuestion) {
-                parent.questionsList.NextQuestion();
+                parent.questions.NextQuestion();
             }
             parent.refreshQuestion();
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
-            parent.questionsList.setThemeNum(parent.cbTheme.getSelectedIndex());
+            parent.questions.setThemeNum(parent.cbTheme.getSelectedIndex());
             parent.begin();
         }
     }
