@@ -14,7 +14,7 @@ public class QuestionsList {
     private List<String> themesList;      // полный список тем
     private List<Question> questionsList; // полный список вопросов (все темы)
 
-    // CheckingSkills.parameters
+    // CheckingSkills.properties
     private int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов
     private boolean VISIBLE_ANSWERS = false; // отображать подсказки
     private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
@@ -30,7 +30,7 @@ public class QuestionsList {
 
 
     public QuestionsList() {
-        getParameters("CheckingSkills.parameters"); // читаем параметры из файла
+        getProperties("CheckingSkills.properties"); // читаем параметры из файла
     }
 
     /**
@@ -258,7 +258,7 @@ public class QuestionsList {
      *
      * @param fileName
      */
-    private void getParameters(String fileName) {
+    private void getProperties(String fileName) {
         File file = new File(fileName);
         if (file.exists()) { // найден файл с установками
             try (
