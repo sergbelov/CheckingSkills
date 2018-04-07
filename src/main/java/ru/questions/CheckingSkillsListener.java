@@ -1,4 +1,4 @@
-package ru;
+package ru.questions;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,4 @@
-package ru;
+package ru.questions;
 
 import java.io.File;
 import java.text.DateFormat;

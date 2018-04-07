@@ -1,5 +1,7 @@
 package ru;
 
+import ru.questions.CheckingSkills;
+
 /**
  * @author Белов Сергей
   * Точка входа

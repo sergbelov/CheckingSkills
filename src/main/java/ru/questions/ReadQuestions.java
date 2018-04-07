@@ -1,4 +1,4 @@
-package ru;
+package ru.questions;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

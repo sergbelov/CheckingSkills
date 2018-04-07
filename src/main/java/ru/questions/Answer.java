@@ -1,4 +1,4 @@
-package ru;
+package ru.questions;
 
 /**
  * @author Белов Сергей
