@@ -10,7 +10,7 @@ import javax.swing.*;
 public class CheckingSkills {
 
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
-    private long startTesting; // время начала теста
+//    private long startTesting; // время начала теста
     private boolean visibleAnswers = false; // отображать подсказки
     Questions questions = new Questions("CheckingSkills.properties");; // список вопросов с ответами
 
@@ -154,7 +154,7 @@ public class CheckingSkills {
         if (curTheme != null && !curTheme.isEmpty()) {
             cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
         }
-        questions.setThemeNum(cbTheme.getSelectedIndex());
+        questions.setThemeByNum(cbTheme.getSelectedIndex());
 
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
@@ -169,9 +169,8 @@ public class CheckingSkills {
 
         bEnd.setEnabled(true);
         visibleAnswers = questions.isVisibleAnswers();
-        questions.generateRandomQuestionsArr(); // случайная последовательность вопросов
-        refreshQuestion();                          // отображаем вопрос
-        startTesting = System.currentTimeMillis();  // время старта
+        questions.start();  // начинаем тестирование
+        refreshQuestion();  // отображаем вопрос с вариантами ответов
 /*
         long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         System.out.println(usedBytes);
@@ -307,7 +306,7 @@ public class CheckingSkills {
 
         }
 
-        questions.saveResultTest(startTesting, resultTXT); // сохраняем результат тестирования
+        questions.saveResult(resultTXT); // сохраняем результат тестирования
 
         if (countError == 0) {
             if (JOptionPane.showOptionDialog(

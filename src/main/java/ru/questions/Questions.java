@@ -20,27 +20,34 @@ public class Questions {
     private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
     private String PATH_RESULT = "result\\";
 
-    private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
+    private String theme;               // текущая тема
     private int themeNum;               // номер текущей темы
+    private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
     private int questionNumOnForm;      // номер текущего вопроса (порядковый на форме)
     private int[] randomQuestionsArr;   // случайная последовательность номеров вопросов по теме
+    private long startTesting;          // время начала теста
 
     private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
 
 
+    /**
+     * Инициализация (читаем параметры из файла fileProperties)
+     *
+     * @param fileProperties
+     */
     public Questions(String fileProperties) {
-        getProperties(fileProperties); // читаем параметры из файла
+        getProperties(fileProperties);
     }
 
     /**
-     * Читаем вопросы из файла
+     * Читаем вопросы из файла FILE_QUESTIONS
      */
     public void readQuestions() {
 
-        questionsList = new ArrayList<>(
-                readQuestions.read(FILE_QUESTIONS));
+        questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
+        // темы
         themesList = new ArrayList<>(
                 questionsList
                         .stream()
@@ -49,27 +56,32 @@ public class Questions {
                         .distinct()
                         .collect(Collectors.toList()));
 
-        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+        // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+//        saveQuestionsGroupByThemes("Cp1251");
 
 //        Collections.sort(themesList);
     }
 
     /**
-     * Максимальное количество задаваемых вопросов с учетом имеющихся по теме
+     * Задаем текущую тему
      *
-     * @return
+     * @param theme
      */
-    public int getMaxQuestion() {
-        return maxQuestion;
+    public void setTheme(String theme) {
+        this.theme = theme;
+        this.themeNum = themesList.indexOf(theme);
+        setMaxQuestion();
     }
 
     /**
-     * Размер полного списка (все темы)
+     * Задаем текущую тему (номер)
      *
-     * @return
+     * @param themeNum
      */
-    public int size() {
-        return questionsList.size();
+    public void setThemeByNum(int themeNum) {
+        this.theme = getTheme(themeNum);
+        this.themeNum = themeNum;
+        setMaxQuestion();
     }
 
     /**
@@ -78,9 +90,7 @@ public class Questions {
      * @param themeNum
      * @return
      */
-    public String getTheme(int themeNum) {
-        return themesList.get(themeNum);
-    }
+    public String getTheme(int themeNum) { return themesList.get(themeNum); }
 
     /**
      * Текущая тема
@@ -88,15 +98,9 @@ public class Questions {
      * @return
      */
     public String getCurTheme() {
-        return themesList.get(themeNum);
+//        return themesList.get(themeNum);
+        return theme;
     }
-
-    /**
-     * Задаем текущую тему
-     *
-     * @param themeNum
-     */
-    public void setThemeNum(int themeNum) { this.themeNum = themeNum; }
 
     /**
      * Количество вопросов по теме
@@ -125,11 +129,27 @@ public class Questions {
     }
 
     /**
+     * Максимально количество задаваемых вопросов
+     * (равно количеству вопросов по теме, но не более MAX_QUESTION_CONST)
+     */
+    private void setMaxQuestion(){
+        maxQuestion = Math.min(getCountQuestionsInTheme(themeNum), MAX_QUESTION_CONST);
+    }
+
+    /**
+     * Максимальное количество задаваемых вопросов с учетом имеющихся по теме
+     *
+     * @return
+     */
+    public int getMaxQuestion() { return maxQuestion; }
+
+    /**
      * Сисок тем
      *
      * @return
      */
     public List<String> getThemesList() { return themesList; }
+
 
     /**
      * Вопрос по номеру
@@ -153,35 +173,30 @@ public class Questions {
      *
      * @return
      */
-    public void generateRandomQuestionsArr() {
+    public void start() {
 
         questionNumOnForm = 0;
 
-        // сбрасываем текущий выбор
+        // сбрасываем текущий выбор ответов (если есть)
         if (randomQuestionsArr != null) {
             Arrays
                 .stream(randomQuestionsArr)
                 .forEach(n -> {
-                    questionsList.get(n).clearAnswersSelected(); // сбросим текущий выбор
-                    questionsList.get(n).answersListShuffle(); // перемешаем варианты ответов
+                    questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
+                    questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
                 });
-//            for (int i = 0; i < randomQuestionsArr.length; i++) {
-//                questions.get(randomQuestionsArr[i]).clearAnswersSelected(); // сбросим текущий выбор
-//                questions.get(randomQuestionsArr[i]).answersListShuffle(); // перемешаем варианты ответов
-//            }
         }
-
-        // максимально количество задаваемых вопросов (равно количеству вопросов по теме, но не более maxQuestionConst)
-        maxQuestion = Math.min(getCountQuestionsInTheme(themeNum), MAX_QUESTION_CONST);
 
         // выберем maxQuestion случайных вопросов из текущей темы
         Random random = new Random();
         randomQuestionsArr = IntStream
                 .generate(() -> random.nextInt(questionsList.size()))
                 .distinct()
-                .filter(n -> questionsList.get(n).getTheme().equals(getTheme(themeNum)))
+                .filter(n -> questionsList.get(n).getTheme().equals(theme))
                 .limit(maxQuestion)
                 .toArray();
+
+        startTesting = System.currentTimeMillis();  // время старта
     }
 
     /**
@@ -198,9 +213,7 @@ public class Questions {
      *
      * @return
      */
-    public int getCurQuestionNum() {
-        return randomQuestionsArr[questionNumOnForm];
-    }
+    public int getCurQuestionNum() { return randomQuestionsArr[questionNumOnForm]; }
 
     /**
      * Переход к предыдущему вопросу
@@ -333,10 +346,9 @@ public class Questions {
     /**
      * Сохраним результат тестирования
      *
-     * @param startTesting
      * @param resultTXT
      */
-    public void saveResultTest(long startTesting, String resultTXT) {
+    public void saveResult(String resultTXT) {
         saveResult.save(
                 PATH_RESULT,
 //                System.getProperty("user.name") + ".xml",
