@@ -26,6 +26,8 @@ public class SaveResult {
     /**
      * Сохранение результата тестирования в XML-файл
      * @param path          - путь для сохранения
+     * @param fileName      - имя файла
+     * @param user          - пользователь
      * @param startTesting  - время начала теста
      * @param stopTesting   - время окончания теста
      * @param theme         - тема
@@ -33,6 +35,7 @@ public class SaveResult {
      */
     void save(String path,
               String fileName,
+              String user,
               long startTesting,
               long stopTesting,
               String theme,
@@ -66,7 +69,7 @@ public class SaveResult {
             }
 
             // добавляем новый узел
-            rootElement.appendChild(getTestResult(doc, startTesting, stopTesting, theme, resultTXT));
+            rootElement.appendChild(getTestResult(doc, user, startTesting, stopTesting, theme, resultTXT));
             doc.getDocumentElement().normalize();
 
             //создаем объект TransformerFactory для вывода в файл
@@ -99,7 +102,7 @@ public class SaveResult {
     }
 
     // метод для создания нового узла XML-файла
-    private static Node getTestResult(Document doc, long startTesting, long stopTesting, String theme, String resultTXT) {
+    private static Node getTestResult(Document doc, String user, long startTesting, long stopTesting, String theme, String resultTXT) {
 
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Element result = doc.createElement("TestResult");
@@ -109,6 +112,8 @@ public class SaveResult {
 
         // создаем элемент Theme
         result.appendChild(getLanguageElement(doc, result, "Theme", theme));
+        // создаем элемент User
+        result.appendChild(getLanguageElement(doc, result, "User", user));
         // создаем элемент StartTesting
         result.appendChild(getLanguageElement(doc, result, "StartTesting", dateFormat.format(startTesting)));
         // создаем элемент StopTesting

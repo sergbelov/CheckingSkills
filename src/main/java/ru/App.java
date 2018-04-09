@@ -1,6 +1,6 @@
 package ru;
 
-import ru.questions.CheckingSkills;
+import ru.checkingSkills.CheckingSkills;
 
 /**
  * @author Белов Сергей
@@ -10,6 +10,6 @@ public class App {
 
     public static void main(String[] args) {
         CheckingSkills checkingSkills = new CheckingSkills();
-        checkingSkills.begin();
+        checkingSkills.start();
     }
 }

@@ -1,5 +1,10 @@
 package ru.questions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.core.config.Configurator;
+
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -7,14 +12,16 @@ import java.util.stream.IntStream;
 
 /**
  * @author Белов Сергей
- * Список всех вопросов
+ *         Список всех вопросов
  */
 public class Questions {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     private List<String> themesList;      // полный список тем
     private List<Question> questionsList; // полный список вопросов (все темы)
 
-    // CheckingSkills.properties
+    // checkingSkills.properties
     private int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов
     private boolean VISIBLE_ANSWERS = false; // отображать подсказки
     private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
@@ -25,25 +32,38 @@ public class Questions {
     private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
     private int questionNumOnForm;      // номер текущего вопроса (порядковый на форме)
     private int[] randomQuestionsArr;   // случайная последовательность номеров вопросов по теме
-    private long startTesting;          // время начала теста
+
+    private String user = System.getProperty("user.name"); // текущий пользователь
+    private long startTesting; // время начала теста
 
     private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
     private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
 
 
     /**
-     * Инициализация (читаем параметры из файла fileProperties)
-     *
-     * @param fileProperties
+     * Текущий пользователь
      */
-    public Questions(String fileProperties) {
-        getProperties(fileProperties);
+    public void setUser(String user) {
+        this.user = user;
     }
 
     /**
+     * Текущий пользователь
+     *
+     * @return
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * Читаем параметры из файла fileProperties
      * Читаем вопросы из файла FILE_QUESTIONS
      */
-    public void readQuestions() {
+    public void readQuestions(String fileProperties) {
+
+        getProperties(fileProperties);
+//        LOG.info("\r\nПуть к файлу CheckingSkills.properties :\t" + fileProperties + "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
 
         questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
@@ -90,7 +110,9 @@ public class Questions {
      * @param themeNum
      * @return
      */
-    public String getTheme(int themeNum) { return themesList.get(themeNum); }
+    public String getTheme(int themeNum) {
+        return themesList.get(themeNum);
+    }
 
     /**
      * Текущая тема
@@ -132,7 +154,7 @@ public class Questions {
      * Максимально количество задаваемых вопросов
      * (равно количеству вопросов по теме, но не более MAX_QUESTION_CONST)
      */
-    private void setMaxQuestion(){
+    private void setMaxQuestion() {
         maxQuestion = Math.min(getCountQuestionsInTheme(themeNum), MAX_QUESTION_CONST);
     }
 
@@ -141,14 +163,18 @@ public class Questions {
      *
      * @return
      */
-    public int getMaxQuestion() { return maxQuestion; }
+    public int getMaxQuestion() {
+        return maxQuestion;
+    }
 
     /**
      * Сисок тем
      *
      * @return
      */
-    public List<String> getThemesList() { return themesList; }
+    public List<String> getThemesList() {
+        return themesList;
+    }
 
 
     /**
@@ -160,8 +186,10 @@ public class Questions {
     public Question get(int questionNum) {
         return questionsList.get(questionNum);
     }
+
     /**
      * Вопрос текущий
+     *
      * @return
      */
     public Question getCur() {
@@ -169,7 +197,7 @@ public class Questions {
     }
 
     /**
-     * Генерим случайную последовательность номеров по текущей теме
+     * Начинаем тестирование
      *
      * @return
      */
@@ -180,11 +208,11 @@ public class Questions {
         // сбрасываем текущий выбор ответов (если есть)
         if (randomQuestionsArr != null) {
             Arrays
-                .stream(randomQuestionsArr)
-                .forEach(n -> {
-                    questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
-                    questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
-                });
+                    .stream(randomQuestionsArr)
+                    .forEach(n -> {
+                        questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
+                        questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
+                    });
         }
 
         // выберем maxQuestion случайных вопросов из текущей темы
@@ -213,7 +241,9 @@ public class Questions {
      *
      * @return
      */
-    public int getCurQuestionNum() { return randomQuestionsArr[questionNumOnForm]; }
+    public int getCurQuestionNum() {
+        return randomQuestionsArr[questionNumOnForm];
+    }
 
     /**
      * Переход к предыдущему вопросу
@@ -250,7 +280,7 @@ public class Questions {
     /**
      * Отображать подсказки
      */
-    public boolean isVisibleAnswers(){
+    public boolean isVisibleAnswers() {
         return VISIBLE_ANSWERS;
     }
 
@@ -275,7 +305,7 @@ public class Questions {
         File file = new File(fileName);
         if (file.exists()) { // найден файл с установками
             try (
-                InputStream is = new FileInputStream(file)
+                    InputStream is = new FileInputStream(file)
             ) {
                 Properties pr = new Properties();
                 pr.load(is);
@@ -343,20 +373,48 @@ public class Questions {
                 });
     }
 
+
     /**
+     * Заканчиваем тестирование
      * Сохраним результат тестирования
      *
-     * @param resultTXT
+     * @return
      */
-    public void saveResult(String resultTXT) {
+    public String stop() {
+        String message, resultTXT;
+        int countError = getCountNotCorrectAnswers();
+        int correctAnswer = getMaxQuestion() - countError;
+        int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
+
+        if (countError == 0) { // ошибок нет
+            message = "<html>Примите поздравления!<br/>Отличная работа!<br/><br/>Еще разок?</html>";
+            resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
+
+        } else { // ошибки есть
+
+            message = "<html>Имеются ошибки.<br/>" +
+                    "Дан верный ответ на " + correctAnswer +
+                    " из " + getMaxQuestion() +
+                    " ( " + correctAnswerProc + "% )<br/><br/>" +
+                    "Анализ ошибок:<br/>" +
+                    "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
+                    "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
+                    "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
+            resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
+        }
+
+        // сохраняем результат тестирования
         saveResult.save(
                 PATH_RESULT,
 //                System.getProperty("user.name") + ".xml",
                 "result.xml",
+                user,
                 startTesting,
                 System.currentTimeMillis(),
                 getCurTheme(),
                 resultTXT);
+
+        return message;
     }
 
 }

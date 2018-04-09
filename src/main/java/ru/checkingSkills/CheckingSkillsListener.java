@@ -1,4 +1,4 @@
-package ru.questions;
+package ru.checkingSkills;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -11,9 +11,9 @@ import javax.swing.*;
 public class CheckingSkillsListener implements ActionListener {
 
     Object[] options = { "Да", "Нет" };
-    CheckingSkills parent; // ссылка на CheckingSkills
+    CheckingSkills parent; // ссылка на checkingSkills
 
-    // Конструктор сохраняет ссылку на окно CheckingSkills в переменной класса “parent”
+    // Конструктор сохраняет ссылку на окно checkingSkills в переменной класса “parent”
     CheckingSkillsListener(CheckingSkills parent){
         this.parent = parent;
     }
@@ -63,7 +63,7 @@ public class CheckingSkillsListener implements ActionListener {
                     options,
                     options[0]) == 0){
 //                Runtime.getRuntime().gc(); // почистим память
-                parent.begin();
+                parent.start();
             }
 
         } else if (eventSource == parent.bEnd) { // завершить тестирование
@@ -77,7 +77,7 @@ public class CheckingSkillsListener implements ActionListener {
                     null,
                     options,
                     options[0]) == 0){
-                parent.checkAnswers();
+                parent.stop();
             }
 
         } else if (eventSource == parent.bPrevQuestion || eventSource == parent.bNextQuestion) { // следующий/предыдущий вопрос
@@ -92,7 +92,7 @@ public class CheckingSkillsListener implements ActionListener {
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
             parent.questions.setThemeByNum(parent.cbTheme.getSelectedIndex());
-            parent.begin();
+            parent.start();
         }
     }
 }

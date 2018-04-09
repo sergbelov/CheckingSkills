@@ -1,4 +1,6 @@
-package ru.questions;
+package ru.checkingSkills;
+
+import ru.questions.Questions;
 
 import java.awt.*;
 import javax.swing.*;
@@ -9,10 +11,11 @@ import javax.swing.*;
  */
 public class CheckingSkills {
 
+    final String FILE_PROPERTIES = "CheckingSkills.properties";
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
 //    private long startTesting; // время начала теста
     private boolean visibleAnswers = false; // отображать подсказки
-    Questions questions = new Questions("CheckingSkills.properties");; // список вопросов с ответами
+    Questions questions = new Questions();; // список вопросов с ответами
 
     JComboBox cbTheme;
     JLabel lQuestion;
@@ -37,8 +40,9 @@ public class CheckingSkills {
 //        currPath = System.getProperty("user.dir")+"\\";
 //        JOptionPane.showMessageDialog(null, currPath);
 
-        questions.readQuestions();
+//        questions.readQuestions(FILE_PROPERTIES);
 
+        questions.setUser(System.getProperty("user.name"));
         CheckingSkillsListener listener = new CheckingSkillsListener(this); // слушатель
 
         // основная панель
@@ -144,11 +148,11 @@ public class CheckingSkills {
     /**
      * Начинаем новое тестирование
      */
-    public void begin() {
+    public void start() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
         String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
-        questions.readQuestions(); // читаем вопросы из файла
+        questions.readQuestions(FILE_PROPERTIES); // читаем вопросы из файла
         cbTheme.setModel(new DefaultComboBoxModel(questions.getThemesList().toArray()));
         cbTheme.validate();
         if (curTheme != null && !curTheme.isEmpty()) {
@@ -269,56 +273,26 @@ public class CheckingSkills {
     }
 
     /**
+     * Завершаем тестирование
      * Проверка корректности ответов
      *
      * @return
      */
-    public int checkAnswers() {
+    public int stop() {
 
-        String title, message, resultTXT;
-        int countError = questions.getCountNotCorrectAnswers();
+        String message = questions.stop();
 
-        if (countError == 0) { // ошибок нет
-            title = "Тестирование завершено";
-            message = "<html>Примите поздравления!<br/>Отличная работа!<br/><br/>Еще разок?</html>";
-            resultTXT = "Отлично!!! (" + (questions.getMaxQuestion() - countError) +
-                    " из " + questions.getMaxQuestion() + ")";
-
-        } else { // ошибки есть
-            int correctAnswerProc = (questions.getMaxQuestion() - countError) * 100 / questions.getMaxQuestion();
-
-            title = "Тестирование завершено с ошибками";
-            message = "<html>Имеются ошибки.<br/>" +
-                    "Дан верный ответ на " + (questions.getMaxQuestion() - countError) +
-                    " из " + questions.getMaxQuestion() +
-                    ", что составляет " + correctAnswerProc + "%<br/><br/>" +
-                    "Анализ ошибок:<br/>" +
-                    "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
-                    "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
-                    "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
-/*
-                    "<font color=\"#10aa10\">Зеленый</font> - правильный выбор<br/>" +
-                    "<font color=\"#ffb000\">Желтый</font> - нужно было выбрать<br/>" +
-                    "<font color=\"#ff10010\">Красный</font> - не правильный выбор<br/></html>";
-*/
-            resultTXT = "(" + (questions.getMaxQuestion() - countError) +
-                    " из " + questions.getMaxQuestion() + ") " + correctAnswerProc + "%";
-
-        }
-
-        questions.saveResult(resultTXT); // сохраняем результат тестирования
-
-        if (countError == 0) {
+        if (message.contains("Примите поздравления!")) {
             if (JOptionPane.showOptionDialog(
                     mainFrame,
                     message,
-                    title,
+                    "Тестирование завершено без ошибок",
                     JOptionPane.OK_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null,
                     options,
                     options[0]) == 0) {
-                begin();
+                start();
             } else {
                 System.exit(0);
             }
@@ -340,7 +314,7 @@ public class CheckingSkills {
             JOptionPane.showMessageDialog(
                     mainFrame,
                     message,
-                    title,
+                    "Тестрование завершено с ошибками",
                     JOptionPane.WARNING_MESSAGE);
 
             return -1;
@@ -357,8 +331,8 @@ public class CheckingSkills {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                CheckingSkills tp = new CheckingSkills();
-                tp.begin();
+                checkingSkills tp = new checkingSkills();
+                tp.start();
             }
         });
     }
