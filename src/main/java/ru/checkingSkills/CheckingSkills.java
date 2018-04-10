@@ -151,14 +151,20 @@ public class CheckingSkills {
     public void start() {
 //        Runtime.getRuntime().gc(); // чистка памяти
 
-        String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
+//        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+//        System.out.println(stackTraceElements[2].getMethodName());
+
         questions.readQuestions(FILE_PROPERTIES); // читаем вопросы из файла
-        cbTheme.setModel(new DefaultComboBoxModel(questions.getThemesList().toArray()));
-        cbTheme.validate();
-        if (curTheme != null && !curTheme.isEmpty()) {
+
+        String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
+        cbTheme.setModel(new DefaultComboBoxModel(questions.getThemesList().toArray())); // список тем
+//        cbTheme.validate();
+        if (curTheme != null && !curTheme.isEmpty()){
             cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
         }
-        questions.setThemeByNum(cbTheme.getSelectedIndex());
+        curTheme = (String) cbTheme.getSelectedItem(); // текущая тема
+
+        questions.setTheme(curTheme);
 
         // внешний вид - по умолчанию
         for (int i = 0; i < maxAnswer; i++) {
@@ -175,10 +181,9 @@ public class CheckingSkills {
         visibleAnswers = questions.isVisibleAnswers();
         questions.start();  // начинаем тестирование
         refreshQuestion();  // отображаем вопрос с вариантами ответов
-/*
-        long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-        System.out.println(usedBytes);
-*/
+
+//        long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+//        System.out.println(usedBytes);
     }
 
     /**
@@ -188,51 +193,51 @@ public class CheckingSkills {
 
         boolean answered = false;
 
-        lQuestion.setText("<html>" + questions.getCur().getQuestion() + "</html>");// вопрос
+        lQuestion.setText("<html>" + questions.get().getQuestion() + "</html>");// вопрос
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton
 
         // варианты ответов
-        if (questions.getCur().getType() == 1) {      // RadioButton
-            for (int i = 0; i < questions.getCur().getCountAnswers(); i++) {
-                arrRB[i].setText("<html>" + questions.getCur().getAnswer(i).getAnswer() + "</html>");
-                arrRB[i].setSelected(questions.getCur().getAnswer(i).isSelected());
+        if (questions.get().getType() == 1) {      // RadioButton
+            for (int i = 0; i < questions.get().getCountAnswers(); i++) {
+                arrRB[i].setText("<html>" + questions.get().getAnswer(i).getAnswer() + "</html>");
+                arrRB[i].setSelected(questions.get().getAnswer(i).isSelected());
                 p2.add(arrRB[i]);
-                if (questions.getCur().getAnswer(i).isSelected()) {
+                if (questions.get().getAnswer(i).isSelected()) {
                     answered = true;
                 }
 
                 if (visibleAnswers) { // подсказки
-                    if (questions.getCur().getAnswer(i).isCorrect() & questions.getCur().getAnswer(i).isSelected()) {
+                    if (questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
                         arrRB[i].setBackground(greenColor);
                     } // отмечен правильный ответ
-                    else if (questions.getCur().getAnswer(i).isCorrect()) {
+                    else if (questions.get().getAnswer(i).isCorrect()) {
                         arrRB[i].setBackground(yellowColor);
                     } // не отмечен правильный вариант
-                    else if (!questions.getCur().getAnswer(i).isCorrect() & questions.getCur().getAnswer(i).isSelected()) {
+                    else if (!questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
                         arrRB[i].setBackground(redColor);
                     } // отмечен не правильный вариант
                     else arrRB[i].setBackground(defaultBackground);
                 }
             }
 
-        } else if (questions.getCur().getType() == 2) { // CheckBox
-            for (int i = 0; i < questions.getCur().getCountAnswers(); i++) {
-                arrCB[i].setText("<html>" + questions.getCur().getAnswer(i).getAnswer() + "</html>");
-                arrCB[i].setSelected(questions.getCur().getAnswer(i).isSelected());
+        } else if (questions.get().getType() == 2) { // CheckBox
+            for (int i = 0; i < questions.get().getCountAnswers(); i++) {
+                arrCB[i].setText("<html>" + questions.get().getAnswer(i).getAnswer() + "</html>");
+                arrCB[i].setSelected(questions.get().getAnswer(i).isSelected());
                 p2.add(arrCB[i]);
-                if (questions.getCur().getAnswer(i).isSelected()) {
+                if (questions.get().getAnswer(i).isSelected()) {
                     answered = true;
                 }
 
                 if (visibleAnswers) {
-                    if (questions.getCur().getAnswer(i).isCorrect() & questions.getCur().getAnswer(i).isSelected()) {
+                    if (questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
                         arrCB[i].setBackground(greenColor);
                     } // отмечен правильный ответ
-                    else if (questions.getCur().getAnswer(i).isCorrect()) {
+                    else if (questions.get().getAnswer(i).isCorrect()) {
                         arrCB[i].setBackground(yellowColor);
                     } // не отмечен правильный вариант
-                    else if (!questions.getCur().getAnswer(i).isCorrect() & questions.getCur().getAnswer(i).isSelected()) {
+                    else if (!questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
                         arrCB[i].setBackground(redColor);
                     } // отмечен не правильный вариант
                     else arrCB[i].setBackground(defaultBackground);
@@ -259,9 +264,9 @@ public class CheckingSkills {
      */
     public void rememberStatus(boolean isClear) {
 
-        for (int i = 0; i < questions.getCur().getCountAnswers(); i++) {
+        for (int i = 0; i < questions.get().getCountAnswers(); i++) {
             questions
-                    .getCur()
+                    .get()
                     .getAnswer(i)
                     .setSelected(arrRB[i].isSelected() | arrCB[i].isSelected());
 

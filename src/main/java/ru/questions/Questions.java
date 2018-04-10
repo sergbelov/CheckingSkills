@@ -12,106 +12,79 @@ import java.util.stream.IntStream;
 
 /**
  * @author Белов Сергей
- *         Список всех вопросов
+ * Список всех вопросов
  */
 public class Questions {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private List<String> themesList;      // полный список тем
-    private List<Question> questionsList; // полный список вопросов (все темы)
-
     // checkingSkills.properties
-    private int MAX_QUESTION_CONST = 10; // макимальное количество задаваемых вопросов
-    private boolean VISIBLE_ANSWERS = false; // отображать подсказки
-    private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";
-    private String PATH_RESULT = "result\\";
+    private int MAX_QUESTION_CONST = 10;                            // макимальное количество задаваемых вопросов
+    private boolean VISIBLE_ANSWERS = false;                        // отображать подсказки
+    private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";   // файл с вопросами
+    private String PATH_RESULT = "result\\";                        // путь для сохранения результатов тестирования
 
-    private String theme;               // текущая тема
-    private int themeNum;               // номер текущей темы
-    private int maxQuestion;            // максимальное количество задаваемых вопросов с учетом имеющихся по теме
-    private int questionNumOnForm;      // номер текущего вопроса (порядковый на форме)
-    private int[] randomQuestionsArr;   // случайная последовательность номеров вопросов по теме
+    private String theme;                   // текущая тема
+    private int maxQuestion;                // максимальное количество задаваемых вопросов с учетом имеющихся по теме
+    private int questionNumOnForm;          // номер текущего вопроса (порядковый на форме)
+    private int[] randomQuestionsArr;       // случайная последовательность номеров вопросов по теме
+    private List<String> themesList;        // список тем
+    private List<Question> questionsList;   // список вопросов (все темы)
 
-    private String user = System.getProperty("user.name"); // текущий пользователь
-    private long startTesting; // время начала теста
+    private String user = System.getProperty("user.name");      // текущий пользователь
+    private long startTesting;                                  // время начала теста
 
-    private ReadQuestions readQuestions = new ReadQuestions(); // читаем вопросы из XML-файла
-    private SaveResult saveResult = new SaveResult(); // запись результатов тестирования в XML-файл
+    private ReadQuestions readQuestions = new ReadQuestions();  // читаем вопросы из XML-файла
+    private SaveResult saveResult = new SaveResult();           // запись результатов тестирования в XML-файл
 
 
     /**
      * Текущий пользователь
      */
-    public void setUser(String user) {
-        this.user = user;
-    }
+    public void setUser(String user) { this.user = user; }
 
     /**
      * Текущий пользователь
      *
      * @return
      */
-    public String getUser() {
-        return user;
-    }
+    public String getUser() { return user; }
 
     /**
-     * Читаем параметры из файла fileProperties
      * Читаем вопросы из файла FILE_QUESTIONS
      */
     public void readQuestions(String fileProperties) {
 
-        getProperties(fileProperties);
-//        LOG.info("\r\nПуть к файлу CheckingSkills.properties :\t" + fileProperties + "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
+        getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
+//        LOG.info( "\r\nПуть к файлу CheckingSkills.properties :\t" + fileProperties +
+//                  "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
+
+        // список вопросов (все темы)
         questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
-        // темы
+        // список тем
         themesList = new ArrayList<>(
                 questionsList
-                        .stream()
-                        .map(Question::getTheme)
-                        .sorted()
-                        .distinct()
-                        .collect(Collectors.toList()));
+                    .stream()
+                    .map(Question::getTheme)
+                    .sorted()
+                    .distinct()
+                    .collect(Collectors.toList()));
 
-        // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
-//        saveQuestionsGroupByThemes("Cp1251");
-
-//        Collections.sort(themesList);
+//        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
     }
 
     /**
      * Задаем текущую тему
+     *      Максимально количество задаваемых вопросов
+     *      (равно количеству вопросов по теме, но не более MAX_QUESTION_CONST)
      *
      * @param theme
      */
     public void setTheme(String theme) {
         this.theme = theme;
-        this.themeNum = themesList.indexOf(theme);
-        setMaxQuestion();
-    }
-
-    /**
-     * Задаем текущую тему (номер)
-     *
-     * @param themeNum
-     */
-    public void setThemeByNum(int themeNum) {
-        this.theme = getTheme(themeNum);
-        this.themeNum = themeNum;
-        setMaxQuestion();
-    }
-
-    /**
-     * Тема по номеру
-     *
-     * @param themeNum
-     * @return
-     */
-    public String getTheme(int themeNum) {
-        return themesList.get(themeNum);
+        maxQuestion = Math.min(getCountQuestionsInTheme(theme), MAX_QUESTION_CONST);
     }
 
     /**
@@ -119,23 +92,14 @@ public class Questions {
      *
      * @return
      */
-    public String getCurTheme() {
-//        return themesList.get(themeNum);
-        return theme;
-    }
+    public String getTheme() { return theme; }
 
     /**
-     * Количество вопросов по теме
+     * Максимальное количество задаваемых вопросов (с учетом имеющихся по теме)
      *
-     * @param themeNum
      * @return
      */
-    public int getCountQuestionsInTheme(int themeNum) {
-        return (int) questionsList
-                .stream()
-                .filter((x) -> x.getTheme().equals(themesList.get(themeNum)))
-                .count();
-    }
+    public int getMaxQuestion() { return maxQuestion; }
 
     /**
      * Количество вопросов по теме
@@ -146,25 +110,8 @@ public class Questions {
     public int getCountQuestionsInTheme(String theme) {
         return (int) questionsList
                 .stream()
-                .filter((x) -> x.getTheme().equalsIgnoreCase(theme))
+                .filter((x) -> x.getTheme().equals(theme))
                 .count();
-    }
-
-    /**
-     * Максимально количество задаваемых вопросов
-     * (равно количеству вопросов по теме, но не более MAX_QUESTION_CONST)
-     */
-    private void setMaxQuestion() {
-        maxQuestion = Math.min(getCountQuestionsInTheme(themeNum), MAX_QUESTION_CONST);
-    }
-
-    /**
-     * Максимальное количество задаваемых вопросов с учетом имеющихся по теме
-     *
-     * @return
-     */
-    public int getMaxQuestion() {
-        return maxQuestion;
     }
 
     /**
@@ -172,10 +119,7 @@ public class Questions {
      *
      * @return
      */
-    public List<String> getThemesList() {
-        return themesList;
-    }
-
+    public List<String> getThemesList() { return themesList; }
 
     /**
      * Вопрос по номеру
@@ -183,7 +127,7 @@ public class Questions {
      * @param questionNum
      * @return
      */
-    public Question get(int questionNum) {
+    public Question getByNum(int questionNum) {
         return questionsList.get(questionNum);
     }
 
@@ -192,40 +136,7 @@ public class Questions {
      *
      * @return
      */
-    public Question getCur() {
-        return questionsList.get(getCurQuestionNum());
-    }
-
-    /**
-     * Начинаем тестирование
-     *
-     * @return
-     */
-    public void start() {
-
-        questionNumOnForm = 0;
-
-        // сбрасываем текущий выбор ответов (если есть)
-        if (randomQuestionsArr != null) {
-            Arrays
-                    .stream(randomQuestionsArr)
-                    .forEach(n -> {
-                        questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
-                        questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
-                    });
-        }
-
-        // выберем maxQuestion случайных вопросов из текущей темы
-        Random random = new Random();
-        randomQuestionsArr = IntStream
-                .generate(() -> random.nextInt(questionsList.size()))
-                .distinct()
-                .filter(n -> questionsList.get(n).getTheme().equals(theme))
-                .limit(maxQuestion)
-                .toArray();
-
-        startTesting = System.currentTimeMillis();  // время старта
-    }
+    public Question get() { return questionsList.get(getCurQuestionNum()); }
 
     /**
      * Текущий номер вопроса на форме
@@ -241,9 +152,7 @@ public class Questions {
      *
      * @return
      */
-    public int getCurQuestionNum() {
-        return randomQuestionsArr[questionNumOnForm];
-    }
+    public int getCurQuestionNum() { return randomQuestionsArr[questionNumOnForm]; }
 
     /**
      * Переход к предыдущему вопросу
@@ -269,7 +178,7 @@ public class Questions {
     }
 
     /**
-     * Последний вопрос в списке?
+     * Последний вопрос в списке ?
      *
      * @return
      */
@@ -278,7 +187,7 @@ public class Questions {
     }
 
     /**
-     * Отображать подсказки
+     * Отображать подсказки ?
      */
     public boolean isVisibleAnswers() {
         return VISIBLE_ANSWERS;
@@ -305,7 +214,7 @@ public class Questions {
         File file = new File(fileName);
         if (file.exists()) { // найден файл с установками
             try (
-                    InputStream is = new FileInputStream(file)
+                InputStream is = new FileInputStream(file)
             ) {
                 Properties pr = new Properties();
                 pr.load(is);
@@ -327,7 +236,6 @@ public class Questions {
      * Сохраним вопросы с правильными ответами (сгруппировав по темам)
      */
     public void saveQuestionsGroupByThemes(final String charset) {
-
 //        StandardCharsets.US_ASCII.name();
         StringBuilder sbQuestions = new StringBuilder();
 
@@ -349,7 +257,7 @@ public class Questions {
 
                         questionsList // список вопросов по теме
                                 .stream()
-                                .filter(q -> q.getTheme().equalsIgnoreCase(t))
+                                .filter(q -> q.getTheme().equals(t))
                                 .forEach(q -> {
                                     sbQuestions
                                             .append("==================================================\r\n")
@@ -373,6 +281,34 @@ public class Questions {
                 });
     }
 
+    /**
+     * Начинаем тестирование
+     */
+    public void start() {
+
+        questionNumOnForm = 0;
+
+        // сбрасываем текущий выбор ответов (если есть)
+        if (randomQuestionsArr != null) {
+            Arrays
+                    .stream(randomQuestionsArr)
+                    .forEach(n -> {
+                        questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
+                        questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
+                    });
+        }
+
+        // выберем maxQuestion случайных вопросов из текущей темы
+        Random random = new Random();
+        randomQuestionsArr = IntStream
+                .generate(() -> random.nextInt(questionsList.size()))
+                .distinct()
+                .filter(n -> questionsList.get(n).getTheme().equals(theme))
+                .limit(maxQuestion)
+                .toArray();
+
+        startTesting = System.currentTimeMillis();  // время старта
+    }
 
     /**
      * Заканчиваем тестирование
@@ -411,7 +347,7 @@ public class Questions {
                 user,
                 startTesting,
                 System.currentTimeMillis(),
-                getCurTheme(),
+                getTheme(),
                 resultTXT);
 
         return message;

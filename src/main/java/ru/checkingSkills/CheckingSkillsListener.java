@@ -50,6 +50,7 @@ public class CheckingSkillsListener implements ActionListener {
                     null,
                     options,
                     options[0]) == 0) {
+
                 System.exit(0);
             }
 
@@ -62,7 +63,7 @@ public class CheckingSkillsListener implements ActionListener {
                     null,
                     options,
                     options[0]) == 0){
-//                Runtime.getRuntime().gc(); // почистим память
+
                 parent.start();
             }
 
@@ -77,6 +78,7 @@ public class CheckingSkillsListener implements ActionListener {
                     null,
                     options,
                     options[0]) == 0){
+
                 parent.stop();
             }
 
@@ -91,7 +93,7 @@ public class CheckingSkillsListener implements ActionListener {
             parent.refreshQuestion();
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
-            parent.questions.setThemeByNum(parent.cbTheme.getSelectedIndex());
+            parent.questions.setTheme((String) parent.cbTheme.getSelectedItem());
             parent.start();
         }
     }
