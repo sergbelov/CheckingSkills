@@ -1,5 +1,6 @@
 package ru.checkingSkills;
 
+import ru.questions.Question;
 import ru.questions.Questions;
 
 import java.awt.*;
@@ -198,7 +199,7 @@ public class CheckingSkills {
         bGRB.clearSelection(); // сброс RadioButton
 
         // варианты ответов
-        if (questions.get().getType() == 1) {      // RadioButton
+        if (questions.get().getType().equals(Question.TypeOfAnswer.radio)) { // RadioButton
             for (int i = 0; i < questions.get().getCountAnswers(); i++) {
                 arrRB[i].setText("<html>" + questions.get().getAnswer(i).getAnswer() + "</html>");
                 arrRB[i].setSelected(questions.get().getAnswer(i).isSelected());
@@ -221,7 +222,7 @@ public class CheckingSkills {
                 }
             }
 
-        } else if (questions.get().getType() == 2) { // CheckBox
+        } else if (questions.get().getType().equals(Question.TypeOfAnswer.checkbox)) { // CheckBox
             for (int i = 0; i < questions.get().getCountAnswers(); i++) {
                 arrCB[i].setText("<html>" + questions.get().getAnswer(i).getAnswer() + "</html>");
                 arrCB[i].setSelected(questions.get().getAnswer(i).isSelected());
