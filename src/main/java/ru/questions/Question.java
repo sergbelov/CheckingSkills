@@ -14,7 +14,7 @@ public class Question implements Comparable<Question> {
 
     public enum TypeOfAnswer {radio, checkbox};
 
-    private TypeOfAnswer type;                // тип ответа 1-RadioButton; 2-CheckBox
+    private TypeOfAnswer type;          // тип ответа RadioButton; CheckBox
     private String theme;               // тема
     private String question;            // вопрос
     private List<Answer> answersList;   // список вариантов ответа
@@ -26,7 +26,10 @@ public class Question implements Comparable<Question> {
         this.answersList = new ArrayList<>(answersListParam);
 
         // если правильных ответов более одного - CheckBox иначе RadioButton
-        this.type = (int) answersList.stream().filter((x) -> x.isCorrect()).count() > 1 ? TypeOfAnswer.checkbox : TypeOfAnswer.radio;
+        this.type = (int) answersList
+                .stream()
+                .filter((x) -> x.isCorrect()).count() > 1
+                ? TypeOfAnswer.checkbox : TypeOfAnswer.radio;
 
         // перемешаем варианты ответов
         this.answersListShuffle();
