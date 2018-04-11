@@ -86,9 +86,9 @@ public class CheckingSkillsListener implements ActionListener {
             parent.rememberStatus(true); // запомним текущий выбор
 
             if (eventSource == parent.bPrevQuestion) {
-                parent.questions.PrevQuestion();
+                parent.questions.prevQuestion();
             } else if (eventSource == parent.bNextQuestion) {
-                parent.questions.NextQuestion();
+                parent.questions.nextQuestion();
             }
             parent.refreshQuestion();
 

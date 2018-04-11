@@ -157,14 +157,14 @@ public class Questions {
     /**
      * Переход к предыдущему вопросу
      */
-    public void PrevQuestion() {
+    public void prevQuestion() {
         if (questionNumOnForm > 0) questionNumOnForm--;
     }
 
     /**
      * Переход к следующему вопросу
      */
-    public void NextQuestion() {
+    public void nextQuestion() {
         if (questionNumOnForm < maxQuestion - 1) questionNumOnForm++;
     }
 
