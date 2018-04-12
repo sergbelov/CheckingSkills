@@ -93,8 +93,15 @@ public class Question implements Comparable<Question> {
 
 
     @Override
-    public int compareTo(Question question) {
-        return this.getTheme().compareTo(question.getTheme()) |
-                this.getQuestion().compareTo(question.getQuestion());
+    public int compareTo(Question o) {
+        if (this == o) return 0;
+
+        int compare = this.getTheme().compareTo(o.getTheme());
+        if (compare != 0) return compare;
+
+        compare = this.getQuestion().compareTo(o.getQuestion());
+        if (compare != 0) return compare;
+
+        return 0;
     }
 }
