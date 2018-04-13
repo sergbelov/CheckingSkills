@@ -195,7 +195,14 @@ public class CheckingSkills {
         boolean answered = false;
 
 //        lQuestion.setText("<html>" + questions.get().getQuestion() + "</html>");// вопрос
-        lQuestion.setText("<html>" + questions.get().getQuestion() +"<br>"+ questions.get().getAuthor()+ "</html>");// вопрос
+        lQuestion.setText(
+                "<html>" +
+                        ((questions.get().getAuthor() == null) ?
+                                "" :
+                                questions.get().getAuthor() + "<br><br>") +
+                questions.get().getQuestion() +
+                "</html>");// вопрос
+
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton
 
