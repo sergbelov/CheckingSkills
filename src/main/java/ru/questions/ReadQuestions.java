@@ -1,14 +1,17 @@
 package ru.questions;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,9 @@ import java.util.List;
  */
 public class ReadQuestions {
 
+    private static final Logger LOG = LogManager.getLogger();
+
+    private String author;                                      // автор
     private String theme;                                       // тема
     private String question;                                    // вопрос
     private List<Answer> answersList = new ArrayList<>();       // список вариантов ответа
@@ -34,6 +40,8 @@ public class ReadQuestions {
 
         File file = new File(fileXML);
         if (!file.exists()) { // файл с вопросами не найден
+            LOG.warn("Не найден XML-файл с вопросами " + fileXML);
+/*
             JOptionPane.showMessageDialog(
                     null,
                     "<html>Не найден XML-файл с вопросами<br/>" +
@@ -45,106 +53,69 @@ public class ReadQuestions {
             if (file != null) {
                 file = new File(file.getAbsolutePath());
             }
+*/
         }
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
+            // Строим объектную модель исходного XML файла
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(file);
+
+            // Выполнять нормализацию не обязательно, но рекомендуется
             doc.getDocumentElement().normalize();
-            NodeList tags = doc.getChildNodes();  // узел в XML
 
-            // проходим по каждому элементу
-            for (int i = 0; i < tags.getLength(); i++) {
-                Node tag = tags.item(i);
-                getXMLData("", tag);
-            }
+            // Получаем все узлы с именем "QuestionBlock"
+            NodeList nodesList = doc.getElementsByTagName("QuestionBlock");
+            NodeList nodesList2;
 
-        } catch (Exception exc) {
-            //exc.printStackTrace();
-            JOptionPane.showMessageDialog(
-                    null,
-                    exc.getMessage(),
-                    "Ошибка при чтении данных",
-                    JOptionPane.ERROR_MESSAGE);
+            for (int i = 0; i < nodesList.getLength(); i++) {
+                Node node = nodesList.item(i);
+                if (Node.ELEMENT_NODE == node.getNodeType()) {
+                    Element element = (Element) node;
 
-            System.exit(-1);
-        }
+                    theme = formatText(element.getElementsByTagName("theme").item(0).getTextContent());
 
-        if (answersList.size() > 0) { // добавим последний вопрос из файла
-            questionsList.add(
-                    new Question(
-                            theme,
-                            question,
-                            answersList));
-        }
+                    question = formatText(element.getElementsByTagName("question").item(0).getTextContent());
 
-        return questionsList;
-    }
+                    if (element.getElementsByTagName("author").item(0) != null) {
+                        author = formatText(element.getElementsByTagName("author").item(0).getTextContent());
+                    }
 
-    /**
-     * Парсим данные
-     *
-     * @param prefix
-     * @param node
-     */
-    private void getXMLData(String prefix, Node node) {
+                    nodesList2 = element.getElementsByTagName("at");
+                    for (int x = 0; x < nodesList2.getLength(); x++) {
+                        answersList.add(new Answer(formatText(nodesList2.item(x).getTextContent()), true, false));
+                    }
 
-        String text = node.getNodeValue();
+                    nodesList2 = element.getElementsByTagName("af");
+                    for (int x = 0; x < nodesList2.getLength(); x++) {
+                        answersList.add(new Answer(formatText(nodesList2.item(x).getTextContent()), false, false));
+                    }
 
-        if (node != null && text != null && !text.isEmpty() && node.getNodeType() == 8) { // комментарий
-//            System.out.println(text);
-        } else {
-
-            if (text != null &&
-                    !text.isEmpty() &&
-                    !formatText(text).isEmpty() &&
-                    node.getNodeType() != 8 // не комментарий
-                    ) {
-
-//                System.out.println(prefix + " value = \"" + text + "\"");
-
-                if (node.getParentNode().getNodeName().equalsIgnoreCase("theme")) { // тема
-                    if (answersList.size() > 0) { // в памяти есть ранее прочитанный блок - добавим в список
+                    if (answersList.size() > 0) { // есть прочитанный блок - добавим в список
                         questionsList.add(
                                 new Question(
+                                        author,
                                         theme,
                                         question,
                                         answersList));
 
                         // очистим переменные
+                        author = null;
                         theme = null;
                         question = null;
                         answersList.clear();
                     }
-                    theme = formatText(text);
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("question")) { // вопрос
-                    question = formatText(text);
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("at")) { // верныый ответ
-                    answersList.add(new Answer(formatText(text), true, false));
-
-                } else if (node.getParentNode().getNodeName().equalsIgnoreCase("af")) { // ложный ответ
-                    answersList.add(new Answer(formatText(text), false, false));
                 }
             }
 
-            NamedNodeMap attributes = node.getAttributes();
-            if (attributes != null) {
-                for (int i = 0; i < attributes.getLength(); i++) {
-                    Node attr = attributes.item(i);
-                    System.out.println(prefix + " attr = \"" + attr.getNodeName() + "\"" + " value = \"" + attr.getTextContent().toString() + "\" ");
-                    System.out.println(node.getParentNode());
-                }
-            }
-
-            NodeList children = node.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                getXMLData(prefix + node.getNodeName() + ":", children.item(i));
-            }
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOG.error(ex);
         }
+
+        return questionsList;
     }
+
 
     /**
      * Уберем из строки: переводы строк, табуляции, двойные пробелы

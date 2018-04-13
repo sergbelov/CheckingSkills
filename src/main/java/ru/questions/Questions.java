@@ -64,15 +64,20 @@ public class Questions {
         questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
         // список тем
-        themesList = new ArrayList<>(
-                questionsList
-                    .stream()
-                    .map(Question::getTheme)
-                    .sorted()
-                    .distinct()
-                    .collect(Collectors.toList()));
+        if (questionsList != null && !questionsList.isEmpty()) {
+            themesList = new ArrayList<>(
+                    questionsList
+                            .stream()
+                            .map(Question::getTheme)
+                            .sorted()
+                            .distinct()
+                            .collect(Collectors.toList()));
 
 //        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+        } else {
+            System.out.println("Ошибка при чтении файла с вопросами");
+            System.exit(-1);
+        }
     }
 
     /**

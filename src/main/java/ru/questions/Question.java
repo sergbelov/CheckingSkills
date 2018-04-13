@@ -4,23 +4,32 @@ import java.util.*;
 
 /**
  * @author Белов Сергей
- * Вопрос, включает в себя:
- * String theme             тема;
- * String question          вопрос;
- * Integer type             тип (1-RadioButton; 2-CheckBox);
- * List<Answer> answersList варианты ответов
+ *         Вопрос, включает в себя:
+ *         String author            автор;
+ *         String theme             тема;
+ *         String question          вопрос;
+ *         Integer type             тип (1-RadioButton; 2-CheckBox);
+ *         List<Answer> answersList варианты ответов
  */
 public class Question implements Comparable<Question> {
 
-    public enum TypeOfAnswer {radio, checkbox};
+    public enum TypeOfAnswer {radio, checkbox}
+
+    ;
 
     private TypeOfAnswer type;          // тип ответа RadioButton; CheckBox
+    private String author;              // автор
     private String theme;               // тема
     private String question;            // вопрос
     private List<Answer> answersList;   // список вариантов ответа
 
 
-    public Question(String themeParam, String questionParam, List<Answer> answersListParam) {
+    public Question(String authorParam,
+                    String themeParam,
+                    String questionParam,
+                    List<Answer> answersListParam) {
+
+        this.author = authorParam;
         this.theme = themeParam;
         this.question = questionParam;
         this.answersList = new ArrayList<>(answersListParam);
@@ -39,6 +48,10 @@ public class Question implements Comparable<Question> {
         return type;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
     public String getTheme() {
         return theme;
     }
@@ -55,17 +68,20 @@ public class Question implements Comparable<Question> {
         return answersList.get(i);
     }
 
-    public List<Answer> getAnswersList() { return answersList; }
+    public List<Answer> getAnswersList() {
+        return answersList;
+    }
 
 
     /**
      * Ответ правильный
+     *
      * @return
      */
-    public boolean isAnswerCorrect(){
+    public boolean isAnswerCorrect() {
         return answersList
                 .stream()
-                .filter((x) -> x.isCorrect()!=x.isSelected())
+                .filter((x) -> x.isCorrect() != x.isSelected())
                 .count() == 0;
     }
 
@@ -86,7 +102,7 @@ public class Question implements Comparable<Question> {
 
     /**
      * Перемешаем варианты ответов
-    */
+     */
     public void answersListShuffle() {
         Collections.shuffle(answersList);
     }
