@@ -239,7 +239,7 @@ public class Questions {
                 this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
 //                this.LOGGER_LEVEL = pr.getProperty("LOGGER_LEVEL", "WARN");
 
-                System.out.println(LOGGER_LEVEL);
+//                System.out.println(LOGGER_LEVEL);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

@@ -56,9 +56,12 @@ public class SaveResultJson implements SaveResult {
         file = new File(path + fileName);
         if (file.exists()) {
             try {
-                JsonReader reader = new JsonReader(new FileReader(file.toString()));
+//                JsonReader reader = new JsonReader(new FileReader(file.toString()));
+                JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
                 resultTestList = gson.fromJson(reader, new TypeToken<List<ResultTest>>() {}.getType());
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         }
