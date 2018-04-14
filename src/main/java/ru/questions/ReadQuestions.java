@@ -7,5 +7,5 @@ import java.util.List;
  * Читаем вопросы из файла
  */
 public interface ReadQuestions {
-    List<Question> read(String fileName);
+    List<QuestionJson> read(String fileName);
 }

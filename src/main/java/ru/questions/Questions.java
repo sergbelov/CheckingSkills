@@ -1,11 +1,15 @@
 package ru.questions;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 //import org.apache.logging.log4j.Level;
 //import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,22 +25,24 @@ public class Questions {
     // checkingSkills.properties
     private int MAX_QUESTION_CONST = 10;                            // макимальное количество задаваемых вопросов
     private boolean VISIBLE_ANSWERS = false;                        // отображать подсказки
-    private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";   // файл с вопросами
+    private String FILE_QUESTIONS = "questions\\XMLDataTest.json";  // файл с вопросами
     private String PATH_RESULT = "result\\";                        // путь для сохранения результатов тестирования
-    private String FORMAT_RESULT = "XML";                           // формат файла с результатами тестирования XML или JSON
+    private String FORMAT_RESULT = "JSON";                          // формат файла с результатами тестирования XML или JSON
+//    private String LOGGER_LEVEL = "WARN";                           // Уровень логирования
+    private Level LOGGER_LEVEL = Level.WARN;                        // Уровень логирования
 
-    private String theme;                   // текущая тема
-    private int maxQuestion;                // максимальное количество задаваемых вопросов с учетом имеющихся по теме
-    private int questionNumOnForm;          // номер текущего вопроса (порядковый на форме)
-    private int[] randomQuestionsArr;       // случайная последовательность номеров вопросов по теме
-    private List<String> themesList;        // список тем
-    private List<Question> questionsList;   // список вопросов (все темы)
+    private String theme;                                     // текущая тема
+    private int maxQuestion;                                  // максимальное количество задаваемых вопросов с учетом имеющихся по теме
+    private int questionNum;                                  // номер текущего вопроса
+    private List<String> themesList;                          // список тем
+    private List<QuestionJson> questionsJsonList;             // полный список вопросов (все темы)
+    private List<Question> questionsList = new ArrayList<>(); // список текущих вопросов
 
-    private String user = System.getProperty("user.name");      // текущий пользователь
-    private long startTesting;                                  // время начала теста
+    private String user = System.getProperty("user.name");    // текущий пользователь
+    private long startTesting;                                // время начала теста
 
-    private ReadQuestions readQuestions;    // читаем вопросы из XML-файла
-    private SaveResult saveResult;          // запись результатов тестирования в XML-файл
+    private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (FILE_QUESTIONS расширение))
+    private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (FORMAT_RESULT))
 
 
     /**
@@ -58,6 +64,7 @@ public class Questions {
 
         getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
+        // тип файла с вопросами
         if (FILE_QUESTIONS.toUpperCase().endsWith(".XML")) {
             readQuestions = new ReadQuestionsXml();
         } else if (FILE_QUESTIONS.toUpperCase().endsWith(".JSON")) {
@@ -72,26 +79,26 @@ public class Questions {
 //                  "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
 
             // список вопросов (все темы)
-            questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
+            questionsJsonList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
             // список тем
-            if (questionsList != null && !questionsList.isEmpty()) {
+            if (questionsJsonList != null && !questionsJsonList.isEmpty()) {
                 themesList = new ArrayList<>(
-                        questionsList
+                        questionsJsonList
                                 .stream()
-                                .map(Question::getTheme)
+                                .map(QuestionJson::getTheme)
                                 .sorted()
                                 .distinct()
                                 .collect(Collectors.toList()));
 
-//        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+//                saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
                 System.out.println("Ошибка при чтении файла с вопросами");
                 System.exit(-1);
             }
         } else{
-            LOG.error("В файле с параметрами указан не вырный формат файла с вопросами");
-            System.out.println("В файле с параметрами указан не вырный формат файла с вопросами");
+            LOG.error("В файле с параметрами " + fileProperties + " - указан не вырный формат файла с вопросами (допустимы форматы JSON или XML)");
+            System.out.println("В файле с параметрами " + fileProperties + " - указан не вырный формат файла с вопросами (допустимы форматы JSON или XML)");
             System.exit(-1);
         }
 
@@ -130,7 +137,7 @@ public class Questions {
      * @return
      */
     public int getCountQuestionsInTheme(String theme) {
-        return (int) questionsList
+        return (int) questionsJsonList
                 .stream()
                 .filter((x) -> x.getTheme().equals(theme))
                 .count();
@@ -144,50 +151,33 @@ public class Questions {
     public List<String> getThemesList() { return themesList; }
 
     /**
-     * Вопрос по номеру
-     *
-     * @param questionNum
-     * @return
-     */
-    public Question getByNum(int questionNum) {
-        return questionsList.get(questionNum);
-    }
-
-    /**
      * Вопрос текущий
      *
      * @return
      */
-    public Question get() { return questionsList.get(getCurQuestionNum()); }
+    public Question get() { return questionsList.get(questionNum); }
 
     /**
-     * Текущий номер вопроса на форме
+     * Текущий номер вопроса
      *
      * @return
      */
-    public int getQuestionNumOnForm() {
-        return questionNumOnForm;
+    public int getQuestionNum() {
+        return questionNum;
     }
-
-    /**
-     * Текущий номер вопроса в общем списке
-     *
-     * @return
-     */
-    public int getCurQuestionNum() { return randomQuestionsArr[questionNumOnForm]; }
 
     /**
      * Переход к предыдущему вопросу
      */
     public void prevQuestion() {
-        if (questionNumOnForm > 0) questionNumOnForm--;
+        if (questionNum > 0) questionNum--;
     }
 
     /**
      * Переход к следующему вопросу
      */
     public void nextQuestion() {
-        if (questionNumOnForm < maxQuestion - 1) questionNumOnForm++;
+        if (questionNum < maxQuestion - 1) questionNum++;
     }
 
     /**
@@ -196,7 +186,7 @@ public class Questions {
      * @return
      */
     public boolean isFirstQuestion() {
-        return questionNumOnForm == 0;
+        return questionNum == 0;
     }
 
     /**
@@ -205,7 +195,7 @@ public class Questions {
      * @return
      */
     public boolean isLastQuestion() {
-        return questionNumOnForm == (maxQuestion - 1);
+        return questionNum == (maxQuestion - 1);
     }
 
     /**
@@ -221,10 +211,10 @@ public class Questions {
      * @return
      */
     public int getCountNotCorrectAnswers() {
-        return (int) Arrays
-                .stream(randomQuestionsArr)
-                .filter(n -> !questionsList.get(n).isAnswerCorrect())
-                .count();
+        return (int) questionsList
+                    .stream()
+                    .filter(q -> !q.isAnswerCorrect())
+                    .count();
     }
 
     /**
@@ -246,6 +236,10 @@ public class Questions {
                 this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
                 this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
+                this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
+//                this.LOGGER_LEVEL = pr.getProperty("LOGGER_LEVEL", "WARN");
+
+                System.out.println(LOGGER_LEVEL);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -279,7 +273,7 @@ public class Questions {
                                 .append(t)
                                 .append("\r\n##################################################\r\n");
 
-                        questionsList // список вопросов по теме
+                        questionsJsonList // список вопросов по теме
                                 .stream()
                                 .filter(q -> q.getTheme().equals(t))
                                 .forEach(q -> {
@@ -287,13 +281,11 @@ public class Questions {
                                             .append("==================================================\r\n")
                                             .append(q.getQuestion())
                                             .append("\r\n");
-                                    for (int a = 0; a < q.getCountAnswers(); a++) {
-                                        if (q.getAnswer(a).isCorrect()) {
-                                            sbQuestions
-                                                    .append("..................................................\r\n")
-                                                    .append(q.getAnswer(a).getAnswer())
-                                                    .append("\r\n");
-                                        }
+                                    for (String a : q.getAnswersTrue()) {
+                                        sbQuestions
+                                                .append("..................................................\r\n")
+                                                .append(a)
+                                                .append("\r\n");
                                     }
                                 });
                         bw.write(sbQuestions.toString());
@@ -310,26 +302,33 @@ public class Questions {
      */
     public void start() {
 
-        questionNumOnForm = 0;
+        questionNum = 0;
+        questionsList.clear();
+        List<Answer> answersList = new ArrayList<>();
 
-        // сбрасываем текущий выбор ответов (если есть)
-        if (randomQuestionsArr != null) {
-            Arrays
-                    .stream(randomQuestionsArr)
-                    .forEach(n -> {
-                        questionsList.get(n).clearAnswersSelected();    // сбросим текущий выбор
-                        questionsList.get(n).answersListShuffle();      // перемешаем варианты ответов
-                    });
-        }
-
-        // выберем maxQuestion случайных вопросов из текущей темы
+        // выберем maxQuestion случайных вопросов по текущей теме
         Random random = new Random();
-        randomQuestionsArr = IntStream
-                .generate(() -> random.nextInt(questionsList.size()))
-                .distinct()
-                .filter(n -> questionsList.get(n).getTheme().equals(theme))
-                .limit(maxQuestion)
-                .toArray();
+        IntStream
+            .generate(() -> random.nextInt(questionsJsonList.size()))
+            .distinct()
+            .filter(n -> questionsJsonList.get(n).getTheme().equals(theme))
+            .limit(maxQuestion)
+            .forEach(q -> {
+                for (String a : questionsJsonList.get(q).getAnswersTrue()){
+                    answersList.add(new Answer(a, true, false));
+                }
+                for (String a : questionsJsonList.get(q).getAnswersFalse()){
+                    answersList.add(new Answer(a, false, false));
+                }
+                questionsList.add(
+                        new Question(
+                                questionsJsonList.get(q).getAuthor(),
+                                questionsJsonList.get(q).getTheme(),
+                                questionsJsonList.get(q).getQuestion(),
+                                answersList));
+
+                answersList.clear();
+            });
 
         startTesting = System.currentTimeMillis();  // время старта
     }
@@ -361,6 +360,28 @@ public class Questions {
                     "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
                     "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
             resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
+        }
+
+        //логирование
+        if (LOGGER_LEVEL.equals(Level.INFO)) {
+            Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
+
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+            final String[] questionsError = {""};
+            questionsList
+                    .stream()
+                    .filter(q -> !q.isAnswerCorrect())
+                    .map(q -> q.getQuestion())
+                    .forEach(q -> questionsError[0] = questionsError[0] + q +"\r\n");
+
+            LOG.info("\r\nТестирование завершено:\r\n" +
+                    user + "\r\n" +
+                    dateFormat.format(startTesting) + "\r\n" +
+                    dateFormat.format(System.currentTimeMillis()) + "\r\n" +
+                    resultTXT + "\r\n" +
+                    questionsError[0]
+            );
         }
 
         // сохраняем результат тестирования

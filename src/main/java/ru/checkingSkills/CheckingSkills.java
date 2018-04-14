@@ -200,8 +200,8 @@ public class CheckingSkills {
                         ((questions.get().getAuthor() == null) ?
                                 "" :
                                 "<h6>"+questions.get().getAuthor() + "</h6>") +
-                "<h4>"+questions.get().getQuestion() +
-                "</h4></html>");// вопрос
+                "<h3>"+questions.get().getQuestion() +
+                "</h3></html>");// вопрос
 
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton
@@ -263,7 +263,7 @@ public class CheckingSkills {
         bPrevQuestion.setEnabled(!questions.isFirstQuestion()); // первый вопрос ?
         bNextQuestion.setEnabled(!questions.isLastQuestion()); // последний вопрос ?
 
-        mainFrame.setTitle("Проверка знаний (" + (questions.getQuestionNumOnForm() + 1) + " из " + questions.getMaxQuestion() + ")");
+        mainFrame.setTitle("Проверка знаний (" + (questions.getQuestionNum() + 1) + " из " + questions.getMaxQuestion() + ")");
 
         p2.repaint();
     }

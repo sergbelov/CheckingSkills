@@ -23,25 +23,24 @@ public class ReadQuestionsXml implements ReadQuestions{
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private String author;                                      // автор
-    private String theme;                                       // тема
-    private String question;                                    // вопрос
-    private List<Answer> answersList = new ArrayList<>();       // список вариантов ответа
-    private List<Question> questionsList = new ArrayList<>();   // полный список вопросов (все темы)
+    private String author;                                              // автор
+    private String theme;                                               // тема
+    private String question;                                            // вопрос
+    private List<QuestionJson> questionsJsonList = new ArrayList<>();   // полный список вопросов (все темы)
 
     // для преобразования XML в Json
     private List<String> answersTrue = new ArrayList<>();
     private List<String> answersFalse = new ArrayList<>();
-    private List<QuestionJson> questionsJsonList = new ArrayList<>();
 
     /**
      * Читаем вопросы из файла
      *
      * @param fileXML
      */
-    public List<Question> read(String fileXML) {
+//    public List<Question> read(String fileXML) {
+    public List<QuestionJson> read(String fileXML) {
 
-        questionsList.clear();
+        questionsJsonList.clear();
 
         File file = new File(fileXML);
         if (!file.exists()) { // файл с вопросами не найден
@@ -78,52 +77,33 @@ public class ReadQuestionsXml implements ReadQuestions{
                 Node node = nodesList.item(i);
                 if (Node.ELEMENT_NODE == node.getNodeType()) {
                     Element element = (Element) node;
-
                     theme = formatText(element.getElementsByTagName("theme").item(0).getTextContent());
-
                     question = formatText(element.getElementsByTagName("question").item(0).getTextContent());
-
                     if (element.getElementsByTagName("author").item(0) != null) {
                         author = formatText(element.getElementsByTagName("author").item(0).getTextContent());
+                    } else {
+                        author = "";
                     }
-
                     nodesList2 = element.getElementsByTagName("at");
                     for (int x = 0; x < nodesList2.getLength(); x++) {
-                        answersList.add(new Answer(formatText(nodesList2.item(x).getTextContent()), true, false));
                         answersTrue.add(formatText(nodesList2.item(x).getTextContent()));
                     }
 
                     nodesList2 = element.getElementsByTagName("af");
                     for (int x = 0; x < nodesList2.getLength(); x++) {
-                        answersList.add(new Answer(formatText(nodesList2.item(x).getTextContent()), false, false));
                         answersFalse.add(formatText(nodesList2.item(x).getTextContent()));
                     }
 
-                    if (answersList.size() > 0) { // есть прочитанный блок - добавим в список
-                        questionsList.add(
-                                new Question(
-                                        author,
-                                        theme,
-                                        question,
-                                        answersList));
+                    questionsJsonList.add(
+                            new QuestionJson(
+                                    author,
+                                    theme,
+                                    question,
+                                    answersTrue,
+                                    answersFalse));
 
-                        questionsJsonList.add(
-                                new QuestionJson(
-                                        author,
-                                        theme,
-                                        question,
-                                        answersTrue,
-                                        answersFalse));
-
-                        answersTrue.clear();
-                        answersFalse.clear();
-
-                        // очистим переменные
-                        author = null;
-                        theme = null;
-                        question = null;
-                        answersList.clear();
-                    }
+                    answersTrue.clear();
+                    answersFalse.clear();
                 }
             }
 
@@ -158,7 +138,8 @@ public class ReadQuestionsXml implements ReadQuestions{
             e.printStackTrace();
         };
 
-        return questionsList;
+//        return questionsList;
+        return questionsJsonList;
     }
 
 
