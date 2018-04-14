@@ -59,9 +59,9 @@ public class Questions {
         getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
         if (FILE_QUESTIONS.toUpperCase().endsWith(".XML")) {
-            readQuestions = new ReadQuestionsXML();
+            readQuestions = new ReadQuestionsXml();
         } else if (FILE_QUESTIONS.toUpperCase().endsWith(".JSON")) {
-            readQuestions = new ReadQuestionsJSON();
+            readQuestions = new ReadQuestionsJson();
         } else{
             readQuestions = null;
         }
@@ -368,12 +368,12 @@ public class Questions {
         switch (FORMAT_RESULT.toUpperCase()){
             case "XML":
                 fileResultName = "result.xml";
-                saveResult = new SaveResultXML();
+                saveResult = new SaveResultXml();
                 break;
 
             case "JSON":
                 fileResultName = "result.json";
-                saveResult = new SaveResultJSON();
+                saveResult = new SaveResultJson();
                 break;
 
             default:

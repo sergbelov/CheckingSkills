@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author Белов Сергей
- * Читаем вопросы из файла
+ * Вопрос с ответами (Json)
  */
 public class QuestionJson {
 
@@ -20,6 +20,7 @@ public class QuestionJson {
                         String question,
                         List<String> answersTrue,
                         List<String> answersFalse) {
+
         this.author = author;
         this.theme = theme;
         this.question = question;

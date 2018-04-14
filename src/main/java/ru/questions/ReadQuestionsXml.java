@@ -19,7 +19,7 @@ import java.util.List;
  * @author Белов Сергей
  * Читаем вопросы из XML-файла
  */
-public class ReadQuestionsXML implements ReadQuestions{
+public class ReadQuestionsXml implements ReadQuestions{
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -132,6 +132,10 @@ public class ReadQuestionsXML implements ReadQuestions{
         }
 
 
+        // место нахождение файла с вопросами
+        File parentFolder = new File(file.getAbsolutePath()
+                                .substring(0, file.getAbsolutePath().lastIndexOf(
+                                File.separator)));
 
         // запишем массив с вопросами в Json-файл
 //        Gson gson = new Gson();
@@ -144,10 +148,11 @@ public class ReadQuestionsXML implements ReadQuestions{
 //                FileWriter fw = new FileWriter("JSONDataTest.json", false);
                 BufferedWriter fw = new BufferedWriter(
                                         new OutputStreamWriter(
-                                            new FileOutputStream("JSONDataTest.json", false),
+                                            new FileOutputStream(parentFolder.getAbsolutePath() + "/JSONDataTest.json", false),
                                             "UTF-8"));
             ){
-            fw.write("{\"questions\":"+ json +"}");
+//            fw.write("{\"questions\":"+ json +"}");
+            fw.write( json );
             fw.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,23 +1,21 @@
 package ru.questions;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Белов Сергей
  * Читаем вопросы из Json-файла
  */
-public class ReadQuestionsJSON implements ReadQuestions{
+public class ReadQuestionsJson implements ReadQuestions{
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -50,6 +48,7 @@ public class ReadQuestionsJSON implements ReadQuestions{
 */
         } else {
 
+/*
             int bytesRead = -1;
             byte[] buffer = new byte[1024];
             StringBuilder jsonSB = new StringBuilder();
@@ -62,6 +61,43 @@ public class ReadQuestionsJSON implements ReadQuestions{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+*/
+
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+
+            file = new File(fileJson);
+            if (file.exists()) {
+                List<QuestionJson> questionJsonList = new ArrayList<>();
+                try {
+                    JsonReader reader = new JsonReader(new FileReader(file.toString()));
+                    questionJsonList = gson.fromJson(reader, new TypeToken<List<QuestionJson>>() {}.getType());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                questionJsonList
+                        .stream()
+                        .forEach(q -> {
+                            answersList.clear();
+                            for (String a : q.getAnswersTrue()){
+                                answersList.add(new Answer(a, true, false));
+                            }
+                            for (String a : q.getAnswersFalse()){
+                                answersList.add(new Answer(a, false, false));
+                            }
+                            questionsList.add(
+                                    new Question(
+                                            q.getAuthor(),
+                                            q.getTheme(),
+                                            q.getQuestion(),
+                                            answersList));
+
+                        });
+            }
+
+
+/*
 
             try {
                 JSONObject jsonObject = new JSONObject(jsonSB.toString());
@@ -72,6 +108,8 @@ public class ReadQuestionsJSON implements ReadQuestions{
 
                     if (!jsonObject2.isNull("author")) {
                         author = jsonObject2.getString("author");
+                    } else {
+                        author = "";
                     }
                     theme = jsonObject2.getString("theme");
                     question = jsonObject2.getString("question");
@@ -93,19 +131,19 @@ public class ReadQuestionsJSON implements ReadQuestions{
                                     theme,
                                     question,
                                     answersList));
-
-                        // очистим переменные
-                        author = null;
-                        theme = null;
-                        question = null;
-                        answersList.clear();
                     }
-
+                    // очистим переменные
+                    author = null;
+                    theme = null;
+                    question = null;
+                    answersList.clear();
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+*/
+
         }
         return questionsList;
     }

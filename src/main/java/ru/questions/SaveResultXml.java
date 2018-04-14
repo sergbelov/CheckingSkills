@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
  * @author Белов Сергей
  * Сохранение результата тестирования в XML-файл
  */
-public class SaveResultXML implements SaveResult {
+public class SaveResultXml implements SaveResult {
 
     /**
      * Сохранение результата тестирования в XML-файл

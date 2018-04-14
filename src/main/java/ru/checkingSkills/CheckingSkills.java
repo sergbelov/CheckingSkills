@@ -199,9 +199,9 @@ public class CheckingSkills {
                 "<html>" +
                         ((questions.get().getAuthor() == null) ?
                                 "" :
-                                questions.get().getAuthor() + "<br><br>") +
-                questions.get().getQuestion() +
-                "</html>");// вопрос
+                                "<h6>"+questions.get().getAuthor() + "</h6>") +
+                "<h4>"+questions.get().getQuestion() +
+                "</h4></html>");// вопрос
 
         p2.removeAll(); // удадяем контролы с p2
         bGRB.clearSelection(); // сброс RadioButton

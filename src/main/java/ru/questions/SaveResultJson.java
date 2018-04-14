@@ -15,7 +15,7 @@ import java.util.List;
  * @author Белов Сергей
  * Сохранение результата тестирования в XML-файл
  */
-public class SaveResultJSON implements SaveResult {
+public class SaveResultJson implements SaveResult {
 
     /**
      * Сохранение результата тестирования в XML-файл
