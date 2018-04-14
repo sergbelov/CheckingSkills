@@ -23,6 +23,7 @@ public class Questions {
     private boolean VISIBLE_ANSWERS = false;                        // отображать подсказки
     private String FILE_QUESTIONS = "questions\\XMLDataTest.xml";   // файл с вопросами
     private String PATH_RESULT = "result\\";                        // путь для сохранения результатов тестирования
+    private String FORMAT_RESULT = "XML";                           // формат файла с результатами тестирования XML или JSON
 
     private String theme;                   // текущая тема
     private int maxQuestion;                // максимальное количество задаваемых вопросов с учетом имеющихся по теме
@@ -34,8 +35,8 @@ public class Questions {
     private String user = System.getProperty("user.name");      // текущий пользователь
     private long startTesting;                                  // время начала теста
 
-    private ReadQuestions readQuestions = new ReadQuestions();  // читаем вопросы из XML-файла
-    private SaveResult saveResult = new SaveResult();           // запись результатов тестирования в XML-файл
+    private ReadQuestions readQuestions;    // читаем вопросы из XML-файла
+    private SaveResult saveResult;          // запись результатов тестирования в XML-файл
 
 
     /**
@@ -57,27 +58,43 @@ public class Questions {
 
         getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
+        if (FILE_QUESTIONS.toUpperCase().endsWith(".XML")) {
+            readQuestions = new ReadQuestionsXML();
+        } else if (FILE_QUESTIONS.toUpperCase().endsWith(".JSON")) {
+            readQuestions = new ReadQuestionsJSON();
+        } else{
+            readQuestions = null;
+        }
+
+        if (readQuestions != null) {
+
 //        LOG.info( "\r\nПуть к файлу CheckingSkills.properties :\t" + fileProperties +
 //                  "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
 
-        // список вопросов (все темы)
-        questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
+            // список вопросов (все темы)
+            questionsList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
-        // список тем
-        if (questionsList != null && !questionsList.isEmpty()) {
-            themesList = new ArrayList<>(
-                    questionsList
-                            .stream()
-                            .map(Question::getTheme)
-                            .sorted()
-                            .distinct()
-                            .collect(Collectors.toList()));
+            // список тем
+            if (questionsList != null && !questionsList.isEmpty()) {
+                themesList = new ArrayList<>(
+                        questionsList
+                                .stream()
+                                .map(Question::getTheme)
+                                .sorted()
+                                .distinct()
+                                .collect(Collectors.toList()));
 
 //        saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
-        } else {
-            System.out.println("Ошибка при чтении файла с вопросами");
+            } else {
+                System.out.println("Ошибка при чтении файла с вопросами");
+                System.exit(-1);
+            }
+        } else{
+            LOG.error("В файле с параметрами указан не вырный формат файла с вопросами");
+            System.out.println("В файле с параметрами указан не вырный формат файла с вопросами");
             System.exit(-1);
         }
+
     }
 
     /**
@@ -228,6 +245,7 @@ public class Questions {
                 this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
                 this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
+                this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -250,9 +268,10 @@ public class Questions {
                 .forEach(t -> {
 
                     try (
-                            FileOutputStream fileOutPutStream = new FileOutputStream(t.replace("\\", "_") + ".txt", false);
-                            BufferedWriter bufferWriter = new BufferedWriter(new OutputStreamWriter(fileOutPutStream,
-                                    charset != null & charset.length() > 0 ? charset : "Cp1251"));
+                        BufferedWriter bw = new BufferedWriter(
+                                                new OutputStreamWriter(
+                                                    new FileOutputStream(t.replace("\\", "_") + ".txt", false),
+                                                    charset != null & charset.length() > 0 ? charset : "Cp1251"));
                     ) {
                         sbQuestions.setLength(0);
                         sbQuestions
@@ -277,8 +296,8 @@ public class Questions {
                                         }
                                     }
                                 });
-                        bufferWriter.write(sbQuestions.toString());
-                        bufferWriter.flush();
+                        bw.write(sbQuestions.toString());
+                        bw.flush();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -345,16 +364,34 @@ public class Questions {
         }
 
         // сохраняем результат тестирования
-        saveResult.save(
-                PATH_RESULT,
-//                System.getProperty("user.name") + ".xml",
-                "result.xml",
-                user,
-                startTesting,
-                System.currentTimeMillis(),
-                getTheme(),
-                resultTXT);
+        String fileResultName = "";
+        switch (FORMAT_RESULT.toUpperCase()){
+            case "XML":
+                fileResultName = "result.xml";
+                saveResult = new SaveResultXML();
+                break;
 
+            case "JSON":
+                fileResultName = "result.json";
+                saveResult = new SaveResultJSON();
+                break;
+
+            default:
+                saveResult = null;
+        }
+
+        if (saveResult != null) {
+            saveResult.save(
+                    PATH_RESULT,
+                    fileResultName,
+                    user,
+                    startTesting,
+                    System.currentTimeMillis(),
+                    getTheme(),
+                    resultTXT);
+        } else {
+            LOG.warn("Результат тестирования не сохранен !");
+        }
         return message;
     }
 

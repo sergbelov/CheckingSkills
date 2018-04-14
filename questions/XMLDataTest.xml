@@ -3,7 +3,7 @@
 author		Автор
 theme		Тема теста
 question	Вопрос
-answer_true 	верные ответы
+answers_true 	верные ответы
 	at		вариант верного ответа
 answers_false 	ложные ответы
 	af		вариант ложного ответа
@@ -12,10 +12,10 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема1</theme>
 		<question>Вопрос 1 Тема 1?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
 			<at>Верный ответ 2</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -24,10 +24,10 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема1</theme>
 		<question>Вопрос 2 Тема 1?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
 			<at>Верный ответ 2</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -37,9 +37,9 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема1</theme>
 		<question>Вопрос 3 Тема 1?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -49,10 +49,10 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема2</theme>
 		<question>Вопрос 1 Тема 2?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
 			<at>Верный ответ 2</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -61,10 +61,10 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема2</theme>
 		<question>Вопрос 2 Тема 2?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
 			<at>Верный ответ 2</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -74,9 +74,9 @@ answers_false 	ложные ответы
 	<QuestionBlock>
 		<theme>Тема2</theme>
 		<question>Вопрос 3 Тема 2?</question>
-		<answer_true>
+		<answers_true>
 			<at>Верный ответ 1</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Ложный ответ 1</af>
 			<af>Ложный ответ 2</af>
@@ -87,9 +87,9 @@ answers_false 	ложные ответы
 		<theme>Финансовая культура</theme>
 		<author>https://fincult.info/</author>
 		<question>Какой банкноты не существует?</question>
-		<answer_true>
+		<answers_true>
 			<at>300 рублей</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>5 рублей</af>
 			<af>10 рублей</af>
@@ -101,9 +101,9 @@ answers_false 	ложные ответы
 		<theme>Финансовая культура</theme>
 		<author>https://fincult.info/</author>
 		<question>Как проверить подлинность банкноты?</question>
-		<answer_true>
+		<answers_true>
 			<at>Проверить как минимум 3 защитных признака</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Это невозможно без специального оборудования</af>
 			<af>Достаточно проверить один защитный признак</af>
@@ -114,9 +114,9 @@ answers_false 	ложные ответы
 		<author>https://fincult.info/</author>
 		<theme>Финансовая культура</theme>
 		<question>Инфляция означает, что на одну и ту же сумму денег по прошествии некоторого времени можно будет купить…</question>
-		<answer_true>
+		<answers_true>
 			<at>Меньше товаров и услуг</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Больше товаров и услуг</af>
 			<af>Столько же товаров и услуг</af>
@@ -126,9 +126,9 @@ answers_false 	ложные ответы
 		<author>https://fincult.info/</author>
 		<theme>Финансовая культура</theme>
 		<question>Как называется устойчивое снижение цен?</question>
-		<answer_true>
+		<answers_true>
 			<at>Дефляция</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Девальвация</af>
 			<af>Деноминация</af>
@@ -139,9 +139,9 @@ answers_false 	ложные ответы
 		<author>https://fincult.info/</author>
 		<theme>Финансовая культура</theme>
 		<question>Что происходит с инфляционными ожиданиями при росте инфляции?</question>
-		<answer_true>
+		<answers_true>
 			<at>Растут, ведь чем больше растут цены, тем больше мы их боимся</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Снижаются, ведь все очень надеются на то, что рост цен прекратится</af>
 			<af>С ростом инфляции люди вообще стараются не думать о ценах</af>
@@ -151,9 +151,9 @@ answers_false 	ложные ответы
 		<author>https://fincult.info/</author>
 		<theme>Финансовая культура</theme>
 		<question>Каков режим валютного курса в России?</question>
-		<answer_true>
+		<answers_true>
 			<at>Плавающий</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Фиксированный</af>
 			<af>Гибкий</af>
@@ -163,9 +163,9 @@ answers_false 	ложные ответы
 		<author>https://fincult.info/</author>
 		<theme>Финансовая культура</theme>
 		<question>Как определяется официальный валютный курс?</question>
-		<answer_true>
+		<answers_true>
 			<at>Курс постоянно колеблется в процессе торгов на валютной бирже, официальный курс – это среднее значение за определенный промежуток торгов в течение одного дня</at>
-		</answer_true>
+		</answers_true>
 		<answers_false>
 			<af>Центральный банк устанавливает официальный курс так, как считает необходимым</af>
 			<af>Официальный валютный курс никто уже давно не устанавливает, все могут продавать и покупать валюту по любому курсу</af>
