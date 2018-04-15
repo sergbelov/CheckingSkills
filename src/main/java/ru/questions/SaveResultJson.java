@@ -55,13 +55,16 @@ public class SaveResultJson implements SaveResult {
         file.mkdirs();
         file = new File(path + fileName);
         if (file.exists()) {
-            try {
+            try(
 //                JsonReader reader = new JsonReader(new FileReader(file.toString()));
                 JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+            ) {
                 resultTestList = gson.fromJson(reader, new TypeToken<List<ResultTest>>() {}.getType());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -72,7 +75,7 @@ public class SaveResultJson implements SaveResult {
                                     new OutputStreamWriter(
                                         new FileOutputStream(file.toString(), false),
                                         "UTF-8"));
-        ){
+        ) {
             fw.write(json );
             fw.flush();
         } catch (IOException e) {

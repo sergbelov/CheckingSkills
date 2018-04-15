@@ -133,7 +133,7 @@ public class ReadQuestionsXml implements ReadQuestions{
                                         new OutputStreamWriter(
                                             new FileOutputStream(parentFolder.getAbsolutePath() + "/Questions.json", false),
                                             "UTF-8"));
-            ){
+        ) {
 //            fw.write("{\"questions\":"+ json +"}");
             fw.write( json );
             fw.flush();

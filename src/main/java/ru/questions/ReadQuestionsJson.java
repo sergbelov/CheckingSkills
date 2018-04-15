@@ -53,13 +53,16 @@ public class ReadQuestionsJson implements ReadQuestions{
 
             file = new File(fileJson);
             if (file.exists()) {
-                try {
+                try(
 //                    JsonReader reader = new JsonReader(new FileReader(file.toString()));
                     JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+                ) {
                     questionsJsonList = gson.fromJson(reader, new TypeToken<List<QuestionJson>>() {}.getType());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
