@@ -157,32 +157,41 @@ public class CheckingSkills {
 
         questions.readQuestions(FILE_PROPERTIES); // читаем вопросы из файла
 
-        String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
-        cbTheme.setModel(new DefaultComboBoxModel(questions.getThemesList().toArray())); // список тем
-//        cbTheme.validate();
-        if (curTheme != null && !curTheme.isEmpty()){
-            cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
+        if (questions.getThemesList().size() > 0) {
+            String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
+            cbTheme.setModel(new DefaultComboBoxModel(questions.getThemesList().toArray())); // список тем
+//            cbTheme.validate();
+            if (curTheme != null && !curTheme.isEmpty()) {
+                cbTheme.setSelectedItem(curTheme); // указатель на запомненную тему
+            }
+            curTheme = (String) cbTheme.getSelectedItem(); // текущая тема
+
+            questions.setTheme(curTheme);
+
+            // внешний вид - по умолчанию
+            for (int i = 0; i < maxAnswer; i++) {
+                arrRB[i].setEnabled(true);
+                arrRB[i].setBackground(defaultBackground);
+                arrRB[i].setSelected(false);
+
+                arrCB[i].setEnabled(true);
+                arrCB[i].setBackground(defaultBackground);
+                arrCB[i].setSelected(false);
+            }
+
+            bEnd.setEnabled(true);
+            visibleAnswers = questions.isVisibleAnswers();
+            questions.start();  // начинаем тестирование
+            refreshQuestion();  // отображаем вопрос с вариантами ответов
+
+        } else{
+            JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Ошибка при чтении вопросов из файла",
+                    "Ошибка при чтении вопросов из файла",
+                    JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
         }
-        curTheme = (String) cbTheme.getSelectedItem(); // текущая тема
-
-        questions.setTheme(curTheme);
-
-        // внешний вид - по умолчанию
-        for (int i = 0; i < maxAnswer; i++) {
-            arrRB[i].setEnabled(true);
-            arrRB[i].setBackground(defaultBackground);
-            arrRB[i].setSelected(false);
-
-            arrCB[i].setEnabled(true);
-            arrCB[i].setBackground(defaultBackground);
-            arrCB[i].setSelected(false);
-        }
-
-        bEnd.setEnabled(true);
-        visibleAnswers = questions.isVisibleAnswers();
-        questions.start();  // начинаем тестирование
-        refreshQuestion();  // отображаем вопрос с вариантами ответов
-
 //        long usedBytes = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 //        System.out.println(usedBytes);
     }

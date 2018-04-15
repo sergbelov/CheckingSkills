@@ -23,22 +23,22 @@ public class Questions {
     private static final Logger LOG = LogManager.getLogger();
 
     // checkingSkills.properties
-    private int MAX_QUESTION_CONST = 10;                         // макимальное количество задаваемых вопросов
-    private boolean VISIBLE_ANSWERS = false;                     // отображать подсказки
-    private String FILE_QUESTIONS = "questions\\Questions.json"; // файл с вопросами
-    private String PATH_RESULT = "result\\";                     // путь для сохранения результатов тестирования
-    private String FORMAT_RESULT = "JSON";                       // формат файла с результатами тестирования XML или JSON
-    public static Level LOGGER_LEVEL = Level.WARN;               // уровень логирования
+    private int MAX_QUESTION_CONST = 10;                        // макимальное количество задаваемых вопросов
+    private boolean VISIBLE_ANSWERS = false;                    // отображать подсказки
+    private String FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
+    private String PATH_RESULT = "result\\";                    // путь для сохранения результатов тестирования
+    private String FORMAT_RESULT = "JSON";                      // формат файла с результатами тестирования XML или JSON
+    public static Level LOGGER_LEVEL = Level.WARN;              // уровень логирования
 
-    private String theme;                                     // текущая тема
-    private int maxQuestion;                                  // максимальное количество задаваемых вопросов с учетом имеющихся по теме
-    private int questionNum;                                  // номер текущего вопроса
-    private List<String> themesList;                          // список тем
-    private List<QuestionJson> questionsJsonList;             // полный список вопросов (все темы)
-    private List<Question> questionsList = new ArrayList<>(); // список текущих вопросов
+    private String theme;                                       // текущая тема
+    private int maxQuestion;                                    // максимальное количество задаваемых вопросов с учетом имеющихся по теме
+    private int questionNum;                                    // номер текущего вопроса
+    private List<String> themesList = new ArrayList<>();        // список тем
+    private List<QuestionJson> questionsJsonList;               // полный список вопросов (все темы)
+    private List<Question> questionsList = new ArrayList<>();   // список текущих вопросов
 
-    private String user = System.getProperty("user.name");    // текущий пользователь
-    private long startTesting;                                // время начала теста
+    private String user = System.getProperty("user.name");      // текущий пользователь
+    private long startTesting;                                  // время начала теста
 
     private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (FILE_QUESTIONS расширение))
     private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (FORMAT_RESULT))
@@ -60,6 +60,9 @@ public class Questions {
      * Читаем вопросы из файла FILE_QUESTIONS
      */
     public void readQuestions(String fileProperties) {
+
+        if (questionsJsonList != null) questionsJsonList.clear();
+        if (themesList != null) themesList.clear();
 
         getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
@@ -92,15 +95,11 @@ public class Questions {
 
 //                saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
-                System.out.println("Ошибка при чтении файла с вопросами");
-                System.exit(-1);
+                LOG.error("Ошибка при чтении вопросов из файла");
             }
         } else{
-            LOG.error("В файле с параметрами " + fileProperties + " - указан не вырный формат файла с вопросами (допустимы форматы JSON или XML)");
-            System.out.println("В файле с параметрами " + fileProperties + " - указан не вырный формат файла с вопросами (допустимы форматы JSON или XML)");
-            System.exit(-1);
+            LOG.error("В файле с параметрами " + fileProperties + " - указан не верный формат файла с вопросами (допустимы форматы JSON или XML)");
         }
-
     }
 
     /**
