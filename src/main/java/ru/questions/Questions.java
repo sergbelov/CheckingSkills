@@ -23,7 +23,7 @@ public class Questions {
     private static final Logger LOG = LogManager.getLogger();
 
     // checkingSkills.properties
-    private int MAX_QUESTION_CONST = 10;                        // макимальное количество задаваемых вопросов
+    private int MAX_QUESTION_CONST = 10;                        // максимальное количество задаваемых вопросов
     private boolean VISIBLE_ANSWERS = false;                    // отображать подсказки
     private String FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
     private String PATH_RESULT = "result\\";                    // путь для сохранения результатов тестирования
@@ -239,9 +239,8 @@ public class Questions {
 
                 Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
-                LOG.info("\r\nФайл с параметрами " + fileName +
-                        "\r\nПараметры:"+
-                        "\r\nМакимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
+                LOG.info("Параметры из файла " + fileName +
+                        "\r\nМаксимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
                         "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
                         "\r\nФайл с вопросами : " + FILE_QUESTIONS +
                         "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
@@ -257,9 +256,9 @@ public class Questions {
         } else{
             Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
-            LOG.warn("\r\nНе найден файл с параметрами " + fileName +
+            LOG.warn("Не найден файл с параметрами " + fileName +
             "\r\nПараметры по умолчанию:"+
-            "\r\nМакимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
+            "\r\nМаксимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
             "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
             "\r\nФайл с вопросами : " + FILE_QUESTIONS +
             "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
