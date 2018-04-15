@@ -1,5 +1,6 @@
 [
   {
+    "author": "",
     "theme": "Тема1",
     "question": "Вопрос 1 Тема 1?",
     "answersTrue": [
@@ -12,6 +13,7 @@
     ]
   },
   {
+    "author": "",
     "theme": "Тема1",
     "question": "Вопрос 2 Тема 1?",
     "answersTrue": [
@@ -25,6 +27,7 @@
     ]
   },
   {
+    "author": "",
     "theme": "Тема1",
     "question": "Вопрос 3 Тема 1?",
     "answersTrue": [
@@ -37,6 +40,7 @@
     ]
   },
   {
+    "author": "",
     "theme": "Тема2",
     "question": "Вопрос 1 Тема 2?",
     "answersTrue": [
@@ -49,6 +53,7 @@
     ]
   },
   {
+    "author": "",
     "theme": "Тема2",
     "question": "Вопрос 2 Тема 2?",
     "answersTrue": [
@@ -62,6 +67,7 @@
     ]
   },
   {
+    "author": "",
     "theme": "Тема2",
     "question": "Вопрос 3 Тема 2?",
     "answersTrue": [

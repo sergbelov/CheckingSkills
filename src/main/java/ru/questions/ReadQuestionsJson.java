@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,14 +23,15 @@ public class ReadQuestionsJson implements ReadQuestions{
     private List<QuestionJson> questionsJsonList = new ArrayList<>(); // полный список вопросов (все темы)
 
     @Override
-//    public List<Question> read(String fileJson) {
     public List<QuestionJson> read(String fileJson) {
+
+        Configurator.setLevel(LOG.getName(), Questions.LOGGER_LEVEL);
 
         questionsJsonList.clear();
 
         File file = new File(fileJson);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден Json-файл с вопросами " + fileJson);
+            LOG.warn("Не найден файл с вопросами " + fileJson);
 /*
             JOptionPane.showMessageDialog(
                     null,

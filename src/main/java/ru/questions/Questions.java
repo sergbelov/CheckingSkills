@@ -23,13 +23,12 @@ public class Questions {
     private static final Logger LOG = LogManager.getLogger();
 
     // checkingSkills.properties
-    private int MAX_QUESTION_CONST = 10;                            // макимальное количество задаваемых вопросов
-    private boolean VISIBLE_ANSWERS = false;                        // отображать подсказки
-    private String FILE_QUESTIONS = "questions\\XMLDataTest.json";  // файл с вопросами
-    private String PATH_RESULT = "result\\";                        // путь для сохранения результатов тестирования
-    private String FORMAT_RESULT = "JSON";                          // формат файла с результатами тестирования XML или JSON
-//    private String LOGGER_LEVEL = "WARN";                           // Уровень логирования
-    private Level LOGGER_LEVEL = Level.WARN;                        // Уровень логирования
+    private int MAX_QUESTION_CONST = 10;                         // макимальное количество задаваемых вопросов
+    private boolean VISIBLE_ANSWERS = false;                     // отображать подсказки
+    private String FILE_QUESTIONS = "questions\\Questions.json"; // файл с вопросами
+    private String PATH_RESULT = "result\\";                     // путь для сохранения результатов тестирования
+    private String FORMAT_RESULT = "JSON";                       // формат файла с результатами тестирования XML или JSON
+    public static Level LOGGER_LEVEL = Level.WARN;               // уровень логирования
 
     private String theme;                                     // текущая тема
     private int maxQuestion;                                  // максимальное количество задаваемых вопросов с учетом имеющихся по теме
@@ -233,19 +232,41 @@ public class Questions {
 
                 this.MAX_QUESTION_CONST = Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
                 this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
-                this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\XMLDataTest.xml");
+                this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\Questions.json");
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
                 this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
                 this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
 //                this.LOGGER_LEVEL = pr.getProperty("LOGGER_LEVEL", "WARN");
 
-//                System.out.println(LOGGER_LEVEL);
+                Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
+
+                LOG.info("\r\nФайл с параметрами " + fileName +
+                        "\r\nПараметры:"+
+                        "\r\nМакимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
+                        "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
+                        "\r\nФайл с вопросами : " + FILE_QUESTIONS +
+                        "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
+                        "\r\nФормат файла с результатами тестирования XML или JSON : " + FORMAT_RESULT +
+                        "\r\nУровень логирования : " + LOGGER_LEVEL
+                );
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else{
+            Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
+
+            LOG.warn("\r\nНе найден файл с параметрами " + fileName +
+            "\r\nПараметры по умолчанию:"+
+            "\r\nМакимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
+            "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
+            "\r\nФайл с вопросами : " + FILE_QUESTIONS +
+            "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
+            "\r\nФормат файла с результатами тестирования XML или JSON : " + FORMAT_RESULT +
+            "\r\nУровень логирования : " + LOGGER_LEVEL
+            );
         }
     }
 
@@ -362,27 +383,22 @@ public class Questions {
             resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
         }
 
-        //логирование
-        if (LOGGER_LEVEL.equals(Level.INFO)) {
-            Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
+        // результат тестирования в лог-файл
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        final String[] questionsError = {""};
+        questionsList
+                .stream()
+                .filter(q -> !q.isAnswerCorrect())
+                .map(q -> q.getQuestion())
+                .forEach(q -> questionsError[0] = questionsError[0] + q +"\r\n");
 
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-            final String[] questionsError = {""};
-            questionsList
-                    .stream()
-                    .filter(q -> !q.isAnswerCorrect())
-                    .map(q -> q.getQuestion())
-                    .forEach(q -> questionsError[0] = questionsError[0] + q +"\r\n");
-
-            LOG.info("\r\nТестирование завершено:\r\n" +
-                    user + "\r\n" +
-                    dateFormat.format(startTesting) + "\r\n" +
-                    dateFormat.format(System.currentTimeMillis()) + "\r\n" +
-                    resultTXT + "\r\n" +
-                    questionsError[0]
-            );
-        }
+        LOG.info("\r\nТестирование завершено:\r\n" +
+                user + "\r\n" +
+                dateFormat.format(startTesting) + "\r\n" +
+                dateFormat.format(System.currentTimeMillis()) + "\r\n" +
+                resultTXT + "\r\n" +
+                questionsError[0]
+        );
 
         // сохраняем результат тестирования
         String fileResultName = "";

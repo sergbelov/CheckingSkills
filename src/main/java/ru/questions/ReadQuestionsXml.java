@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.apache.logging.log4j.core.config.Configurator;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -40,11 +41,13 @@ public class ReadQuestionsXml implements ReadQuestions{
 //    public List<Question> read(String fileXML) {
     public List<QuestionJson> read(String fileXML) {
 
+        Configurator.setLevel(LOG.getName(), Questions.LOGGER_LEVEL);
+
         questionsJsonList.clear();
 
         File file = new File(fileXML);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден XML-файл с вопросами " + fileXML);
+            LOG.warn("Не найден файл с вопросами " + fileXML);
 /*
             JOptionPane.showMessageDialog(
                     null,
@@ -125,10 +128,10 @@ public class ReadQuestionsXml implements ReadQuestions{
 
         String json = gson.toJson(questionsJsonList);
         try(
-//                FileWriter fw = new FileWriter("JSONDataTest.json", false);
+//                FileWriter fw = new FileWriter("Questions.json", false);
                 BufferedWriter fw = new BufferedWriter(
                                         new OutputStreamWriter(
-                                            new FileOutputStream(parentFolder.getAbsolutePath() + "/JSONDataTest.json", false),
+                                            new FileOutputStream(parentFolder.getAbsolutePath() + "/Questions.json", false),
                                             "UTF-8"));
             ){
 //            fw.write("{\"questions\":"+ json +"}");
