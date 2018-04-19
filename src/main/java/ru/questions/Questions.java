@@ -149,11 +149,27 @@ public class Questions {
     public List<String> getThemesList() { return themesList; }
 
     /**
+     * Список текущих вопросов
+     *
+     * @return
+     */
+    public List<Question> getQuestionsList() { return questionsList; }
+
+
+    /**
      * Вопрос текущий
      *
      * @return
      */
     public Question get() { return questionsList.get(questionNum); }
+
+    /**
+     * Вопрос по номеру
+     *
+     * @param q
+     * @return
+     */
+    public Question get(int q) { return questionsList.get(q); }
 
     /**
      * Текущий номер вопроса

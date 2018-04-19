@@ -28,10 +28,7 @@ public class CheckingSkills {
     JFrame mainFrame;
     Object[] options = {"Да", "Нет"};
 
-    Color redColor = new Color(250, 100, 100);
-    Color greenColor = new Color(100, 200, 100);
     Color blueColor = new Color(100, 100, 200);
-    Color yellowColor = new Color(247, 250, 144);
     Color blackColor = new Color(0, 0, 0);
     Color defaultBackground = null;
 
@@ -226,16 +223,7 @@ public class CheckingSkills {
                 }
 
                 if (visibleAnswers) { // подсказки
-                    if (questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
-                        arrRB[i].setBackground(greenColor);
-                    } // отмечен правильный ответ
-                    else if (questions.get().getAnswer(i).isCorrect()) {
-                        arrRB[i].setBackground(yellowColor);
-                    } // не отмечен правильный вариант
-                    else if (!questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
-                        arrRB[i].setBackground(redColor);
-                    } // отмечен не правильный вариант
-                    else arrRB[i].setBackground(defaultBackground);
+                    arrRB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
 
@@ -249,16 +237,7 @@ public class CheckingSkills {
                 }
 
                 if (visibleAnswers) {
-                    if (questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
-                        arrCB[i].setBackground(greenColor);
-                    } // отмечен правильный ответ
-                    else if (questions.get().getAnswer(i).isCorrect()) {
-                        arrCB[i].setBackground(yellowColor);
-                    } // не отмечен правильный вариант
-                    else if (!questions.get().getAnswer(i).isCorrect() & questions.get().getAnswer(i).isSelected()) {
-                        arrCB[i].setBackground(redColor);
-                    } // отмечен не правильный вариант
-                    else arrCB[i].setBackground(defaultBackground);
+                    arrCB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
         }
@@ -270,7 +249,7 @@ public class CheckingSkills {
         }
 
         bPrevQuestion.setEnabled(!questions.isFirstQuestion()); // первый вопрос ?
-        bNextQuestion.setEnabled(!questions.isLastQuestion()); // последний вопрос ?
+        bNextQuestion.setEnabled(!questions.isLastQuestion());  // последний вопрос ?
 
         mainFrame.setTitle("Проверка знаний (" + (questions.getQuestionNum() + 1) + " из " + questions.getMaxQuestion() + ")");
 
