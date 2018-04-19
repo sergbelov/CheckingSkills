@@ -381,7 +381,7 @@ public class Questions {
         int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
 
         if (countError == 0) { // ошибок нет
-            message = "<html>Примите поздравления!<br/>Отличная работа!<br/><br/>Еще разок?</html>";
+            message = "<html>Примите поздравления!<br/>Отличная работа!</html>";
             resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
 
         } else { // ошибки есть

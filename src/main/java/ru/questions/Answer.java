@@ -35,6 +35,9 @@ public class Answer {
     public boolean isSelected() {
         return selected;
     }
+    public String isSelectedHTML() {
+        return selected ? "checked" : "";
+    }
 
     public void setSelected(boolean selected) {
         this.selected = selected;

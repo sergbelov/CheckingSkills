@@ -27,6 +27,7 @@ public class CheckingSkills {
     JPanel windowContent, p1, p2, p4;
     JFrame mainFrame;
     Object[] options = {"Да", "Нет"};
+    Object[] options2 = {"Еще раз", "Выход"};
 
     Color blueColor = new Color(100, 100, 200);
     Color blackColor = new Color(0, 0, 0);
@@ -285,6 +286,7 @@ public class CheckingSkills {
         String message = questions.stop();
 
         if (message.contains("Примите поздравления!")) {
+            System.out.println(message);
             if (JOptionPane.showOptionDialog(
                     mainFrame,
                     message,
@@ -292,8 +294,8 @@ public class CheckingSkills {
                     JOptionPane.OK_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null,
-                    options,
-                    options[0]) == 0) {
+                    options2,
+                    options2[0]) == 0) {
                 start();
             } else {
                 System.exit(0);
