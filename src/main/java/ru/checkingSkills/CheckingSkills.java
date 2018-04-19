@@ -286,7 +286,6 @@ public class CheckingSkills {
         String message = questions.stop();
 
         if (message.contains("Примите поздравления!")) {
-            System.out.println(message);
             if (JOptionPane.showOptionDialog(
                     mainFrame,
                     message,

@@ -76,10 +76,6 @@ public class Questions {
         }
 
         if (readQuestions != null) {
-
-//        LOG.info( "\r\nПуть к файлу CheckingSkills.properties :\t" + fileProperties +
-//                  "\r\nПуть к файлу с вопросами :\t\t\t" + FILE_QUESTIONS);
-
             // список вопросов (все темы)
             questionsJsonList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
 
@@ -366,6 +362,11 @@ public class Questions {
             });
 
         startTesting = System.currentTimeMillis();  // время старта
+
+        LOG.info("Пользователь "+
+                user +
+                " начал тестирование по теме " +
+                theme);
     }
 
     /**
@@ -381,7 +382,7 @@ public class Questions {
         int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
 
         if (countError == 0) { // ошибок нет
-            message = "<html>Примите поздравления!<br/>Отличная работа!</html>";
+            message = "<html>Отличная работа!<br/>Примите поздравления!</html>";
             resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
 
         } else { // ошибки есть
@@ -406,13 +407,16 @@ public class Questions {
                 .map(q -> q.getQuestion())
                 .forEach(q -> questionsError[0] = questionsError[0] + q +"\r\n");
 
-        LOG.info("\r\nТестирование завершено:\r\n" +
-                user + "\r\n" +
-                dateFormat.format(startTesting) + "\r\n" +
-                dateFormat.format(System.currentTimeMillis()) + "\r\n" +
-                resultTXT + "\r\n" +
-                questionsError[0]
-        );
+        if (!questionsError[0].isEmpty()) {
+            questionsError[0] = "\r\nДан не верный ответ на вопросы:\r\n" + questionsError[0];
+        }
+
+        LOG.info("Пользователь "+
+                user +
+                " завершил тестирование по теме "+
+                theme + " / Результат: " +
+                resultTXT +
+                questionsError[0] );
 
         // сохраняем результат тестирования
         String fileResultName = "";
