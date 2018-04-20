@@ -111,7 +111,8 @@ public class ReadQuestionsXml implements ReadQuestions{
             }
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOG.error(ex);
+            LOG.error("", ex);
+            ex.getStackTrace();
         }
 
 
@@ -138,6 +139,7 @@ public class ReadQuestionsXml implements ReadQuestions{
             fw.write( json );
             fw.flush();
         } catch (IOException e) {
+            LOG.error("IOException", e);
             e.printStackTrace();
         };
 

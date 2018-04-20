@@ -13,6 +13,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +24,8 @@ import org.w3c.dom.Node;
  * Сохранение результата тестирования в XML-файл
  */
 public class SaveResultXml implements SaveResult {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Сохранение результата тестирования в XML-файл
@@ -87,13 +91,9 @@ public class SaveResultXml implements SaveResult {
 //            transformer.transform(source, console);
             transformer.transform(source, streamResult);
 
-        } catch (Exception ew) {
-//            ew.printStackTrace();
-            JOptionPane.showMessageDialog(null,
-                    ew.getMessage(),
-                    "Ошибка",
-                    JOptionPane.ERROR_MESSAGE);
-//            System.exit(-1);
+        } catch (Exception e) {
+            LOG.error("Exception", e);
+            e.printStackTrace();
         } finally {
             if (doc != null) doc = null;
 //            Runtime.getRuntime().gc(); // чистка памяти
