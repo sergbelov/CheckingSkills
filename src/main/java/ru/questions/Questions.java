@@ -379,80 +379,84 @@ public class Questions {
      * @return
      */
     public String stop() {
-        String message, resultTXT;
-        int countError = getCountNotCorrectAnswers();
-        int correctAnswer = getMaxQuestion() - countError;
-        int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
+        if (startingTime > 0) {
+            String message, resultTXT;
+            int countError = getCountNotCorrectAnswers();
+            int correctAnswer = getMaxQuestion() - countError;
+            int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
 
-        if (countError == 0) { // ошибок нет
-            message = "<html>Отличная работа!<br/>Примите поздравления!</html>";
-            resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
+            if (countError == 0) { // ошибок нет
+                message = "<html>Отличная работа!<br/>Примите поздравления!</html>";
+                resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
 
-        } else { // ошибки есть
+            } else { // ошибки есть
 
-            message = "<html>Имеются ошибки.<br/>" +
-                    "Дан верный ответ на " + correctAnswer +
-                    " из " + getMaxQuestion() +
-                    " ( " + correctAnswerProc + "% )<br/><br/>" +
-                    "Анализ ошибок:<br/>" +
-                    "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
-                    "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
-                    "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
-            resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
-        }
+                message = "<html>Имеются ошибки.<br/>" +
+                        "Дан верный ответ на " + correctAnswer +
+                        " из " + getMaxQuestion() +
+                        " ( " + correctAnswerProc + "% )<br/><br/>" +
+                        "Анализ ошибок:<br/>" +
+                        "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
+                        "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
+                        "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
+                resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
+            }
 
-        // результат тестирования в лог-файл
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        final String[] questionsError = {""};
-        questionsList
-                .stream()
-                .filter(q -> !q.isAnswerCorrect())
-                .map(q -> q.getQuestion())
-                .forEach(q -> questionsError[0] = questionsError[0] + q +"\r\n");
+            // результат тестирования в лог-файл
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            final String[] questionsError = {""};
+            questionsList
+                    .stream()
+                    .filter(q -> !q.isAnswerCorrect())
+                    .map(q -> q.getQuestion())
+                    .forEach(q -> questionsError[0] = questionsError[0] + q + "\r\n");
 
-        if (!questionsError[0].isEmpty()) {
-            questionsError[0] = "\r\nДан не верный ответ на вопросы:\r\n" + questionsError[0];
-        }
+            if (!questionsError[0].isEmpty()) {
+                questionsError[0] = "\r\nДан не верный ответ на вопросы:\r\n" + questionsError[0];
+            }
 
-        LOG.info("Пользователь "+
-                user +
-                " завершил тестирование по теме "+
-                theme + " / Результат: " +
-                resultTXT +
-                questionsError[0] );
+            LOG.info("Пользователь " +
+                    user +
+                    " завершил тестирование по теме " +
+                    theme + " / Результат: " +
+                    resultTXT +
+                    questionsError[0]);
 
-        // сохраняем результат тестирования
-        String fileResultName = "";
-        switch (FORMAT_RESULT.toUpperCase()){
-            case "XML":
-                fileResultName = "result.xml";
-                saveResult = new SaveResultXml();
-                break;
+            // сохраняем результат тестирования
+            String fileResultName = "";
+            switch (FORMAT_RESULT.toUpperCase()) {
+                case "XML":
+                    fileResultName = "result.xml";
+                    saveResult = new SaveResultXml();
+                    break;
 
-            case "JSON":
-                fileResultName = "result.json";
-                saveResult = new SaveResultJson();
-                break;
+                case "JSON":
+                    fileResultName = "result.json";
+                    saveResult = new SaveResultJson();
+                    break;
 
-            default:
-                saveResult = null;
-        }
+                default:
+                    saveResult = null;
+            }
 
-        if (saveResult != null) {
-            saveResult.save(
-                    PATH_RESULT,
-                    fileResultName,
-                    user,
-                    startingTime,
-                    System.currentTimeMillis(),
-                    getTheme(),
-                    resultTXT);
+            if (saveResult != null) {
+                saveResult.save(
+                        PATH_RESULT,
+                        fileResultName,
+                        user,
+                        startingTime,
+                        System.currentTimeMillis(),
+                        getTheme(),
+                        resultTXT);
+            } else {
+                LOG.warn("Результат тестирования не сохранен !");
+            }
+
+            startingTime = 0;
+            return message;
         } else {
-            LOG.warn("Результат тестирования не сохранен !");
+            return "";
         }
-
-        startingTime = 0;
-        return message;
     }
 
     public boolean isStarted() { return startingTime > 0 ? true : false; }
