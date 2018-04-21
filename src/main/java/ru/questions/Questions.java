@@ -242,7 +242,7 @@ public class Questions {
                 pr.load(is);
 
                 this.MAX_QUESTION_CONST = Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
-                this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWER", "FALSE"));
+                this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWERS", "FALSE"));
                 this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\Questions.json");
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
                 this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
@@ -455,5 +455,5 @@ public class Questions {
         return message;
     }
 
-    public long getStartingTime() { return startingTime; }
+    public boolean isStarted() { return startingTime > 0 ? true : false; }
 }

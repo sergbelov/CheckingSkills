@@ -14,8 +14,6 @@ public class CheckingSkills {
 
     final String FILE_PROPERTIES = "CheckingSkills.properties";
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
-//    private long startTesting; // время начала теста
-    private boolean visibleAnswers = false; // отображать подсказки
     Questions questions = new Questions();; // список вопросов с ответами
 
     JComboBox cbTheme;
@@ -178,7 +176,6 @@ public class CheckingSkills {
             }
 
             bEnd.setEnabled(true);
-            visibleAnswers = questions.isVisibleAnswers();
             questions.start();  // начинаем тестирование
             refreshQuestion();  // отображаем вопрос с вариантами ответов
 
@@ -223,7 +220,7 @@ public class CheckingSkills {
                     answered = true;
                 }
 
-                if (visibleAnswers) { // подсказки
+                if (questions.isVisibleAnswers() || !questions.isStarted()) { // подсказки
                     arrRB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
@@ -237,7 +234,7 @@ public class CheckingSkills {
                     answered = true;
                 }
 
-                if (visibleAnswers) {
+                if (questions.isVisibleAnswers() || !questions.isStarted()) { // подсказки
                     arrCB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
@@ -302,8 +299,6 @@ public class CheckingSkills {
             return 1;
 
         } else {
-
-            visibleAnswers = true; // отображать подсказки
 
             // для анализа, отключаем активность контролов
             for (int i = 0; i < maxAnswer; i++) {
