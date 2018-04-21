@@ -12,16 +12,16 @@ public interface SaveResult {
      * @param path          - путь для сохранения
      * @param fileName      - имя файла
      * @param user          - пользователь
-     * @param startTesting  - время начала теста
-     * @param stopTesting   - время окончания теста
+     * @param startingTime  - время начала теста
+     * @param stoppingTime  - время окончания теста
      * @param theme         - тема
      * @param resultTXT     - результат тестирования
      */
     void save(  String path,
                 String fileName,
                 String user,
-                long startTesting,
-                long stopTesting,
+                long startingTime,
+                long stoppingTime,
                 String theme,
                 String resultTXT);
 }

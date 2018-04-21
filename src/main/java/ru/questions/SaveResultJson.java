@@ -27,16 +27,16 @@ public class SaveResultJson implements SaveResult {
      * @param path         - путь для сохранения
      * @param fileName     - имя файла
      * @param user         - пользователь
-     * @param startTesting - время начала теста
-     * @param stopTesting  - время окончания теста
+     * @param startingTime - время начала теста
+     * @param stoppingTime  - время окончания теста
      * @param theme        - тема
      * @param resultTXT    - результат тестирования
      */
     public void save(String path,
                      String fileName,
                      String user,
-                     long startTesting,
-                     long stopTesting,
+                     long startingTime,
+                     long stoppingTime,
                      String theme,
                      String resultTXT) {
 
@@ -44,8 +44,8 @@ public class SaveResultJson implements SaveResult {
 
         ResultTest resultTest = new ResultTest(
                 user,
-                dateFormat.format(startTesting),
-                dateFormat.format(stopTesting),
+                dateFormat.format(startingTime),
+                dateFormat.format(stoppingTime),
                 theme,
                 resultTXT);
 
@@ -95,20 +95,20 @@ public class SaveResultJson implements SaveResult {
     // класс с результатами тестирования
     class ResultTest {
         private String user;
-        private String startTesting;
-        private String stopTesting;
+        private String startingTime;
+        private String stoppingTime;
         private String theme;
         private String result;
 
         public ResultTest(String user,
-                          String startTesting,
-                          String stopTesting,
+                          String startingTime,
+                          String stoppingTime,
                           String theme,
                           String result) {
 
             this.user = user;
-            this.startTesting = startTesting;
-            this.stopTesting = stopTesting;
+            this.startingTime = startingTime;
+            this.stoppingTime = stoppingTime;
             this.theme = theme;
             this.result = result;
         }
@@ -117,12 +117,12 @@ public class SaveResultJson implements SaveResult {
             return user;
         }
 
-        public String getStartTesting() {
-            return startTesting;
+        public String getStartingTime() {
+            return startingTime;
         }
 
-        public String getStopTesting() {
-            return stopTesting;
+        public String getStoppingTime() {
+            return stoppingTime;
         }
 
         public String getTheme() {

@@ -38,7 +38,7 @@ public class Questions {
     private List<Question> questionsList = new ArrayList<>();   // список текущих вопросов
 
     private String user = System.getProperty("user.name");      // текущий пользователь
-    private long startTesting;                                  // время начала теста
+    private long startingTime = 0;                              // время начала теста
 
     private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (FILE_QUESTIONS расширение))
     private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (FORMAT_RESULT))
@@ -364,7 +364,7 @@ public class Questions {
                 answersList.clear();
             });
 
-        startTesting = System.currentTimeMillis();  // время старта
+        startingTime = System.currentTimeMillis();  // время старта
 
         LOG.info("Пользователь "+
                 user +
@@ -443,14 +443,17 @@ public class Questions {
                     PATH_RESULT,
                     fileResultName,
                     user,
-                    startTesting,
+                    startingTime,
                     System.currentTimeMillis(),
                     getTheme(),
                     resultTXT);
         } else {
             LOG.warn("Результат тестирования не сохранен !");
         }
+
+        startingTime = 0;
         return message;
     }
 
+    public long getStartingTime() { return startingTime; }
 }
