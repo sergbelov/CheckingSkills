@@ -47,7 +47,8 @@ public class ReadQuestionsXml implements ReadQuestions{
 
         File file = new File(fileXML);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден файл с вопросами " + fileXML);
+            LOG.warn("Не найден файл с вопросами : {}", fileXML);
+
 /*
             JOptionPane.showMessageDialog(
                     null,

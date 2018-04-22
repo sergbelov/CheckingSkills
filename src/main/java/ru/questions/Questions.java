@@ -89,12 +89,12 @@ public class Questions {
                                 .distinct()
                                 .collect(Collectors.toList()));
 
-//                saveQuestionsGroupByThemes("Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+//                saveQuestionsGroupByThemes(PATH_RESULT, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
                 LOG.error("Ошибка при чтении вопросов из файла");
             }
         } else{
-            LOG.error("В файле с параметрами " + fileProperties + " - указан не верный формат файла с вопросами (допустимы форматы JSON или XML)");
+            LOG.error("Файл с вопросами имеет недопустимый формат (возможны JSON или XML)");
         }
     }
 
@@ -247,18 +247,23 @@ public class Questions {
                 this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
                 this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
                 this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
-//                this.LOGGER_LEVEL = pr.getProperty("LOGGER_LEVEL", "WARN");
 
                 Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
-                LOG.info("Параметры из файла " + fileName +
-                        "\r\nМаксимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
-                        "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
-                        "\r\nФайл с вопросами : " + FILE_QUESTIONS +
-                        "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
-                        "\r\nФормат файла с результатами тестирования XML или JSON : " + FORMAT_RESULT +
-                        "\r\nУровень логирования : " + LOGGER_LEVEL
-                );
+                LOG.info("Параметры из файла {}\r\n"+
+                            "Максимальное количество задаваемых вопросов : {}\r\n" +
+                            "Отображать подсказки : {}\r\n" +
+                            "Файл с вопросами : {}\r\n" +
+                            "Путь для сохранения результатов тестирования : {}\r\n" +
+                            "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
+                            "Уровень логирования : {}",
+                        fileName,
+                        MAX_QUESTION_CONST,
+                        VISIBLE_ANSWERS,
+                        FILE_QUESTIONS,
+                        PATH_RESULT,
+                        FORMAT_RESULT,
+                        LOGGER_LEVEL);
 
             } catch (FileNotFoundException e) {
                 LOG.error("FileNotFoundException", e);
@@ -270,22 +275,28 @@ public class Questions {
         } else{
             Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
-            LOG.warn("Не найден файл с параметрами " + fileName +
-            "\r\nПараметры по умолчанию:"+
-            "\r\nМаксимальное количество задаваемых вопросов : " + MAX_QUESTION_CONST +
-            "\r\nОтображать подсказки : " + VISIBLE_ANSWERS +
-            "\r\nФайл с вопросами : " + FILE_QUESTIONS +
-            "\r\nПуть для сохранения результатов тестирования : " + PATH_RESULT +
-            "\r\nФормат файла с результатами тестирования XML или JSON : " + FORMAT_RESULT +
-            "\r\nУровень логирования : " + LOGGER_LEVEL
-            );
+            LOG.warn("Не найден файл с параметрами {}\r\n" +
+                        "Параметры по умолчанию:\r\n" +
+                        "Максимальное количество задаваемых вопросов : {}\r\n" +
+                        "Отображать подсказки : {}\r\n" +
+                        "Файл с вопросами : {}\r\n" +
+                        "Путь для сохранения результатов тестирования : {}\r\n" +
+                        "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
+                        "Уровень логирования : {}",
+                fileName,
+                MAX_QUESTION_CONST,
+                VISIBLE_ANSWERS,
+                FILE_QUESTIONS,
+                PATH_RESULT,
+                FORMAT_RESULT,
+                LOGGER_LEVEL);
         }
     }
 
     /**
      * Сохраним вопросы с правильными ответами (сгруппировав по темам)
      */
-    public void saveQuestionsGroupByThemes(final String charset) {
+    public void saveQuestionsGroupByThemes(final String path, final String charset) {
 //        StandardCharsets.US_ASCII.name();
         StringBuilder sbQuestions = new StringBuilder();
 
@@ -297,7 +308,7 @@ public class Questions {
                     try (
                         BufferedWriter bw = new BufferedWriter(
                                                 new OutputStreamWriter(
-                                                    new FileOutputStream(t.replace("\\", "_") + ".txt", false),
+                                                    new FileOutputStream(path +  File.separator + t.replace("\\", "_") + ".txt", false),
                                                     charset != null & charset.length() > 0 ? charset : "Cp1251"));
                     ) {
                         sbQuestions.setLength(0);
@@ -366,9 +377,8 @@ public class Questions {
 
         startingTime = System.currentTimeMillis();  // время старта
 
-        LOG.info("Пользователь "+
-                user +
-                " начал тестирование по теме " +
+        LOG.info("Пользователь {} начал тестирование по теме {}",
+                user,
                 theme);
     }
 
@@ -415,11 +425,10 @@ public class Questions {
                 questionsError[0] = "\r\nДан не верный ответ на вопросы:\r\n" + questionsError[0];
             }
 
-            LOG.info("Пользователь " +
-                    user +
-                    " завершил тестирование по теме " +
-                    theme + " / Результат: " +
-                    resultTXT +
+            LOG.info("Пользователь {} завершил тестирование по теме {}; Результат: {}{}",
+                    user,
+                    theme,
+                    resultTXT,
                     questionsError[0]);
 
             // сохраняем результат тестирования
@@ -449,7 +458,7 @@ public class Questions {
                         getTheme(),
                         resultTXT);
             } else {
-                LOG.warn("Результат тестирования не сохранен !");
+                LOG.warn("Указан недопустимый формат для сохранения результатов тестирования (возможны JSON или XML); Результат тестирования не сохранен!");
             }
 
             startingTime = 0;

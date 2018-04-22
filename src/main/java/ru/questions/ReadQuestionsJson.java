@@ -31,7 +31,7 @@ public class ReadQuestionsJson implements ReadQuestions{
 
         File file = new File(fileJson);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден файл с вопросами " + fileJson);
+            LOG.warn("Не найден файл с вопросами : {}", fileJson);
 /*
             JOptionPane.showMessageDialog(
                     null,
