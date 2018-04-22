@@ -400,7 +400,6 @@ public class Questions {
                 resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
 
             } else { // ошибки есть
-
                 message = "<html>Имеются ошибки.<br/>" +
                         "Дан верный ответ на " + correctAnswer +
                         " из " + getMaxQuestion() +
@@ -414,22 +413,18 @@ public class Questions {
 
             // результат тестирования в лог-файл
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            final String[] questionsError = {""};
+            StringBuilder questionsError = new StringBuilder();
             questionsList
                     .stream()
                     .filter(q -> !q.isAnswerCorrect())
                     .map(q -> q.getQuestion())
-                    .forEach(q -> questionsError[0] = questionsError[0] + q + "\r\n");
-
-            if (!questionsError[0].isEmpty()) {
-                questionsError[0] = "\r\nДан не верный ответ на вопросы:\r\n" + questionsError[0];
-            }
+                    .forEach(q -> questionsError.append("\r\n").append(q));
 
             LOG.info("Пользователь {} завершил тестирование по теме {}; Результат: {}{}",
                     user,
                     theme,
                     resultTXT,
-                    questionsError[0]);
+                    questionsError);
 
             // сохраняем результат тестирования
             String fileResultName = "";
