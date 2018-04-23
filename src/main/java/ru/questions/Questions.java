@@ -413,18 +413,20 @@ public class Questions {
 
             // результат тестирования в лог-файл
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            StringBuilder questionsError = new StringBuilder();
+            StringBuilder wrongAnswers = new StringBuilder();
+            List<String> wrongAnswersList = new ArrayList<>();
             questionsList
                     .stream()
                     .filter(q -> !q.isAnswerCorrect())
                     .map(q -> q.getQuestion())
-                    .forEach(q -> questionsError.append("\r\n").append(q));
+                    .forEach(q -> { wrongAnswersList.add(q);
+                                    wrongAnswers.append("\r\n").append(q);});
 
             LOG.info("Пользователь {} завершил тестирование по теме {}; Результат: {}{}",
                     user,
                     theme,
                     resultTXT,
-                    questionsError);
+                    wrongAnswers);
 
             // сохраняем результат тестирования
             String fileResultName = "";
@@ -451,7 +453,8 @@ public class Questions {
                         startingTime,
                         System.currentTimeMillis(),
                         getTheme(),
-                        resultTXT);
+                        resultTXT,
+                        wrongAnswersList);
             } else {
                 LOG.warn("Указан недопустимый формат для сохранения результатов тестирования (возможны JSON или XML); Результат тестирования не сохранен!");
             }

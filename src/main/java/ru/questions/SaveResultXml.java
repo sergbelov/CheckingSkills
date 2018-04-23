@@ -3,6 +3,7 @@ package ru.questions;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -36,6 +37,7 @@ public class SaveResultXml implements SaveResult {
      * @param stoppingTime   - время окончания теста
      * @param theme         - тема
      * @param resultTXT     - результат тестирования
+     * @param wrongAnswersList - список вопросов на которые дан не верный ответ
      */
     public void save(String path,
               String fileName,
@@ -43,7 +45,8 @@ public class SaveResultXml implements SaveResult {
               long startingTime,
               long stoppingTime,
               String theme,
-              String resultTXT) {
+              String resultTXT,
+              List<String> wrongAnswersList) {
 
         File file = new File(path);
         file.mkdirs();

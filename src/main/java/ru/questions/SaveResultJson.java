@@ -31,6 +31,7 @@ public class SaveResultJson implements SaveResult {
      * @param stoppingTime  - время окончания теста
      * @param theme        - тема
      * @param resultTXT    - результат тестирования
+     * @param wrongAnswersList - список вопросов на которые дан не верный ответ
      */
     public void save(String path,
                      String fileName,
@@ -38,7 +39,8 @@ public class SaveResultJson implements SaveResult {
                      long startingTime,
                      long stoppingTime,
                      String theme,
-                     String resultTXT) {
+                     String resultTXT,
+                     List<String> wrongAnswersList) {
 
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -47,7 +49,8 @@ public class SaveResultJson implements SaveResult {
                 dateFormat.format(startingTime),
                 dateFormat.format(stoppingTime),
                 theme,
-                resultTXT);
+                resultTXT,
+                wrongAnswersList);
 
         List<ResultTest> resultTestList = new ArrayList<>();
 
@@ -99,18 +102,21 @@ public class SaveResultJson implements SaveResult {
         private String stoppingTime;
         private String theme;
         private String result;
+        private List<String> wrongAnswersList;
 
         public ResultTest(String user,
                           String startingTime,
                           String stoppingTime,
                           String theme,
-                          String result) {
+                          String result,
+                          List<String> wrongAnswersList) {
 
             this.user = user;
             this.startingTime = startingTime;
             this.stoppingTime = stoppingTime;
             this.theme = theme;
             this.result = result;
+            this.wrongAnswersList = wrongAnswersList;
         }
 
         public String getUser() {
@@ -132,6 +138,8 @@ public class SaveResultJson implements SaveResult {
         public String getResult() {
             return result;
         }
+
+        public List<String> getWrongAnswersList() { return wrongAnswersList; }
     }
 }
 

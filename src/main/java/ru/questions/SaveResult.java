@@ -1,5 +1,7 @@
 package ru.questions;
 
+import java.util.List;
+
 /**
  * @author Белов Сергей
  * Сохранение результата тестирования в файл
@@ -16,6 +18,7 @@ public interface SaveResult {
      * @param stoppingTime  - время окончания теста
      * @param theme         - тема
      * @param resultTXT     - результат тестирования
+     * @param wrongAnswersList - список вопросов на которые дан не верный ответ
      */
     void save(  String path,
                 String fileName,
@@ -23,5 +26,6 @@ public interface SaveResult {
                 long startingTime,
                 long stoppingTime,
                 String theme,
-                String resultTXT);
+                String resultTXT,
+                List<String> wrongAnswersList);
 }
