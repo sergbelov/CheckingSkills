@@ -142,4 +142,20 @@ public class PropertiesApp {
     public Level getLOGGER_LEVEL() {
         return LOGGER_LEVEL;
     }
+
+    public String getHSQL_PATH() {
+        return HSQL_PATH;
+    }
+
+    public String getHSQL_DB() {
+        return HSQL_DB;
+    }
+
+    public String getHSQL_LOGIN() {
+        return HSQL_LOGIN;
+    }
+
+    public String getHSQL_PASSWORD() {
+        return HSQL_PASSWORD;
+    }
 }
