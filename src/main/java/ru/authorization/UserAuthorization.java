@@ -1,8 +1,10 @@
 package ru.authorization;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -24,13 +26,17 @@ public class UserAuthorization implements UserAuthorizationI {
             String hSqlPath,
             String hSqlDb,
             String login,
-            String password) {
+            String password,
+            Level level) {
+
+        Configurator.setLevel(LOG.getName(), level);
 
         connection = HSqlDbConnection.getConnection(
                 hSqlPath,
                 hSqlDb,
                 login,
-                password);
+                password,
+                level);
     }
 
     public void closeConnection() {
@@ -55,8 +61,37 @@ public class UserAuthorization implements UserAuthorizationI {
     }
 
     @Override
-    public boolean isUserCorrect(String login, String password) {
-        return false;
+    public boolean isCorrectUser(String login, String password) {
+        boolean res = false;
+        messageError.setLength(0);
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("select password from users where LOWER(login) = ?");
+            preparedStatement.setString(1, login.toLowerCase());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                if (encryptMD5(password).equals(resultSet.getString(1))){
+                    LOG.info("Успешная авторизация пользователя {}", login);
+
+                    res = true;
+                } else {
+                    LOG.warn("Не верный пароль для пользователя {}", login);
+                    messageError.append("Не верный пароль для пользователя ")
+                                .append(login);
+                }
+            } else {
+                LOG.warn("Пользователь {} не зарегестрирован", login);
+                messageError.append("Пользователь ")
+                            .append(login)
+                            .append(" не зарегестрирован");
+            }
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            LOG.error(e);
+            e.printStackTrace();
+        }
+        return res;
     }
 
     @Override
@@ -69,9 +104,10 @@ public class UserAuthorization implements UserAuthorizationI {
             preparedStatement.setString(1, login.toLowerCase());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
+                LOG.warn("Пользователь {} уже зарегестрирован", login);
                 messageError.append("Пользователь ")
                             .append(login)
-                            .append(" уже зарегестрирован в системе");
+                            .append(" уже зарегестрирован");
             } else {
                 LOG.debug("Регистрация пользователя {}, {}", login, encryptMD5(password));
                 preparedStatement.close();

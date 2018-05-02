@@ -107,6 +107,12 @@ public class Questions {
                                 .distinct()
                                 .collect(Collectors.toList()));
 
+                StringBuilder themes = new StringBuilder();
+                themesList
+                        .stream()
+                        .forEach(x -> themes.append("\r\n").append(x));
+                LOG.debug("Имеются вопросы по следующим темам:{}", themes.toString());
+
 //                saveQuestionsGroupByThemes(PATH_RESULT, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
                 LOG.error("Ошибка при чтении вопросов из файла {}", FILE_QUESTIONS);

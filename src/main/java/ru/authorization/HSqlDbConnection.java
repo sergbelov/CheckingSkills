@@ -1,7 +1,9 @@
 package ru.authorization;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.sql.*;
 
@@ -37,7 +39,10 @@ public class HSqlDbConnection {
             String hSqlPath,
             String hSqlDb,
             String login,
-            String password) {
+            String password,
+            Level level) {
+
+        Configurator.setLevel(LOG.getName(), level);
 
         if (!isConnect()) {
             if (hSqlPath == null || hSqlPath.isEmpty()) {
