@@ -1,5 +1,6 @@
 package ru.checkingSkills;
 
+import ru.questions.PropertiesApp;
 import ru.questions.Question;
 import ru.questions.Questions;
 
@@ -12,8 +13,10 @@ import javax.swing.*;
  */
 public class CheckingSkills {
 
-    final String FILE_PROPERTIES = "CheckingSkills.properties";
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
+    final String FILE_PROPERTIES = "CheckingSkills.properties";
+
+    PropertiesApp propertiesApp = new PropertiesApp();
     Questions questions = new Questions();; // список вопросов с ответами
 
     JComboBox cbTheme;
@@ -151,7 +154,15 @@ public class CheckingSkills {
 //        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 //        System.out.println(stackTraceElements[2].getMethodName());
 
-        questions.readQuestions(FILE_PROPERTIES); // читаем вопросы из файла
+        propertiesApp.readProperties(FILE_PROPERTIES); // параметры из файла
+
+        questions.readQuestions(
+                propertiesApp.getMAX_QUESTION(),
+                propertiesApp.isVISIBLE_ANSWERS(),
+                propertiesApp.getFILE_QUESTIONS(),
+                propertiesApp.getPATH_RESULT(),
+                propertiesApp.getFORMAT_RESULT(),
+                propertiesApp.getLOGGER_LEVEL()); // читаем вопросы из файла
 
         if (questions.getThemesList().size() > 0) {
             String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -14,24 +15,31 @@ import java.util.List;
 
 /**
  * @author Белов Сергей
- * Читаем вопросы из Json-файла
+ *         Читаем вопросы из Json-файла
  */
-public class ReadQuestionsJson implements ReadQuestions{
+public class ReadQuestionsJson implements ReadQuestions {
 
     private static final Logger LOG = LogManager.getLogger();
 
     private List<QuestionJson> questionsJsonList = new ArrayList<>(); // полный список вопросов (все темы)
 
+    /**
+     * Читаем вопросы из файла
+     *
+     * @param fileJson
+     * @param level
+     * @return
+     */
     @Override
-    public List<QuestionJson> read(String fileJson) {
+    public List<QuestionJson> read(String fileJson, Level level) {
 
-        Configurator.setLevel(LOG.getName(), Questions.LOGGER_LEVEL);
+        Configurator.setLevel(LOG.getName(), level);
 
         questionsJsonList.clear();
 
         File file = new File(fileJson);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден файл с вопросами : {}", fileJson);
+            LOG.error("Не найден файл с вопросами {}", fileJson);
 /*
             JOptionPane.showMessageDialog(
                     null,
@@ -46,28 +54,26 @@ public class ReadQuestionsJson implements ReadQuestions{
             }
 */
         } else {
+            LOG.debug("Читаем вопросы из файла {}", fileJson);
 
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
-
-            file = new File(fileJson);
-            if (file.exists()) {
-                try(
+            try (
 //                    JsonReader reader = new JsonReader(new FileReader(file.toString()));
-                    JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
-                ) {
-                    questionsJsonList = gson.fromJson(reader, new TypeToken<List<QuestionJson>>() {}.getType());
-                } catch (FileNotFoundException e) {
-                    LOG.error("FileNotFoundException", e);
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
-                    LOG.error("UnsupportedEncodingException", e);
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    LOG.error("IOException", e);
-                    e.printStackTrace();
-                }
+                    JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+            ) {
+                questionsJsonList = gson.fromJson(reader, new TypeToken<List<QuestionJson>>() {
+                }.getType());
+            } catch (FileNotFoundException e) {
+                LOG.error("FileNotFoundException", e);
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                LOG.error("UnsupportedEncodingException", e);
+                e.printStackTrace();
+            } catch (IOException e) {
+                LOG.error("IOException", e);
+                e.printStackTrace();
             }
         }
         return questionsJsonList;

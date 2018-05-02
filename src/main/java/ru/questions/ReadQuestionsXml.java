@@ -2,6 +2,7 @@ package ru.questions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,18 +38,19 @@ public class ReadQuestionsXml implements ReadQuestions{
      * Читаем вопросы из файла
      *
      * @param fileXML
+     * @param level
+     * @return
      */
-//    public List<Question> read(String fileXML) {
-    public List<QuestionJson> read(String fileXML) {
+    @Override
+    public List<QuestionJson> read(String fileXML, Level level) {
 
-        Configurator.setLevel(LOG.getName(), Questions.LOGGER_LEVEL);
+        Configurator.setLevel(LOG.getName(), level);
 
         questionsJsonList.clear();
 
         File file = new File(fileXML);
         if (!file.exists()) { // файл с вопросами не найден
-            LOG.warn("Не найден файл с вопросами : {}", fileXML);
-
+            LOG.error("Не найден файл с вопросами {}", fileXML);
 /*
             JOptionPane.showMessageDialog(
                     null,
@@ -62,89 +64,90 @@ public class ReadQuestionsXml implements ReadQuestions{
                 file = new File(file.getAbsolutePath());
             }
 */
-        }
+        } else {
+            LOG.debug("Читаем вопросы из файла {}", fileXML);
 
-        try {
-            // Строим объектную модель исходного XML файла
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(file);
+            try {
+                // Строим объектную модель исходного XML файла
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(file);
 
-            // Выполнять нормализацию не обязательно, но рекомендуется
-            doc.getDocumentElement().normalize();
+                // Выполнять нормализацию не обязательно, но рекомендуется
+                doc.getDocumentElement().normalize();
 
-            // Получаем все узлы с именем "QuestionBlock"
-            NodeList nodesList = doc.getElementsByTagName("QuestionBlock");
-            NodeList nodesList2;
+                // Получаем все узлы с именем "QuestionBlock"
+                NodeList nodesList = doc.getElementsByTagName("QuestionBlock");
+                NodeList nodesList2;
 
-            for (int i = 0; i < nodesList.getLength(); i++) {
-                Node node = nodesList.item(i);
-                if (Node.ELEMENT_NODE == node.getNodeType()) {
-                    Element element = (Element) node;
-                    theme = formatText(element.getElementsByTagName("theme").item(0).getTextContent());
-                    question = formatText(element.getElementsByTagName("question").item(0).getTextContent());
-                    if (element.getElementsByTagName("author").item(0) != null) {
-                        author = formatText(element.getElementsByTagName("author").item(0).getTextContent());
-                    } else {
-                        author = "";
+                for (int i = 0; i < nodesList.getLength(); i++) {
+                    Node node = nodesList.item(i);
+                    if (Node.ELEMENT_NODE == node.getNodeType()) {
+                        Element element = (Element) node;
+                        theme = formatText(element.getElementsByTagName("theme").item(0).getTextContent());
+                        question = formatText(element.getElementsByTagName("question").item(0).getTextContent());
+                        if (element.getElementsByTagName("author").item(0) != null) {
+                            author = formatText(element.getElementsByTagName("author").item(0).getTextContent());
+                        } else {
+                            author = "";
+                        }
+                        nodesList2 = element.getElementsByTagName("at");
+                        for (int x = 0; x < nodesList2.getLength(); x++) {
+                            answersTrue.add(formatText(nodesList2.item(x).getTextContent()));
+                        }
+
+                        nodesList2 = element.getElementsByTagName("af");
+                        for (int x = 0; x < nodesList2.getLength(); x++) {
+                            answersFalse.add(formatText(nodesList2.item(x).getTextContent()));
+                        }
+
+                        questionsJsonList.add(
+                                new QuestionJson(
+                                        author,
+                                        theme,
+                                        question,
+                                        answersTrue,
+                                        answersFalse));
+
+                        answersTrue.clear();
+                        answersFalse.clear();
                     }
-                    nodesList2 = element.getElementsByTagName("at");
-                    for (int x = 0; x < nodesList2.getLength(); x++) {
-                        answersTrue.add(formatText(nodesList2.item(x).getTextContent()));
-                    }
-
-                    nodesList2 = element.getElementsByTagName("af");
-                    for (int x = 0; x < nodesList2.getLength(); x++) {
-                        answersFalse.add(formatText(nodesList2.item(x).getTextContent()));
-                    }
-
-                    questionsJsonList.add(
-                            new QuestionJson(
-                                    author,
-                                    theme,
-                                    question,
-                                    answersTrue,
-                                    answersFalse));
-
-                    answersTrue.clear();
-                    answersFalse.clear();
                 }
+
+            } catch (ParserConfigurationException | SAXException | IOException ex) {
+                LOG.error("", ex);
+                ex.getStackTrace();
             }
 
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOG.error("", ex);
-            ex.getStackTrace();
+            // место нахождение файла с вопросами
+            File parentFolder = new File(file.getAbsolutePath()
+                    .substring(0, file.getAbsolutePath().lastIndexOf(
+                            File.separator)));
+
+            // запишем массив с вопросами в Json-файл
+//            Gson gson = new Gson();
+            Gson gson = new GsonBuilder() // с форматированием
+                    .setPrettyPrinting()
+                    .create();
+
+            String json = gson.toJson(questionsJsonList);
+            try (
+//                FileWriter fw = new FileWriter("Questions.json", false);
+                    BufferedWriter fw = new BufferedWriter(
+                            new OutputStreamWriter(
+                                    new FileOutputStream(parentFolder.getAbsolutePath() + "/Questions.json", false),
+                                    "UTF-8"));
+            ) {
+//            fw.write("{\"questions\":"+ json +"}");
+                fw.write(json);
+                fw.flush();
+            } catch (IOException e) {
+                LOG.error("IOException", e);
+                e.printStackTrace();
+            }
+            ;
         }
 
-
-        // место нахождение файла с вопросами
-        File parentFolder = new File(file.getAbsolutePath()
-                                .substring(0, file.getAbsolutePath().lastIndexOf(
-                                File.separator)));
-
-        // запишем массив с вопросами в Json-файл
-//        Gson gson = new Gson();
-        Gson gson = new GsonBuilder() // с форматированием
-                            .setPrettyPrinting()
-                            .create();
-
-        String json = gson.toJson(questionsJsonList);
-        try(
-//                FileWriter fw = new FileWriter("Questions.json", false);
-                BufferedWriter fw = new BufferedWriter(
-                                        new OutputStreamWriter(
-                                            new FileOutputStream(parentFolder.getAbsolutePath() + "/Questions.json", false),
-                                            "UTF-8"));
-        ) {
-//            fw.write("{\"questions\":"+ json +"}");
-            fw.write( json );
-            fw.flush();
-        } catch (IOException e) {
-            LOG.error("IOException", e);
-            e.printStackTrace();
-        };
-
-//        return questionsList;
         return questionsJsonList;
     }
 

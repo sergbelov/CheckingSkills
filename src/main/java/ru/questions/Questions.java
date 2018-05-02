@@ -4,8 +4,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-//import org.apache.logging.log4j.Level;
-//import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -22,13 +20,13 @@ public class Questions {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    // checkingSkills.properties
-    private int MAX_QUESTION_CONST = 10;                        // максимальное количество задаваемых вопросов
+    // CheckingSkills.properties
+    private int     MAX_QUESTION = 10;                          // максимальное количество задаваемых вопросов
     private boolean VISIBLE_ANSWERS = false;                    // отображать подсказки
-    private String FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
-    private String PATH_RESULT = "result\\";                    // путь для сохранения результатов тестирования
-    private String FORMAT_RESULT = "JSON";                      // формат файла с результатами тестирования XML или JSON
-    public static Level LOGGER_LEVEL = Level.WARN;              // уровень логирования
+    private String  FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
+    private String  PATH_RESULT = "result\\";                   // путь для сохранения результатов тестирования
+    private String  FORMAT_RESULT = "JSON";                     // формат файла с результатами тестирования XML или JSON
+    private Level   LOGGER_LEVEL = Level.WARN;                  // уровень логирования
 
     private String theme;                                       // текущая тема
     private int maxQuestion;                                    // максимальное количество задаваемых вопросов с учетом имеющихся по теме
@@ -57,14 +55,34 @@ public class Questions {
     public String getUser() { return user; }
 
     /**
-     * Читаем вопросы из файла FILE_QUESTIONS
+     * Устанавливаем параметры, читаем вопросы из файла FILE_QUESTIONS
+     *
+     * @param MAX_QUESTION          // максимальное количество задаваемых вопросов
+     * @param VISIBLE_ANSWERS       // отображать подсказки
+     * @param FILE_QUESTIONS        // файл с вопросами
+     * @param PATH_RESULT           // путь для сохранения результатов тестирования
+     * @param FORMAT_RESULT         // формат файла с результатами тестирования XML или JSON
+     * @param LOGGER_LEVEL          // уровень логирования
      */
-    public void readQuestions(String fileProperties) {
+    public void readQuestions(
+            int     MAX_QUESTION,
+            boolean VISIBLE_ANSWERS,
+            String  FILE_QUESTIONS,
+            String  PATH_RESULT,
+            String  FORMAT_RESULT,
+            Level   LOGGER_LEVEL) {
+
+        this.MAX_QUESTION = MAX_QUESTION;
+        this.VISIBLE_ANSWERS = VISIBLE_ANSWERS;
+        this.FILE_QUESTIONS = FILE_QUESTIONS;
+        this.PATH_RESULT = PATH_RESULT;
+        this.FORMAT_RESULT = FORMAT_RESULT;
+        this.LOGGER_LEVEL = LOGGER_LEVEL;
+
+        Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
         if (questionsJsonList != null) questionsJsonList.clear();
         if (themesList != null) themesList.clear();
-
-        getProperties(fileProperties); // Читаем параметры из файла fileProperties
 
         // тип файла с вопросами
         if (FILE_QUESTIONS.toUpperCase().endsWith(".XML")) {
@@ -77,7 +95,7 @@ public class Questions {
 
         if (readQuestions != null) {
             // список вопросов (все темы)
-            questionsJsonList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS));
+            questionsJsonList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS, LOGGER_LEVEL));
 
             // список тем
             if (questionsJsonList != null && !questionsJsonList.isEmpty()) {
@@ -91,7 +109,7 @@ public class Questions {
 
 //                saveQuestionsGroupByThemes(PATH_RESULT, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
-                LOG.error("Ошибка при чтении вопросов из файла");
+                LOG.error("Ошибка при чтении вопросов из файла {}", FILE_QUESTIONS);
             }
         } else{
             LOG.error("Файл с вопросами имеет недопустимый формат (возможны JSON или XML)");
@@ -101,13 +119,13 @@ public class Questions {
     /**
      * Задаем текущую тему
      *      Максимально количество задаваемых вопросов
-     *      (равно количеству вопросов по теме, но не более MAX_QUESTION_CONST)
+     *      (равно количеству вопросов по теме, но не более MAX_QUESTION)
      *
      * @param theme
      */
     public void setTheme(String theme) {
         this.theme = theme;
-        maxQuestion = Math.min(getCountQuestionsInTheme(theme), MAX_QUESTION_CONST);
+        maxQuestion = Math.min(getCountQuestionsInTheme(theme), MAX_QUESTION);
     }
 
     /**
@@ -225,72 +243,6 @@ public class Questions {
                     .stream()
                     .filter(q -> !q.isAnswerCorrect())
                     .count();
-    }
-
-    /**
-     * Читаем параметры из файла
-     *
-     * @param fileName
-     */
-    private void getProperties(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) { // найден файл с установками
-            try (
-                InputStream is = new FileInputStream(file)
-            ) {
-                Properties pr = new Properties();
-                pr.load(is);
-
-                this.MAX_QUESTION_CONST = Integer.parseInt(pr.getProperty("MAX_QUESTION_CONST", "10"));
-                this.VISIBLE_ANSWERS = Boolean.parseBoolean(pr.getProperty("VISIBLE_ANSWERS", "FALSE"));
-                this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\Questions.json");
-                this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
-                this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "XML");
-                this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
-
-                Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
-
-                LOG.info("Параметры из файла {}\r\n"+
-                            "Максимальное количество задаваемых вопросов : {}\r\n" +
-                            "Отображать подсказки : {}\r\n" +
-                            "Файл с вопросами : {}\r\n" +
-                            "Путь для сохранения результатов тестирования : {}\r\n" +
-                            "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
-                            "Уровень логирования : {}",
-                        fileName,
-                        MAX_QUESTION_CONST,
-                        VISIBLE_ANSWERS,
-                        FILE_QUESTIONS,
-                        PATH_RESULT,
-                        FORMAT_RESULT,
-                        LOGGER_LEVEL);
-
-            } catch (FileNotFoundException e) {
-                LOG.error("FileNotFoundException", e);
-                e.printStackTrace();
-            } catch (IOException e) {
-                LOG.error("IOException", e);
-                e.printStackTrace();
-            }
-        } else{
-            Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
-
-            LOG.warn("Не найден файл с параметрами {}\r\n" +
-                        "Параметры по умолчанию:\r\n" +
-                        "Максимальное количество задаваемых вопросов : {}\r\n" +
-                        "Отображать подсказки : {}\r\n" +
-                        "Файл с вопросами : {}\r\n" +
-                        "Путь для сохранения результатов тестирования : {}\r\n" +
-                        "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
-                        "Уровень логирования : {}",
-                fileName,
-                MAX_QUESTION_CONST,
-                VISIBLE_ANSWERS,
-                FILE_QUESTIONS,
-                PATH_RESULT,
-                FORMAT_RESULT,
-                LOGGER_LEVEL);
-        }
     }
 
     /**
