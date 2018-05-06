@@ -64,64 +64,80 @@ public class UserAuthorization implements UserAuthorizationI {
     public boolean isCorrectUser(String login, String password) {
         boolean res = false;
         messageError.setLength(0);
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement("select password from users where LOWER(login) = ?");
-            preparedStatement.setString(1, login.toLowerCase());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                if (encryptMD5(password).equals(resultSet.getString(1))){
-                    LOG.info("Успешная авторизация пользователя {}", login);
-
-                    res = true;
-                } else {
-                    LOG.warn("Не верный пароль для пользователя {}", login);
-                    messageError.append("Не верный пароль для пользователя ")
+        if (login != null && !login.isEmpty()) {
+            PreparedStatement preparedStatement = null;
+            try {
+                preparedStatement = connection.prepareStatement("select password from users where LOWER(login) = ?");
+                preparedStatement.setString(1, login.toLowerCase());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    if (encryptMD5(password).equals(resultSet.getString(1))) {
+                        LOG.info("Успешная авторизация пользователя {}", login);
+                        res = true;
+                    } else {
+                        LOG.warn("Не верный пароль для пользователя {}", login);
+                        messageError.append("Не верный пароль для пользователя ")
                                 .append(login);
-                }
-            } else {
-                LOG.warn("Пользователь {} не зарегестрирован", login);
-                messageError.append("Пользователь ")
+                    }
+                } else {
+                    LOG.warn("Пользователь {} не зарегестрирован", login);
+                    messageError.append("Пользователь ")
                             .append(login)
                             .append(" не зарегестрирован");
-            }
-            preparedStatement.close();
+                }
+                preparedStatement.close();
 
-        } catch (SQLException e) {
-            LOG.error(e);
-            e.printStackTrace();
+            } catch (SQLException e) {
+                LOG.error(e);
+                e.printStackTrace();
+            }
+        } else {
+            messageError.append("Необходимо указать пользователя");
         }
         return res;
     }
 
     @Override
-    public boolean userAdd(String login, String password) {
+    public boolean userAdd(String login, String password, String password2) {
         boolean res = false;
         messageError.setLength(0);
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement("select id from users where LOWER(login) = ?");
-            preparedStatement.setString(1, login.toLowerCase());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                LOG.warn("Пользователь {} уже зарегестрирован", login);
-                messageError.append("Пользователь ")
-                            .append(login)
-                            .append(" уже зарегестрирован");
-            } else {
-                LOG.debug("Регистрация пользователя {}, {}", login, encryptMD5(password));
-                preparedStatement.close();
-                preparedStatement = connection.prepareStatement("INSERT INTO users (login, password) VALUES(?, ?)");
-                preparedStatement.setString(1, login);
-                preparedStatement.setString(2, encryptMD5(password));
-                preparedStatement.executeUpdate();
-                res = true;
-            }
-            preparedStatement.close();
 
-        } catch (SQLException e) {
-            LOG.error(e);
-            e.printStackTrace();
+        if (!password.isEmpty() & password.equals(password2)) {
+            PreparedStatement preparedStatement = null;
+            try {
+                preparedStatement = connection.prepareStatement("select id from users where LOWER(login) = ?");
+                preparedStatement.setString(1, login.toLowerCase());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    LOG.warn("Пользователь {} уже зарегестрирован", login);
+                    messageError.append("Пользователь ")
+                                .append(login)
+                                .append(" уже зарегестрирован");
+                } else {
+                    LOG.debug("Регистрация пользователя {}, {}", login, encryptMD5(password));
+                    preparedStatement.close();
+                    preparedStatement = connection.prepareStatement("INSERT INTO users (login, password) VALUES(?, ?)");
+                    preparedStatement.setString(1, login);
+                    preparedStatement.setString(2, encryptMD5(password));
+                    preparedStatement.executeUpdate();
+                    res = true;
+                }
+                preparedStatement.close();
+
+            } catch (SQLException e) {
+                LOG.error(e);
+                e.printStackTrace();
+            }
+        } else {
+            if (password.isEmpty()){
+                messageError.append("Ошибка регистрации пользователя ")
+                            .append(login)
+                            .append(" пароль не может быть пустым");
+            } else {
+                messageError.append("Ошибка регистрации пользователя ")
+                            .append(login)
+                            .append(" пароль и подтверждение не совпадают");
+            }
         }
         return res;
     }
