@@ -65,32 +65,36 @@ public class UserAuthorization implements UserAuthorizationI {
         boolean res = false;
         messageError.setLength(0);
         if (login != null && !login.isEmpty()) {
-            PreparedStatement preparedStatement = null;
-            try {
-                preparedStatement = connection.prepareStatement("select password from users where LOWER(login) = ?");
-                preparedStatement.setString(1, login.toLowerCase());
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    if (encryptMD5(password).equals(resultSet.getString(1))) {
-                        LOG.info("Успешная авторизация пользователя {}", login);
-                        res = true;
-                    } else {
-                        LOG.warn("Не верный пароль для пользователя {}", login);
-                        messageError.append("Не верный пароль для пользователя ")
-                                .append(login);
-                    }
-                } else {
-                    LOG.warn("Пользователь {} не зарегистрирован", login);
-                    messageError.append("Пользователь ")
-                            .append(login)
-                            .append(" не зарегистрирован");
-                }
-                preparedStatement.close();
+           if (password != null && !password.isEmpty()) {
+               PreparedStatement preparedStatement = null;
+               try {
+                   preparedStatement = connection.prepareStatement("select password from users where LOWER(login) = ?");
+                   preparedStatement.setString(1, login.toLowerCase());
+                   ResultSet resultSet = preparedStatement.executeQuery();
+                   if (resultSet.next()) {
+                       if (encryptMD5(password).equals(resultSet.getString(1))) {
+                           LOG.info("Успешная авторизация пользователя {}", login);
+                           res = true;
+                       } else {
+                           LOG.warn("Не верный пароль для пользователя {}", login);
+                           messageError.append("Не верный пароль для пользователя ")
+                                   .append(login);
+                       }
+                   } else {
+                       LOG.warn("Пользователь {} не зарегистрирован", login);
+                       messageError.append("Пользователь ")
+                               .append(login)
+                               .append(" не зарегистрирован");
+                   }
+                   preparedStatement.close();
 
-            } catch (SQLException e) {
-                LOG.error(e);
-                e.printStackTrace();
-            }
+               } catch (SQLException e) {
+                   LOG.error(e);
+                   e.printStackTrace();
+               }
+           } else{
+               messageError.append("Необходимо указать пароль");
+           }
         } else {
             messageError.append("Необходимо указать пользователя");
         }
