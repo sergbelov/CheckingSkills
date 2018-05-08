@@ -80,10 +80,10 @@ public class UserAuthorization implements UserAuthorizationI {
                                 .append(login);
                     }
                 } else {
-                    LOG.warn("Пользователь {} не зарегестрирован", login);
+                    LOG.warn("Пользователь {} не зарегистрирован", login);
                     messageError.append("Пользователь ")
                             .append(login)
-                            .append(" не зарегестрирован");
+                            .append(" не зарегистрирован");
                 }
                 preparedStatement.close();
 
@@ -109,10 +109,10 @@ public class UserAuthorization implements UserAuthorizationI {
                 preparedStatement.setString(1, login.toLowerCase());
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
-                    LOG.warn("Пользователь {} уже зарегестрирован", login);
+                    LOG.warn("Пользователь {} уже зарегистрирован", login);
                     messageError.append("Пользователь ")
                                 .append(login)
-                                .append(" уже зарегестрирован");
+                                .append(" уже зарегистрирован");
                 } else {
                     LOG.debug("Регистрация пользователя {}, {}", login, encryptMD5(password));
                     preparedStatement.close();
@@ -132,11 +132,11 @@ public class UserAuthorization implements UserAuthorizationI {
             if (password.isEmpty()){
                 messageError.append("Ошибка регистрации пользователя ")
                             .append(login)
-                            .append(" пароль не может быть пустым");
+                            .append(" : пароль не может быть пустым");
             } else {
                 messageError.append("Ошибка регистрации пользователя ")
                             .append(login)
-                            .append(" пароль и подтверждение не совпадают");
+                            .append(" : пароль и подтверждение не совпадают");
             }
         }
         return res;

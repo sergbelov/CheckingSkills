@@ -22,7 +22,6 @@ public class Questions {
 
     // CheckingSkills.properties
     private int     MAX_QUESTION = 10;                          // максимальное количество задаваемых вопросов
-    private boolean VISIBLE_ANSWERS = false;                    // отображать подсказки
     private String  FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
     private String  PATH_RESULT = "result\\";                   // путь для сохранения результатов тестирования
     private String  FORMAT_RESULT = "JSON";                     // формат файла с результатами тестирования XML или JSON
@@ -58,7 +57,6 @@ public class Questions {
      * Устанавливаем параметры, читаем вопросы из файла FILE_QUESTIONS
      *
      * @param MAX_QUESTION          // максимальное количество задаваемых вопросов
-     * @param VISIBLE_ANSWERS       // отображать подсказки
      * @param FILE_QUESTIONS        // файл с вопросами
      * @param PATH_RESULT           // путь для сохранения результатов тестирования
      * @param FORMAT_RESULT         // формат файла с результатами тестирования XML или JSON
@@ -66,14 +64,12 @@ public class Questions {
      */
     public void readQuestions(
             int     MAX_QUESTION,
-            boolean VISIBLE_ANSWERS,
             String  FILE_QUESTIONS,
             String  PATH_RESULT,
             String  FORMAT_RESULT,
             Level   LOGGER_LEVEL) {
 
         this.MAX_QUESTION = MAX_QUESTION;
-        this.VISIBLE_ANSWERS = VISIBLE_ANSWERS;
         this.FILE_QUESTIONS = FILE_QUESTIONS;
         this.PATH_RESULT = PATH_RESULT;
         this.FORMAT_RESULT = FORMAT_RESULT;
@@ -230,13 +226,6 @@ public class Questions {
      */
     public boolean isLastQuestion() {
         return questionNum == (maxQuestion - 1);
-    }
-
-    /**
-     * Отображать подсказки ?
-     */
-    public boolean isVisibleAnswers() {
-        return VISIBLE_ANSWERS;
     }
 
     /**

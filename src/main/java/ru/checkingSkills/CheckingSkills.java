@@ -158,7 +158,6 @@ public class CheckingSkills {
 
         questions.readQuestions(
                 propertiesApp.getMAX_QUESTION(),
-                propertiesApp.isVISIBLE_ANSWERS(),
                 propertiesApp.getFILE_QUESTIONS(),
                 propertiesApp.getPATH_RESULT(),
                 propertiesApp.getFORMAT_RESULT(),
@@ -231,7 +230,7 @@ public class CheckingSkills {
                     answered = true;
                 }
 
-                if (questions.isVisibleAnswers() || !questions.isStarted()) { // подсказки
+                if (!questions.isStarted()) { // подсказки
                     arrRB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
@@ -245,7 +244,7 @@ public class CheckingSkills {
                     answered = true;
                 }
 
-                if (questions.isVisibleAnswers() || !questions.isStarted()) { // подсказки
+                if (!questions.isStarted()) { // подсказки
                     arrCB[i].setBackground(questions.get().getAnswer(i).getColor());
                 }
             }
