@@ -31,7 +31,7 @@ public class SaveResultJson implements SaveResult {
      * @param stoppingTime  - время окончания теста
      * @param theme        - тема
      * @param resultTXT    - результат тестирования
-     * @param wrongAnswersList - список вопросов на которые дан не верный ответ
+     * @param wrongAnswersList - список вопросов на которые дан неверный ответ
      */
     public void save(String path,
                      String fileName,

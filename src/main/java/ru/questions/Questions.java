@@ -354,7 +354,7 @@ public class Questions {
                         "Анализ ошибок:<br/>" +
                         "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
                         "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
-                        "<font color=\"#ff10010\">Не правильный выбор.</font><br/></html>";
+                        "<font color=\"#ff10010\">Неправильный выбор.</font><br/></html>";
                 resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
             }
 

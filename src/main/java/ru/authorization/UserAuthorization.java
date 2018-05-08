@@ -20,23 +20,23 @@ public class UserAuthorization implements UserAuthorizationI {
 
     private Connection connection = null;
     private HSqlDbConnection HSqlDbConnection = new HSqlDbConnection();
-    private StringBuilder messageError = new StringBuilder();
+    private StringBuilder errorMessage = new StringBuilder();
 
     public UserAuthorization(
             String hSqlPath,
             String hSqlDb,
             String login,
             String password,
-            Level level) {
+            Level loggerLevel) {
 
-        Configurator.setLevel(LOG.getName(), level);
+        Configurator.setLevel(LOG.getName(), loggerLevel);
 
         connection = HSqlDbConnection.getConnection(
                 hSqlPath,
                 hSqlDb,
                 login,
                 password,
-                level);
+                loggerLevel);
     }
 
     public void closeConnection() {
@@ -56,14 +56,14 @@ public class UserAuthorization implements UserAuthorizationI {
         return new String(Hex.encodeHex(digest));
     }
 
-    public String getMessageError() {
-        return messageError.toString();
+    public String getErrorMessage() {
+        return errorMessage.toString();
     }
 
     @Override
     public boolean isCorrectUser(String login, String password) {
         boolean res = false;
-        messageError.setLength(0);
+        errorMessage.setLength(0);
         if (login != null && !login.isEmpty()) {
            if (password != null && !password.isEmpty()) {
                PreparedStatement preparedStatement = null;
@@ -76,13 +76,13 @@ public class UserAuthorization implements UserAuthorizationI {
                            LOG.info("Успешная авторизация пользователя {}", login);
                            res = true;
                        } else {
-                           LOG.warn("Не верный пароль для пользователя {}", login);
-                           messageError.append("Не верный пароль для пользователя ")
+                           LOG.warn("Неверный пароль для пользователя {}", login);
+                           errorMessage.append("Неверный пароль для пользователя ")
                                    .append(login);
                        }
                    } else {
                        LOG.warn("Пользователь {} не зарегистрирован", login);
-                       messageError.append("Пользователь ")
+                       errorMessage.append("Пользователь ")
                                .append(login)
                                .append(" не зарегистрирован");
                    }
@@ -93,10 +93,10 @@ public class UserAuthorization implements UserAuthorizationI {
                    e.printStackTrace();
                }
            } else{
-               messageError.append("Необходимо указать пароль");
+               errorMessage.append("Необходимо указать пароль");
            }
         } else {
-            messageError.append("Необходимо указать пользователя");
+            errorMessage.append("Необходимо указать пользователя");
         }
         return res;
     }
@@ -104,7 +104,7 @@ public class UserAuthorization implements UserAuthorizationI {
     @Override
     public boolean userAdd(String login, String password, String password2) {
         boolean res = false;
-        messageError.setLength(0);
+        errorMessage.setLength(0);
 
         if (!password.isEmpty() & password.equals(password2)) {
             PreparedStatement preparedStatement = null;
@@ -114,7 +114,7 @@ public class UserAuthorization implements UserAuthorizationI {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
                     LOG.warn("Пользователь {} уже зарегистрирован", login);
-                    messageError.append("Пользователь ")
+                    errorMessage.append("Пользователь ")
                                 .append(login)
                                 .append(" уже зарегистрирован");
                 } else {
@@ -134,11 +134,11 @@ public class UserAuthorization implements UserAuthorizationI {
             }
         } else {
             if (password.isEmpty()){
-                messageError.append("Ошибка регистрации пользователя ")
+                errorMessage.append("Ошибка регистрации пользователя ")
                             .append(login)
                             .append(" : пароль не может быть пустым");
             } else {
-                messageError.append("Ошибка регистрации пользователя ")
+                errorMessage.append("Ошибка регистрации пользователя ")
                             .append(login)
                             .append(" : пароль и подтверждение не совпадают");
             }

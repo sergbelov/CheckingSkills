@@ -40,9 +40,9 @@ public class HSqlDbConnection {
             String hSqlDb,
             String login,
             String password,
-            Level level) {
+            Level loggerLevel) {
 
-        Configurator.setLevel(LOG.getName(), level);
+        Configurator.setLevel(LOG.getName(), loggerLevel);
 
         if (!isConnect()) {
             if (hSqlPath == null || hSqlPath.isEmpty()) {

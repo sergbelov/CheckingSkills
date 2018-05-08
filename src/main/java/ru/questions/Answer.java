@@ -45,7 +45,7 @@ public class Answer {
 
     public Color getColor(){
         if (selected && correct) { return green;}       // отмечен правильный вариант
-        else if (selected && !correct) {return red;}    // отмечен не правильный вариант
+        else if (selected && !correct) {return red;}    // отмечен неправильный вариант
         else if (correct && !selected) {return yellow;} // не отмечен правильный вариант
         else {return null;}
     }
@@ -53,7 +53,7 @@ public class Answer {
     public String getColorHTML(){
         Color color = new Color(255,255,255);
         if (selected && correct) { color = green;}      // отмечен правильный вариант
-        else if (selected && !correct) {color = red;}   // отмечен не правильный вариант
+        else if (selected && !correct) {color = red;}   // отмечен неправильный вариант
         else if (correct && !selected) {color = yellow;}// не отмечен правильный вариант
 
         return "#" + Integer.toHexString(color.getRGB()).substring(2).toLowerCase();
