@@ -112,10 +112,6 @@ public class PropertiesApp {
         }
     }
 
-    public static Logger getLOG() {
-        return LOG;
-    }
-
     public int getMAX_QUESTION() {
         return MAX_QUESTION;
     }
