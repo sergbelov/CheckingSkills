@@ -65,15 +65,13 @@ public class ReadQuestionsJson implements ReadQuestions {
             ) {
                 questionsJsonList = gson.fromJson(reader, new TypeToken<List<QuestionJson>>() {
                 }.getType());
+
             } catch (FileNotFoundException e) {
-                LOG.error("FileNotFoundException", e);
-                e.printStackTrace();
+                LOG.error(e);
             } catch (UnsupportedEncodingException e) {
-                LOG.error("UnsupportedEncodingException", e);
-                e.printStackTrace();
+                LOG.error(e);
             } catch (IOException e) {
-                LOG.error("IOException", e);
-                e.printStackTrace();
+                LOG.error(e);
             }
         }
         return questionsJsonList;

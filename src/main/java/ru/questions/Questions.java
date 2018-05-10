@@ -282,8 +282,7 @@ public class Questions {
                         bw.write(sbQuestions.toString());
                         bw.flush();
                     } catch (IOException e) {
-                        LOG.error("IOException", e);
-                        e.printStackTrace();
+                        LOG.error(e);
                     }
 
                 });

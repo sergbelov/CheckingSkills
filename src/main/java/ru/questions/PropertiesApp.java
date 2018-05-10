@@ -58,16 +58,16 @@ public class PropertiesApp {
                 Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
                 LOG.info("Параметры из файла {}\r\n"+
-                            "Максимальное количество задаваемых вопросов : {}\r\n" +
-                            "Файл с вопросами : {}\r\n" +
-                            "Путь для сохранения результатов тестирования : {}\r\n" +
-                            "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
-                            "Уровень логирования : {}\r\n" +
-                            "Самостоятельная регистрация пользователей : {}\r\n" +
-                            "HSQL путь к базе : {}\r\n" +
-                            "HSQL имя базы : {}\r\n" +
-                            "HSQL логин : {}\r\n" +
-                            "HSQL пароль : {}",
+                            "Максимальное количество задаваемых вопросов: {}\r\n" +
+                            "Файл с вопросами: {}\r\n" +
+                            "Путь для сохранения результатов тестирования: {}\r\n" +
+                            "Формат файла с результатами тестирования XML или JSON: {}\r\n" +
+                            "Уровень логирования: {}\r\n" +
+                            "Самостоятельная регистрация пользователей: {}\r\n" +
+                            "HSQL путь к базе: {}\r\n" +
+                            "HSQL имя базы: {}\r\n" +
+                            "HSQL логин: {}\r\n" +
+                            "HSQL пароль: {}",
                         fileName,
                         MAX_QUESTION,
                         FILE_QUESTIONS,
@@ -80,28 +80,24 @@ public class PropertiesApp {
                         HSQL_LOGIN,
                         HSQL_PASSWORD);
 
-            } catch (FileNotFoundException e) {
-                LOG.error("FileNotFoundException", e);
-                e.printStackTrace();
             } catch (IOException e) {
-                LOG.error("IOException", e);
-                e.printStackTrace();
+                LOG.error(e);
             }
         } else{
             Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
             LOG.warn("Не найден файл с параметрами {}\r\n" +
                         "Параметры по умолчанию:\r\n" +
-                        "Максимальное количество задаваемых вопросов : {}\r\n" +
-                        "Файл с вопросами : {}\r\n" +
-                        "Путь для сохранения результатов тестирования : {}\r\n" +
-                        "Формат файла с результатами тестирования XML или JSON : {}\r\n" +
-                        "Уровень логирования : {}\r\n" +
-                        "Самостоятельная регистрация пользователей : {}\r\n" +
-                        "HSQL путь к базе : {}\r\n" +
-                        "HSQL имя базы : {}\r\n" +
-                        "HSQL логин : {}\r\n" +
-                        "HSQL пароль : {}",
+                        "Максимальное количество задаваемых вопросов: {}\r\n" +
+                        "Файл с вопросами: {}\r\n" +
+                        "Путь для сохранения результатов тестирования: {}\r\n" +
+                        "Формат файла с результатами тестирования XML или JSON: {}\r\n" +
+                        "Уровень логирования: {}\r\n" +
+                        "Самостоятельная регистрация пользователей: {}\r\n" +
+                        "HSQL путь к базе: {}\r\n" +
+                        "HSQL имя базы: {}\r\n" +
+                        "HSQL логин: {}\r\n" +
+                        "HSQL пароль: {}",
                     fileName,
                     MAX_QUESTION,
                     FILE_QUESTIONS,
@@ -146,9 +142,7 @@ public class PropertiesApp {
         return HSQL_PATH;
     }
 
-    public String getHSQL_DB() {
-        return HSQL_DB;
-    }
+    public String getHSQL_DB() { return HSQL_DB; }
 
     public String getHSQL_LOGIN() {
         return HSQL_LOGIN;

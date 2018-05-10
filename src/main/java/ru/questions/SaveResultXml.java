@@ -95,8 +95,7 @@ public class SaveResultXml implements SaveResult {
             transformer.transform(source, streamResult);
 
         } catch (Exception e) {
-            LOG.error("Exception", e);
-            e.printStackTrace();
+            LOG.error(e);
         } finally {
             if (doc != null) doc = null;
 //            Runtime.getRuntime().gc(); // чистка памяти

@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.*;
 
 /**
@@ -14,24 +16,21 @@ public class HSqlDbConnection {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private final String driverName = "org.hsqldb.jdbcDriver";
     private Connection connection = null;
 
     private boolean loadDriver() {
-        String driverName = "org.hsqldb.jdbcDriver";
         try {
             Class.forName(driverName); //JDBCDriver
         } catch (ClassNotFoundException e) {
-            LOG.error("Ошибка при работе с драйвером {}: {}",
-                    driverName,
-                    e);
-//            e.printStackTrace();
+            LOG.error("Ошибка при работе с драйвером: {} ", driverName, e);
             return false;
         }
-        LOG.debug("{}", driverName);
+        LOG.debug("SQL Driver: {}", driverName);
         return true;
     }
 
-    public boolean isConnect() {
+    public boolean isConnection() {
         return connection == null ? false : true;
     }
 
@@ -44,7 +43,7 @@ public class HSqlDbConnection {
 
         Configurator.setLevel(LOG.getName(), loggerLevel);
 
-        if (!isConnect()) {
+        if (!isConnection()) {
             if (hSqlPath == null || hSqlPath.isEmpty()) {
                 hSqlPath = "hSQL";
             }
@@ -65,7 +64,7 @@ public class HSqlDbConnection {
 //                connection.setAutoCommit(false); // для обработки транзакций
 //                connection.commit();
 //                connection.rollback();
-                    LOG.debug("DriverManager.getConnection({}, {}, {})",
+                    LOG.debug("Подключение к базе данных: DriverManager.getConnection({}, {}, {})",
                             connectionString,
                             login,
                             password);
@@ -76,8 +75,8 @@ public class HSqlDbConnection {
                     LOG.error("Ошибка при подключении к базе данных: DriverManager.getConnection({}, {}, {})",
                             connectionString,
                             login,
-                            password);
-//            e.printStackTrace();
+                            password,
+                            e);
                     return null;
                 }
             }
@@ -86,40 +85,50 @@ public class HSqlDbConnection {
     }
 
     private void createTableUsers() {
-        try {
-            Statement statement = connection.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS users (" +
-                    "id IDENTITY, " +
-                    "login VARCHAR(25), " +
-                    "password VARCHAR(50))";
-            statement.executeUpdate(sql);
-            statement.close();
-            LOG.debug("{}", sql);
-        } catch (SQLException e) {
-            LOG.error(e);
-//            e.printStackTrace();
-        }
+        execUpdate("CREATE TABLE IF NOT EXISTS users (" +
+                "id IDENTITY, " +
+                "login VARCHAR(25), " +
+                "password VARCHAR(50))");
     }
 
-    public void closeConnection() {
+    public boolean closeConnection() {
+        boolean res = false;
 //            try {
-//                this.connection.rollback();
-//                this.connection.setAutoCommit(true);
+//                connection.rollback();
+//                connection.setAutoCommit(true);
 //            } catch (SQLException e) {
 //                e.printStackTrace();
 //            }
-
-        Statement statement;
-        try {
-            statement = connection.createStatement();
-            String sql = "SHUTDOWN";
-            statement.execute(sql);
+        if ((res = execUpdate("SHUTDOWN"))){
             connection = null;
-
-        } catch (SQLException e) {
-            LOG.error(e);
-//            e.printStackTrace();
         }
+        return res;
+    }
+
+    private boolean execUpdate(String sql) {
+        boolean res = false;
+        if (isConnection()) {
+            try {
+                Statement statement = connection.createStatement();
+                statement.execute(sql);
+                statement.close();
+                LOG.debug("{}", sql);
+                res = true;
+
+            } catch (SQLException e) {
+                LOG.error("{}", sql, e);
+            }
+        } else {
+            LOG.error("Отсутствует подключение к базе данных");
+        }
+        return res;
+    }
+
+    // StackTrace to String
+    private String stackTraceToString(Exception e) {
+        StringWriter error = new StringWriter();
+        e.printStackTrace(new PrintWriter(error));
+        return error.toString();
     }
 
 }

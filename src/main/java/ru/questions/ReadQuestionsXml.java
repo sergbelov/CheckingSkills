@@ -114,9 +114,8 @@ public class ReadQuestionsXml implements ReadQuestions{
                     }
                 }
 
-            } catch (ParserConfigurationException | SAXException | IOException ex) {
-                LOG.error("", ex);
-                ex.getStackTrace();
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                LOG.error(e);
             }
 
             // место нахождение файла с вопросами
@@ -142,10 +141,8 @@ public class ReadQuestionsXml implements ReadQuestions{
                 fw.write(json);
                 fw.flush();
             } catch (IOException e) {
-                LOG.error("IOException", e);
-                e.printStackTrace();
+                LOG.error(e);
             }
-            ;
         }
 
         return questionsJsonList;

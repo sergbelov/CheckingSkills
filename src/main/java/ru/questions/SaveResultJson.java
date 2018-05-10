@@ -67,15 +67,12 @@ public class SaveResultJson implements SaveResult {
                 JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
             ) {
                 resultTestList = gson.fromJson(reader, new TypeToken<List<ResultTest>>() {}.getType());
-            } catch (FileNotFoundException e) {
-                LOG.error("FileNotFoundException", e);
-                e.printStackTrace();
+            } catch (FileNotFoundException e ) {
+                LOG.error(e);
             } catch (UnsupportedEncodingException e) {
-                LOG.error("UnsupportedEncodingException", e);
-                e.printStackTrace();
+                LOG.error(e);
             } catch (IOException e) {
-                LOG.error("IOException", e);
-                e.printStackTrace();
+                LOG.error(e);
             }
         }
         resultTestList.add(resultTest);
@@ -89,8 +86,7 @@ public class SaveResultJson implements SaveResult {
             fw.write(json );
             fw.flush();
         } catch (IOException e) {
-            LOG.error("IOException", e);
-            e.printStackTrace();
+            LOG.error(e);
         };
 
     }
