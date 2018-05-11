@@ -17,10 +17,10 @@ public class PropertiesApp {
     private static final Logger LOG = LogManager.getLogger();
 
     // CheckingSkills.properties
-    private int     MAX_QUESTION = 10;                              // максимальное количество задаваемых вопросов
-    private String  FILE_QUESTIONS = "questions\\Questions.json";   // файл с вопросами
-    private String  PATH_RESULT = "result\\";                       // путь для сохранения результатов тестирования
-    private String  FORMAT_RESULT = "JSON";                         // формат файла с результатами тестирования XML или JSON
+    private int     QUESTION_MAX = 10;                              // максимальное количество задаваемых вопросов
+    private String  QUESTION_FILE = "questions\\Questions.json";    // файл с вопросами
+    private String  RESULT_PATH = "result\\";                       // путь для сохранения результатов тестирования
+    private String  RESULT_FORMAT = "JSON";                         // формат файла с результатами тестирования XML или JSON
     private Level   LOGGER_LEVEL = Level.WARN;                      // уровень логирования
     private String  HSQL_PATH = "C:\\TEMP\\questions\\HSQL\\";      // HSQL путь к базе
     private String  HSQL_DB = "DB_CheckingSkills";                  // HSQL имя базы
@@ -42,10 +42,10 @@ public class PropertiesApp {
                 Properties pr = new Properties();
                 pr.load(is);
 
-                this.MAX_QUESTION = Integer.parseInt(pr.getProperty("MAX_QUESTION", "10"));
-                this.FILE_QUESTIONS = pr.getProperty("FILE_QUESTIONS", "questions\\Questions.json");
-                this.PATH_RESULT = pr.getProperty("PATH_RESULT", "Result\\");
-                this.FORMAT_RESULT = pr.getProperty("FORMAT_RESULT", "JSON");
+                this.QUESTION_MAX = Integer.parseInt(pr.getProperty("QUESTION_MAX", "10"));
+                this.QUESTION_FILE = pr.getProperty("QUESTION_FILE", "questions\\Questions.json");
+                this.RESULT_PATH = pr.getProperty("RESULT_PATH", "Result\\");
+                this.RESULT_FORMAT = pr.getProperty("RESULT_FORMAT", "JSON");
                 this.LOGGER_LEVEL = Level.getLevel(pr.getProperty("LOGGER_LEVEL", "WARN"));
                 this.USER_REGISTRATION = Boolean.parseBoolean(pr.getProperty("USER_REGISTRATION", "false"));
 
@@ -69,10 +69,10 @@ public class PropertiesApp {
                             "HSQL логин: {}\r\n" +
                             "HSQL пароль: {}",
                         fileName,
-                        MAX_QUESTION,
-                        FILE_QUESTIONS,
-                        PATH_RESULT,
-                        FORMAT_RESULT,
+                        QUESTION_MAX,
+                        QUESTION_FILE,
+                        RESULT_PATH,
+                        RESULT_FORMAT,
                         LOGGER_LEVEL,
                         USER_REGISTRATION,
                         HSQL_PATH,
@@ -99,10 +99,10 @@ public class PropertiesApp {
                         "HSQL логин: {}\r\n" +
                         "HSQL пароль: {}",
                     fileName,
-                    MAX_QUESTION,
-                    FILE_QUESTIONS,
-                    PATH_RESULT,
-                    FORMAT_RESULT,
+                    QUESTION_MAX,
+                    QUESTION_FILE,
+                    RESULT_PATH,
+                    RESULT_FORMAT,
                     LOGGER_LEVEL,
                     USER_REGISTRATION,
                     HSQL_PATH,
@@ -112,20 +112,22 @@ public class PropertiesApp {
         }
     }
 
-    public int getMAX_QUESTION() {
-        return MAX_QUESTION;
+    public static Logger getLOG() {
+        return LOG;
     }
 
-    public String getFILE_QUESTIONS() {
-        return FILE_QUESTIONS;
+    public int getQUESTION_MAX() { return QUESTION_MAX; }
+
+    public String getQUESTION_FILE() {
+        return QUESTION_FILE;
     }
 
-    public String getPATH_RESULT() {
-        return PATH_RESULT;
+    public String getRESULT_PATH() {
+        return RESULT_PATH;
     }
 
-    public String getFORMAT_RESULT() {
-        return FORMAT_RESULT;
+    public String getRESULT_FORMAT() {
+        return RESULT_FORMAT;
     }
 
     public Level getLOGGER_LEVEL() {

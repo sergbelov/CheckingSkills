@@ -21,14 +21,14 @@ public class Questions {
     private static final Logger LOG = LogManager.getLogger();
 
     // CheckingSkills.properties
-    private int     MAX_QUESTION = 10;                          // максимальное количество задаваемых вопросов
-    private String  FILE_QUESTIONS = "questions\\Questions.json";// файл с вопросами
-    private String  PATH_RESULT = "result\\";                   // путь для сохранения результатов тестирования
-    private String  FORMAT_RESULT = "JSON";                     // формат файла с результатами тестирования XML или JSON
+    private int     QUESTION_MAX = 10;                          // максимальное количество задаваемых вопросов
+    private String  QUESTION_FILE = "questions\\Questions.json";// файл с вопросами
+    private String  RESULT_PATH = "result\\";                   // путь для сохранения результатов тестирования
+    private String  RESULT_FORMAT = "JSON";                     // формат файла с результатами тестирования XML или JSON
     private Level   LOGGER_LEVEL = Level.WARN;                  // уровень логирования
 
     private String theme;                                       // текущая тема
-    private int maxQuestion;                                    // максимальное количество задаваемых вопросов с учетом имеющихся по теме
+    private int questionMax;                                    // максимальное количество задаваемых вопросов с учетом имеющихся по теме
     private int questionNum;                                    // номер текущего вопроса
     private List<String> themesList = new ArrayList<>();        // список тем
     private List<QuestionJson> questionsJsonList;               // полный список вопросов (все темы)
@@ -37,8 +37,8 @@ public class Questions {
     private String user = System.getProperty("user.name");      // текущий пользователь
     private long startingTime = 0;                              // время начала теста
 
-    private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (FILE_QUESTIONS расширение))
-    private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (FORMAT_RESULT))
+    private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (QUESTION_FILE расширение))
+    private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (RESULT_FORMAT))
 
 
     /**
@@ -54,26 +54,26 @@ public class Questions {
     public String getUser() { return user; }
 
     /**
-     * Устанавливаем параметры, читаем вопросы из файла FILE_QUESTIONS
+     * Устанавливаем параметры, читаем вопросы из файла QUESTION_FILE
      *
-     * @param MAX_QUESTION          // максимальное количество задаваемых вопросов
-     * @param FILE_QUESTIONS        // файл с вопросами
-     * @param PATH_RESULT           // путь для сохранения результатов тестирования
-     * @param FORMAT_RESULT         // формат файла с результатами тестирования XML или JSON
+     * @param QUESTION_MAX          // максимальное количество задаваемых вопросов
+     * @param QUESTION_FILE        // файл с вопросами
+     * @param RESULT_PATH           // путь для сохранения результатов тестирования
+     * @param RESULT_FORMAT         // формат файла с результатами тестирования XML или JSON
      * @param LOGGER_LEVEL          // уровень логирования
      */
     public void readQuestions(
-            int     MAX_QUESTION,
-            String  FILE_QUESTIONS,
-            String  PATH_RESULT,
-            String  FORMAT_RESULT,
+            int     QUESTION_MAX,
+            String  QUESTION_FILE,
+            String  RESULT_PATH,
+            String  RESULT_FORMAT,
             Level   LOGGER_LEVEL) {
 
-        this.MAX_QUESTION = MAX_QUESTION;
-        this.FILE_QUESTIONS = FILE_QUESTIONS;
-        this.PATH_RESULT = PATH_RESULT;
-        this.FORMAT_RESULT = FORMAT_RESULT;
-        this.LOGGER_LEVEL = LOGGER_LEVEL;
+        this.QUESTION_MAX   = QUESTION_MAX;
+        this.QUESTION_FILE  = QUESTION_FILE;
+        this.RESULT_PATH    = RESULT_PATH;
+        this.RESULT_FORMAT  = RESULT_FORMAT;
+        this.LOGGER_LEVEL   = LOGGER_LEVEL;
 
         Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
@@ -81,9 +81,9 @@ public class Questions {
         if (themesList != null) themesList.clear();
 
         // тип файла с вопросами
-        if (FILE_QUESTIONS.toUpperCase().endsWith(".XML")) {
+        if (QUESTION_FILE.toUpperCase().endsWith(".XML")) {
             readQuestions = new ReadQuestionsXml();
-        } else if (FILE_QUESTIONS.toUpperCase().endsWith(".JSON")) {
+        } else if (QUESTION_FILE.toUpperCase().endsWith(".JSON")) {
             readQuestions = new ReadQuestionsJson();
         } else{
             readQuestions = null;
@@ -91,7 +91,7 @@ public class Questions {
 
         if (readQuestions != null) {
             // список вопросов (все темы)
-            questionsJsonList = new ArrayList<>(readQuestions.read(FILE_QUESTIONS, LOGGER_LEVEL));
+            questionsJsonList = new ArrayList<>(readQuestions.read(QUESTION_FILE, LOGGER_LEVEL));
 
             // список тем
             if (questionsJsonList != null && !questionsJsonList.isEmpty()) {
@@ -109,9 +109,9 @@ public class Questions {
                         .forEach(x -> themes.append("\r\n").append(x));
                 LOG.debug("Имеются вопросы по следующим темам:{}", themes.toString());
 
-//                saveQuestionsGroupByThemes(PATH_RESULT, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
+//                saveQuestionsGroupByThemes(RESULT_PATH, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
             } else {
-                LOG.error("Ошибка при чтении вопросов из файла {}", FILE_QUESTIONS);
+                LOG.error("Ошибка при чтении вопросов из файла {}", QUESTION_FILE);
             }
         } else{
             LOG.error("Файл с вопросами имеет недопустимый формат (возможны JSON или XML)");
@@ -121,13 +121,13 @@ public class Questions {
     /**
      * Задаем текущую тему
      *      Максимально количество задаваемых вопросов
-     *      (равно количеству вопросов по теме, но не более MAX_QUESTION)
+     *      (равно количеству вопросов по теме, но не более QUESTION_MAX)
      *
      * @param theme
      */
     public void setTheme(String theme) {
         this.theme = theme;
-        maxQuestion = Math.min(getCountQuestionsInTheme(theme), MAX_QUESTION);
+        questionMax = Math.min(getCountQuestionsInTheme(theme), QUESTION_MAX);
     }
 
     /**
@@ -142,7 +142,7 @@ public class Questions {
      *
      * @return
      */
-    public int getMaxQuestion() { return maxQuestion; }
+    public int getQuestionMax() { return questionMax; }
 
     /**
      * Количество вопросов по теме
@@ -207,7 +207,7 @@ public class Questions {
      * Переход к следующему вопросу
      */
     public void nextQuestion() {
-        if (questionNum < maxQuestion - 1) questionNum++;
+        if (questionNum < questionMax - 1) questionNum++;
     }
 
     /**
@@ -225,7 +225,7 @@ public class Questions {
      * @return
      */
     public boolean isLastQuestion() {
-        return questionNum == (maxQuestion - 1);
+        return questionNum == (questionMax - 1);
     }
 
     /**
@@ -297,13 +297,13 @@ public class Questions {
         questionsList.clear();
         List<Answer> answersList = new ArrayList<>();
 
-        // выберем maxQuestion случайных вопросов по текущей теме
+        // выберем questionMax случайных вопросов по текущей теме
         Random random = new Random();
         IntStream
             .generate(() -> random.nextInt(questionsJsonList.size()))
             .distinct()
             .filter(n -> questionsJsonList.get(n).getTheme().equals(theme))
-            .limit(maxQuestion)
+            .limit(questionMax)
             .forEach(q -> {
                 for (String a : questionsJsonList.get(q).getAnswersTrue()){
                     answersList.add(new Answer(a, true, false));
@@ -336,26 +336,39 @@ public class Questions {
      */
     public String stop() {
         if (startingTime > 0) {
-            String message, resultTXT;
+            StringBuilder message = new StringBuilder();
+            StringBuilder resultTXT = new StringBuilder();
             int countError = getCountNotCorrectAnswers();
-            int correctAnswer = getMaxQuestion() - countError;
-            int correctAnswerProc = correctAnswer * 100 / getMaxQuestion();
+            int correctAnswer = getQuestionMax() - countError;
+            int correctAnswerProc = correctAnswer * 100 / getQuestionMax();
 
             if (countError == 0) { // ошибок нет
-                message = "<html>Отличная работа!<br/>Примите поздравления!</html>";
-                resultTXT = "Отлично!!! (" + correctAnswer + " из " + getMaxQuestion() + ")";
+                message.append("<html>Отлично!");
+                resultTXT.append("Отлично! ");
 
             } else { // ошибки есть
-                message = "<html>Имеются ошибки.<br/>" +
-                        "Дан верный ответ на " + correctAnswer +
-                        " из " + getMaxQuestion() +
-                        " ( " + correctAnswerProc + "% )<br/><br/>" +
-                        "Анализ ошибок:<br/>" +
-                        "<font color=\"#10aa10\">Правильный выбор;</font> <br/>" +
-                        "<font color=\"#ffb000\">Нужно было выбрать;</font><br/>" +
-                        "<font color=\"#ff10010\">Неправильный выбор.</font><br/></html>";
-                resultTXT = "(" + correctAnswer + " из " + getMaxQuestion() + ") " + correctAnswerProc + "%";
+                message.append("<html>Имеются ошибки!<br>")
+                        .append("Анализ: ")
+                        .append("<font color=\"#10aa10\">правильный выбор; </font>")
+                        .append("<font color=\"#ffb000\">нужно было выбрать; </font>")
+                        .append("<font color=\"#ff10010\">неправильный выбор</font>.");
+                resultTXT.append("Имеются ошибки! ");
             }
+            message.append("<br/>Дан верный ответ на ")
+                    .append(correctAnswer)
+                    .append(" из ")
+                    .append(getQuestionMax())
+                    .append(" (")
+                    .append(correctAnswerProc)
+                    .append("%)<br/></html>");
+
+            resultTXT.append("Дан верный ответ на ")
+                    .append(correctAnswer)
+                    .append(" из ")
+                    .append(getQuestionMax())
+                    .append(" (")
+                    .append(correctAnswerProc)
+                    .append("%)");
 
             // результат тестирования в лог-файл
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -376,7 +389,7 @@ public class Questions {
 
             // сохраняем результат тестирования
             String fileResultName = "";
-            switch (FORMAT_RESULT.toUpperCase()) {
+            switch (RESULT_FORMAT.toUpperCase()) {
                 case "XML":
                     fileResultName = "result.xml";
                     saveResult = new SaveResultXml();
@@ -393,20 +406,20 @@ public class Questions {
 
             if (saveResult != null) {
                 saveResult.save(
-                        PATH_RESULT,
+                        RESULT_PATH,
                         fileResultName,
                         user,
                         startingTime,
                         System.currentTimeMillis(),
                         getTheme(),
-                        resultTXT,
+                        resultTXT.toString(),
                         wrongAnswersList);
             } else {
                 LOG.warn("Указан недопустимый формат для сохранения результатов тестирования (возможны JSON или XML); Результат тестирования не сохранен!");
             }
 
             startingTime = 0;
-            return message;
+            return message.toString();
         } else {
             return "";
         }

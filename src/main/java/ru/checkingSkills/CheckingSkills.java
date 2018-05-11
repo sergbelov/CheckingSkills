@@ -157,10 +157,10 @@ public class CheckingSkills {
         propertiesApp.readProperties(FILE_PROPERTIES); // параметры из файла
 
         questions.readQuestions(
-                propertiesApp.getMAX_QUESTION(),
-                propertiesApp.getFILE_QUESTIONS(),
-                propertiesApp.getPATH_RESULT(),
-                propertiesApp.getFORMAT_RESULT(),
+                propertiesApp.getQUESTION_MAX(),
+                propertiesApp.getQUESTION_FILE(),
+                propertiesApp.getRESULT_PATH(),
+                propertiesApp.getRESULT_FORMAT(),
                 propertiesApp.getLOGGER_LEVEL()); // читаем вопросы из файла
 
         if (questions.getThemesList().size() > 0) {
@@ -259,7 +259,7 @@ public class CheckingSkills {
         bPrevQuestion.setEnabled(!questions.isFirstQuestion()); // первый вопрос ?
         bNextQuestion.setEnabled(!questions.isLastQuestion());  // последний вопрос ?
 
-        mainFrame.setTitle("Проверка знаний (" + (questions.getQuestionNum() + 1) + " из " + questions.getMaxQuestion() + ")");
+        mainFrame.setTitle("Проверка знаний (" + (questions.getQuestionNum() + 1) + " из " + questions.getQuestionMax() + ")");
 
         p2.repaint();
     }
