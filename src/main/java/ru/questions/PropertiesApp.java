@@ -54,7 +54,6 @@ public class PropertiesApp {
                 this.HSQL_LOGIN = pr.getProperty("HSQL_LOGIN", "admin");
                 this.HSQL_PASSWORD = pr.getProperty("HSQL_PASSWORD", "admin");
 
-
                 Configurator.setLevel(LOG.getName(), LOGGER_LEVEL);
 
                 LOG.info("Параметры из файла {}\r\n"+
@@ -112,15 +111,9 @@ public class PropertiesApp {
         }
     }
 
-    public static Logger getLOG() {
-        return LOG;
-    }
-
     public int getQUESTION_MAX() { return QUESTION_MAX; }
 
-    public String getQUESTION_FILE() {
-        return QUESTION_FILE;
-    }
+    public String getQUESTION_FILE() { return QUESTION_FILE; }
 
     public String getRESULT_PATH() {
         return RESULT_PATH;
