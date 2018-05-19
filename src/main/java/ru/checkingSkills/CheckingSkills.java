@@ -6,6 +6,7 @@ import ru.questions.Questions;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.*;
 
@@ -18,13 +19,13 @@ public class CheckingSkills {
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
     final String FILE_PROPERTIES = "CheckingSkills.properties";
 
-    PropertiesService propertiesService = new PropertiesService(new HashMap<String, String>(){{
+    PropertiesService propertiesService = new PropertiesService(new LinkedHashMap<String, String>(){{
         put("QUESTION_MAX",    "10");                          // максимальное количество задаваемых вопросов
-        put("QUESTION_FILE",   "questions\\Questions.json");   // файл с вопросами
-        put("RESULT_PATH",     "result\\");                    // путь для сохранения результатов тестирования
+        put("QUESTION_FILE",   "questions/Questions.json");   // файл с вопросами
+        put("RESULT_PATH",     "result/");                    // путь для сохранения результатов тестирования
         put("RESULT_FORMAT",   "JSON");                        // формат файла с результатами тестирования XML или JSON
         put("LOGGER_LEVEL",    "WARN");                        // уровень логирования
-        put("HSQL_PATH",       "C:\\TEMP\\questions\\HSQL\\"); // HSQL путь к базе
+        put("HSQL_PATH",       "C:/TEMP/questions/HSQL/"); // HSQL путь к базе
         put("HSQL_DB",         "DB_CheckingSkills");           // HSQL имя базы
         put("HSQL_LOGIN",      "admin");                       // HSQL логин
         put("HSQL_PASSWORD",   "admin");                       // HSQL пароль
@@ -49,8 +50,8 @@ public class CheckingSkills {
 
     public CheckingSkills() {
 //        System.out.println(System.getProperty("user.name"));
-//        currPath = new File("").getAbsolutePath()+"\\";
-//        currPath = System.getProperty("user.dir")+"\\";
+//        currPath = new File("").getAbsolutePath()+"/";
+//        currPath = System.getProperty("user.dir")+"/";
 //        JOptionPane.showMessageDialog(null, currPath);
 
 //        questions.readQuestions(FILE_PROPERTIES);

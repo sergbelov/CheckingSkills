@@ -45,14 +45,14 @@ public class PropertiesService {
                 LOG.error(e);
             }
         } else {
-            report.append("Не найден файл с параметрами ").append(fileName).append("\r\nПараметры по умолчанию:");
+            report.append("Не найден файл с параметрами ").append(fileName).append("\r\n\tПараметры по умолчанию:");
         }
 
         // параметры со значениями
         propertyMap
                 .entrySet()
                 .stream()
-                .sorted(comparingByKey())
+//                .sorted(comparingByKey())
                 .forEach(x -> {
                     report.append("\r\n\t")
                             .append(x.getKey())
