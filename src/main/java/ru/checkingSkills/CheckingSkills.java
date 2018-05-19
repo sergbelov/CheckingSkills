@@ -1,10 +1,12 @@
 package ru.checkingSkills;
 
-import ru.questions.PropertiesApp;
+import ru.questions.PropertiesService;
 import ru.questions.Question;
 import ru.questions.Questions;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 
 /**
@@ -16,7 +18,18 @@ public class CheckingSkills {
     final int maxAnswer = 6; // максимальное количество вариантов ответов на форме
     final String FILE_PROPERTIES = "CheckingSkills.properties";
 
-    PropertiesApp propertiesApp = new PropertiesApp();
+    PropertiesService propertiesService = new PropertiesService(new HashMap<String, String>(){{
+        put("QUESTION_MAX",    "10");                          // максимальное количество задаваемых вопросов
+        put("QUESTION_FILE",   "questions\\Questions.json");   // файл с вопросами
+        put("RESULT_PATH",     "result\\");                    // путь для сохранения результатов тестирования
+        put("RESULT_FORMAT",   "JSON");                        // формат файла с результатами тестирования XML или JSON
+        put("LOGGER_LEVEL",    "WARN");                        // уровень логирования
+        put("HSQL_PATH",       "C:\\TEMP\\questions\\HSQL\\"); // HSQL путь к базе
+        put("HSQL_DB",         "DB_CheckingSkills");           // HSQL имя базы
+        put("HSQL_LOGIN",      "admin");                       // HSQL логин
+        put("HSQL_PASSWORD",   "admin");                       // HSQL пароль
+        put("USER_REGISTRATION","false");                      // Самостоятельная регистрация пользователей
+    }});
     Questions questions = new Questions();; // список вопросов с ответами
 
     JComboBox cbTheme;
@@ -154,14 +167,14 @@ public class CheckingSkills {
 //        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 //        System.out.println(stackTraceElements[2].getMethodName());
 
-        propertiesApp.readProperties(FILE_PROPERTIES); // параметры из файла
+        propertiesService.readProperties(FILE_PROPERTIES); // параметры из файла
 
         questions.readQuestions(
-                propertiesApp.getQUESTION_MAX(),
-                propertiesApp.getQUESTION_FILE(),
-                propertiesApp.getRESULT_PATH(),
-                propertiesApp.getRESULT_FORMAT(),
-                propertiesApp.getLOGGER_LEVEL()); // читаем вопросы из файла
+                propertiesService.getInt("QUESTION_MAX"),
+                propertiesService.getString("QUESTION_FILE"),
+                propertiesService.getString("RESULT_PATH"),
+                propertiesService.getString("RESULT_FORMAT"),
+                propertiesService.getLevel("LOGGER_LEVEL")); // читаем вопросы из файла
 
         if (questions.getThemesList().size() > 0) {
             String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему
