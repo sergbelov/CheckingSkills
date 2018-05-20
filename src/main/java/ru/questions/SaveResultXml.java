@@ -50,8 +50,9 @@ public class SaveResultXml implements SaveResult {
 
         File file = new File(path);
         file.mkdirs();
-//        file = new File(path + System.getProperty("user.name") + ".xml"); //
-        file = new File(path + fileName); //
+//        file = new File(path + System.getProperty("user.name") + ".xml");
+        file = new File(path, fileName); //
+        LOG.debug("Сохранение результата тестирования в файл {}", file);
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -93,8 +94,6 @@ public class SaveResultXml implements SaveResult {
             //записываем данные
 //            transformer.transform(source, console);
             transformer.transform(source, streamResult);
-
-            LOG.debug("Сохранение результата тестирования в файл {}", file);
 
         } catch (Exception e) {
             LOG.error(e);

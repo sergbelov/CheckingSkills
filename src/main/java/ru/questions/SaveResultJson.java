@@ -60,7 +60,9 @@ public class SaveResultJson implements SaveResult {
 
         File file = new File(path);
         file.mkdirs();
-        file = new File(path + fileName);
+        file = new File(path, fileName);
+        LOG.debug("Сохранение результата тестирования в файл {}", file);
+
         if (file.exists()) {
             try(
 //                JsonReader reader = new JsonReader(new FileReader(file.toString()));
@@ -85,7 +87,6 @@ public class SaveResultJson implements SaveResult {
         ) {
             fw.write(json );
             fw.flush();
-            LOG.debug("Сохранение результата тестирования в файл {}", file);
         } catch (IOException e) {
             LOG.error(e);
         };
