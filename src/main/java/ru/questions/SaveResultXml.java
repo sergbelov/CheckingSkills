@@ -94,6 +94,8 @@ public class SaveResultXml implements SaveResult {
 //            transformer.transform(source, console);
             transformer.transform(source, streamResult);
 
+            LOG.debug("Сохранение результата тестирования в файл {}", file);
+
         } catch (Exception e) {
             LOG.error(e);
         } finally {

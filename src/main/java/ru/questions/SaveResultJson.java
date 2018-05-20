@@ -85,6 +85,7 @@ public class SaveResultJson implements SaveResult {
         ) {
             fw.write(json );
             fw.flush();
+            LOG.debug("Сохранение результата тестирования в файл {}", file);
         } catch (IOException e) {
             LOG.error(e);
         };

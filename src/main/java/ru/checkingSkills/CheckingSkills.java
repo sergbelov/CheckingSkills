@@ -20,16 +20,16 @@ public class CheckingSkills {
     final String FILE_PROPERTIES = "CheckingSkills.properties";
 
     PropertiesService propertiesService = new PropertiesService(new LinkedHashMap<String, String>(){{
-        put("QUESTION_MAX",    "10");                          // максимальное количество задаваемых вопросов
-        put("QUESTION_FILE",   "questions/Questions.json");   // файл с вопросами
-        put("RESULT_PATH",     "result/");                    // путь для сохранения результатов тестирования
-        put("RESULT_FORMAT",   "JSON");                        // формат файла с результатами тестирования XML или JSON
-        put("LOGGER_LEVEL",    "WARN");                        // уровень логирования
+        put("QUESTION_MAX",    "10");                      // максимальное количество задаваемых вопросов
+        put("QUESTION_FILE",   "questions/Questions.json");// файл с вопросами
+        put("RESULT_PATH",     "result/");                 // путь для сохранения результатов тестирования
+        put("RESULT_FORMAT",   "JSON");                    // формат файла с результатами тестирования XML или JSON
+        put("LOGGER_LEVEL",    "WARN");                    // уровень логирования
         put("HSQL_PATH",       "C:/TEMP/questions/HSQL/"); // HSQL путь к базе
-        put("HSQL_DB",         "DB_CheckingSkills");           // HSQL имя базы
-        put("HSQL_LOGIN",      "admin");                       // HSQL логин
-        put("HSQL_PASSWORD",   "admin");                       // HSQL пароль
-        put("USER_REGISTRATION","false");                      // Самостоятельная регистрация пользователей
+        put("HSQL_DB",         "DB_CheckingSkills");       // HSQL имя базы
+        put("HSQL_LOGIN",      "admin");                   // HSQL логин
+        put("HSQL_PASSWORD",   "admin");                   // HSQL пароль
+        put("USER_REGISTRATION","false");                  // Самостоятельная регистрация пользователей
     }});
     Questions questions = new Questions();; // список вопросов с ответами
 
@@ -175,7 +175,7 @@ public class CheckingSkills {
                 propertiesService.getString("QUESTION_FILE"),
                 propertiesService.getString("RESULT_PATH"),
                 propertiesService.getString("RESULT_FORMAT"),
-                propertiesService.getLevel("LOGGER_LEVEL")); // читаем вопросы из файла
+                propertiesService.getLevel("LOGGER_LEVEL")); // чтение вопросов из файла
 
         if (questions.getThemesList().size() > 0) {
             String curTheme = (String) cbTheme.getSelectedItem(); // запоминаем текущую тему

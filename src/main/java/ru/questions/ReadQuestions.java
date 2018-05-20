@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Level;
 
 /**
  * @author Белов Сергей
- * Читаем вопросы из файла
+ * Чтение вопросов из файла
  */
 public interface ReadQuestions {
     List<QuestionJson> read(String fileName, Level level);

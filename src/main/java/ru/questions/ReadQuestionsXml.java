@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * @author Белов Сергей
- * Читаем вопросы из XML-файла
+ * Чтение вопросов из XML-файла
  */
 public class ReadQuestionsXml implements ReadQuestions{
 
@@ -35,7 +35,7 @@ public class ReadQuestionsXml implements ReadQuestions{
     private List<String> answersFalse = new ArrayList<>();
 
     /**
-     * Читаем вопросы из файла
+     * Чтение вопросов из файла
      *
      * @param fileXML
      * @param level
@@ -65,7 +65,7 @@ public class ReadQuestionsXml implements ReadQuestions{
             }
 */
         } else {
-            LOG.debug("Читаем вопросы из файла {}", fileXML);
+            LOG.debug("Чтение вопросов из файла {}", fileXML);
 
             try {
                 // Строим объектную модель исходного XML файла

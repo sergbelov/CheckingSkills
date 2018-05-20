@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author Белов Сергей
- *         Читаем вопросы из Json-файла
+ * Чтение вопросов из Json-файла
  */
 public class ReadQuestionsJson implements ReadQuestions {
 
@@ -24,7 +24,7 @@ public class ReadQuestionsJson implements ReadQuestions {
     private List<QuestionJson> questionsJsonList = new ArrayList<>(); // полный список вопросов (все темы)
 
     /**
-     * Читаем вопросы из файла
+     * Чтение вопросов из файла
      *
      * @param fileJson
      * @param level
@@ -54,7 +54,7 @@ public class ReadQuestionsJson implements ReadQuestions {
             }
 */
         } else {
-            LOG.debug("Читаем вопросы из файла {}", fileJson);
+            LOG.debug("Чтение вопросов из файла {}", fileJson);
 
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()

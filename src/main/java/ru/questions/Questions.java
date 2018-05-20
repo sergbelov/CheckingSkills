@@ -37,7 +37,7 @@ public class Questions {
     private String user = System.getProperty("user.name");      // текущий пользователь
     private long startingTime = 0;                              // время начала теста
 
-    private ReadQuestions readQuestions; // читаем вопросы из файла (XML/JSON задается в properties (QUESTION_FILE расширение))
+    private ReadQuestions readQuestions; // чтение вопросов из файла (XML/JSON задается в properties (QUESTION_FILE расширение))
     private SaveResult saveResult;       // запись результатов тестирования в файл (XML/JSON задается в properties (RESULT_FORMAT))
 
 
@@ -56,11 +56,11 @@ public class Questions {
     /**
      * Устанавливаем параметры, читаем вопросы из файла QUESTION_FILE
      *
-     * @param QUESTION_MAX          // максимальное количество задаваемых вопросов
-     * @param QUESTION_FILE        // файл с вопросами
-     * @param RESULT_PATH           // путь для сохранения результатов тестирования
-     * @param RESULT_FORMAT         // формат файла с результатами тестирования XML или JSON
-     * @param LOGGER_LEVEL          // уровень логирования
+     * @param QUESTION_MAX  // максимальное количество задаваемых вопросов
+     * @param QUESTION_FILE // файл с вопросами
+     * @param RESULT_PATH   // путь для сохранения результатов тестирования
+     * @param RESULT_FORMAT // формат файла с результатами тестирования XML или JSON
+     * @param LOGGER_LEVEL  // уровень логирования
      */
     public void readQuestions(
             int     QUESTION_MAX,
@@ -106,7 +106,7 @@ public class Questions {
                 StringBuilder themes = new StringBuilder();
                 themesList
                         .stream()
-                        .forEach(x -> themes.append("\r\n").append(x));
+                        .forEach(x -> themes.append("\r\n\t").append(x));
                 LOG.debug("Имеются вопросы по следующим темам:{}", themes.toString());
 
 //                saveQuestionsGroupByThemes(RESULT_PATH, "Cp1251"); // сохраним вопросы с правильными вариантами ответов в файлы (по темам)
