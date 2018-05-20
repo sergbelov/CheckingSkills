@@ -30,6 +30,7 @@ public class PropertiesService {
 
     public void readProperties(String fileName) {
         StringBuilder report = new StringBuilder();
+        report.append("Параметры из файла ").append(fileName).append(":");
         boolean fileExists = false;
         File file = new File(fileName);
         if (file.exists()) { // найден файл с параметрами
@@ -39,13 +40,12 @@ public class PropertiesService {
                 for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
                     propertyMap.put(entry.getKey(), pr.getProperty(entry.getKey(), entry.getValue()));
                 }
-                report.append("Параметры из файла ").append(fileName).append(":");
                 fileExists = true;
             } catch (IOException e) {
                 LOG.error(e);
             }
         } else {
-            report.append("Не найден файл с параметрами ").append(fileName).append("\r\n\tПараметры по умолчанию:");
+            report.append("\r\n\tФайл не найден, параметры по умолчанию:");
         }
 
         // параметры со значениями
@@ -76,15 +76,16 @@ public class PropertiesService {
     }
 
     public Date getDate(String propertyName) {
-        return getDate(propertyName, new SimpleDateFormat("dd/MM/yyyy"));
+        return getDate(propertyName, "dd/MM/yyyy");
     }
 
-    public Date getDate(String propertyName, SimpleDateFormat simpleDateFormat) {
+    public Date getDate(String propertyName, String dateFormat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         Date date = null;
         try {
             date = simpleDateFormat.parse(propertyMap.get(propertyName));
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
         return date;
     }
