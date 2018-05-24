@@ -125,7 +125,7 @@ public class Questions {
      *
      * @param theme
      */
-    public void setTheme(String theme) {
+    private void setTheme(String theme) {
         this.theme = theme;
         questionMax = Math.min(getCountQuestionsInTheme(theme), QUESTION_MAX);
     }
@@ -291,41 +291,42 @@ public class Questions {
     /**
      * Начинаем тестирование
      */
-    public void start() {
+    public void start(String theme) {
+        if (theme != null && !theme.isEmpty() && startingTime == 0) {
+            setTheme(theme);
+            questionNum = 0;
+            questionsList.clear();
+            List<Answer> answersList = new ArrayList<>();
 
-        questionNum = 0;
-        questionsList.clear();
-        List<Answer> answersList = new ArrayList<>();
+            // выберем questionMax случайных вопросов по текущей теме
+            Random random = new Random();
+            IntStream
+                    .generate(() -> random.nextInt(questionsJsonList.size()))
+                    .distinct()
+                    .filter(n -> questionsJsonList.get(n).getTheme().equals(theme))
+                    .limit(questionMax)
+                    .forEach(q -> {
+                        for (String a : questionsJsonList.get(q).getAnswersTrue()) {
+                            answersList.add(new Answer(a, true, false));
+                        }
+                        for (String a : questionsJsonList.get(q).getAnswersFalse()) {
+                            answersList.add(new Answer(a, false, false));
+                        }
+                        questionsList.add(
+                                new Question(
+                                        questionsJsonList.get(q).getAuthor(),
+                                        questionsJsonList.get(q).getTheme(),
+                                        questionsJsonList.get(q).getQuestion(),
+                                        answersList));
 
-        // выберем questionMax случайных вопросов по текущей теме
-        Random random = new Random();
-        IntStream
-            .generate(() -> random.nextInt(questionsJsonList.size()))
-            .distinct()
-            .filter(n -> questionsJsonList.get(n).getTheme().equals(theme))
-            .limit(questionMax)
-            .forEach(q -> {
-                for (String a : questionsJsonList.get(q).getAnswersTrue()){
-                    answersList.add(new Answer(a, true, false));
-                }
-                for (String a : questionsJsonList.get(q).getAnswersFalse()){
-                    answersList.add(new Answer(a, false, false));
-                }
-                questionsList.add(
-                        new Question(
-                                questionsJsonList.get(q).getAuthor(),
-                                questionsJsonList.get(q).getTheme(),
-                                questionsJsonList.get(q).getQuestion(),
-                                answersList));
+                        answersList.clear();
+                    });
 
-                answersList.clear();
-            });
-
-        startingTime = System.currentTimeMillis();  // время старта
-
-        LOG.info("Пользователь {} начал тестирование по теме {}",
-                user,
-                theme);
+            startingTime = System.currentTimeMillis();  // время старта
+            LOG.info("Пользователь {} начал тестирование по теме {}",
+                    user,
+                    theme);
+        }
     }
 
     /**
@@ -334,9 +335,18 @@ public class Questions {
      *
      * @return
      */
+    public String stop(boolean saveResult){
+        if (saveResult) {
+            return  stop();
+        } else {
+            startingTime = 0;
+            return "";
+        }
+    }
+
     public String stop() {
+        StringBuilder message = new StringBuilder();
         if (startingTime > 0) {
-            StringBuilder message = new StringBuilder();
             StringBuilder resultTXT = new StringBuilder();
             int countError = getCountNotCorrectAnswers();
             int correctAnswer = getQuestionMax() - countError;
@@ -378,8 +388,10 @@ public class Questions {
                     .stream()
                     .filter(q -> !q.isAnswerCorrect())
                     .map(q -> q.getQuestion())
-                    .forEach(q -> { wrongAnswersList.add(q);
-                                    wrongAnswers.append("\r\n").append(q);});
+                    .forEach(q -> {
+                        wrongAnswersList.add(q);
+                        wrongAnswers.append("\r\n\t").append(q);
+                    });
 
             LOG.info("Пользователь {} завершил тестирование по теме {}; Результат: {}{}",
                     user,
@@ -419,10 +431,8 @@ public class Questions {
             }
 
             startingTime = 0;
-            return message.toString();
-        } else {
-            return "";
         }
+        return message.toString();
     }
 
     public boolean isStarted() { return startingTime > 0 ? true : false; }

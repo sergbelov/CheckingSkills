@@ -93,7 +93,8 @@ public class CheckingSkillsListener implements ActionListener {
             parent.refreshQuestion();
 
         } else if (eventSource == parent.cbTheme){ // сменили тему
-            parent.questions.setTheme((String) parent.cbTheme.getSelectedItem());
+//            parent.questions.setTheme((String) parent.cbTheme.getSelectedItem());
+            parent.questions.stop(false);
             parent.start();
         }
     }

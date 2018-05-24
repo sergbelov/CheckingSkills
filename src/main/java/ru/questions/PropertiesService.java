@@ -1,5 +1,8 @@
 package ru.questions;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +14,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -97,4 +101,17 @@ public class PropertiesService {
     public Level getLevel(String propertyName) {
         return Level.getLevel(propertyMap.get(propertyName));
     }
+
+    public <T> List<T> getJsonList(String propertyName, TypeToken typeToken) {
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(propertyMap.get(propertyName), typeToken.getType());
+    }
+/*
+    public List<?> getJsonList(String propertyName) {
+        Gson gson = new GsonBuilder().create();
+        String jsonString = propertyMap.get(propertyName);
+        return gson.fromJson(jsonString, new TypeToken<List<?>>(){}.getType());
+    }
+*/
+
 }

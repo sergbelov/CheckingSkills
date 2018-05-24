@@ -186,8 +186,6 @@ public class CheckingSkills {
             }
             curTheme = (String) cbTheme.getSelectedItem(); // текущая тема
 
-            questions.setTheme(curTheme);
-
             // внешний вид - по умолчанию
             for (int i = 0; i < maxAnswer; i++) {
                 arrRB[i].setEnabled(true);
@@ -200,7 +198,7 @@ public class CheckingSkills {
             }
 
             bEnd.setEnabled(true);
-            questions.start();  // начинаем тестирование
+            questions.start(curTheme);  // начинаем тестирование
             refreshQuestion();  // отображаем вопрос с вариантами ответов
 
         } else{
