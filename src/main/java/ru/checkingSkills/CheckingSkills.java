@@ -1,8 +1,8 @@
 package ru.checkingSkills;
 
-import ru.questions.PropertiesService;
 import ru.questions.Question;
 import ru.questions.Questions;
+import ru.utils.files.PropertiesService;
 
 import java.awt.*;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package ru.questions;
+package ru.utils.files;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static java.util.Map.Entry.comparingByKey;
 
@@ -26,9 +23,16 @@ import static java.util.Map.Entry.comparingByKey;
 public class PropertiesService {
     private static final Logger LOG = LogManager.getLogger();
 
+    private boolean addKey;
     private Map<String, String> propertyMap;
 
+    public PropertiesService() {
+        addKey = true; // список параметров из файла
+        propertyMap = new LinkedHashMap<String, String>();
+    }
+
     public PropertiesService(Map<String, String> propertyMap) {
+        addKey = false; // список параметров задан
         this.propertyMap = propertyMap;
     }
 
@@ -41,9 +45,18 @@ public class PropertiesService {
             try (InputStream is = new FileInputStream(file)) {
                 Properties pr = new Properties();
                 pr.load(is);
+
+                for (Map.Entry<Object, Object> entry : pr.entrySet()){
+//                    System.out.println(entry.getKey());
+                    if (addKey || propertyMap.get(entry.getKey()) != null) {
+                        propertyMap.put(entry.getKey().toString(), entry.getValue().toString());
+                    }
+                }
+/*
                 for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
                     propertyMap.put(entry.getKey(), pr.getProperty(entry.getKey(), entry.getValue()));
                 }
+*/
                 fileExists = true;
             } catch (IOException e) {
                 LOG.error(e);
