@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +25,6 @@ import static java.util.Map.Entry.comparingByKey;
  */
 public class PropertiesService {
     private static final Logger LOG = LogManager.getLogger();
-
     private boolean addKey;
     private Map<String, String> propertyMap;
 
@@ -44,24 +45,32 @@ public class PropertiesService {
     public void readProperties(String fileName) {
         StringBuilder report = new StringBuilder();
         report.append("Параметры из файла ").append(fileName).append(":");
+
         boolean fileExists = false;
         File file = new File(fileName);
         if (file.exists()) { // найден файл с параметрами
+            StringBuilder reportTrace = new StringBuilder();
+            reportTrace.append("Параметры в файле ").append(fileName).append(":");
+
             try (InputStream is = new FileInputStream(file)) {
                 Properties pr = new Properties();
                 pr.load(is);
 
                 for (Map.Entry<Object, Object> entry : pr.entrySet()){
-                    LOG.trace("{} = {}", entry.getKey().toString(), entry.getValue().toString());
+                    reportTrace
+                        .append("\r\n\t")
+                        .append(entry.getKey().toString())
+                        .append(": ")
+                        .append(entry.getValue().toString());
+
                     if (addKey || propertyMap.get(entry.getKey()) != null) {
                         propertyMap.put(entry.getKey().toString(), entry.getValue().toString());
                     }
                 }
-/*
-                for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
-                    propertyMap.put(entry.getKey(), pr.getProperty(entry.getKey(), entry.getValue()));
-                }
-*/
+                LOG.trace(reportTrace);
+//                for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
+//                    propertyMap.put(entry.getKey(), pr.getProperty(entry.getKey(), entry.getValue()));
+//                }
                 fileExists = true;
             } catch (IOException e) {
                 LOG.error(e);
@@ -118,6 +127,16 @@ public class PropertiesService {
 
     public Level getLevel(String propertyName) {
         return Level.getLevel(propertyMap.get(propertyName));
+    }
+
+    public JSONObject getJson(String propertyName) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject =  new JSONObject(propertyMap.get(propertyName));
+        } catch (JSONException e) {
+            LOG.error(e);
+        }
+        return jsonObject;
     }
 
     public <T> List<T> getJsonList(String propertyName, TypeToken typeToken) {

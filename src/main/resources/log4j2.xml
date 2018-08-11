@@ -12,7 +12,8 @@
 
             <PatternLayout>
                 <!--<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [[%t] %c{5}] - %msg%n</pattern>-->
-                <Pattern>%d %-5p [[%t][%c{10}] %F:%L] - %m%n</Pattern>
+                <!--<Pattern>%d %-5p [[%t][%c{10}] %F:%L] - %m%n</Pattern>-->
+                <Pattern>%d [%-5p][[%t][%c{10}]:%L] %m%n</Pattern>
             </PatternLayout>
 
             <Policies>
@@ -29,13 +30,14 @@
 
         <Console name="console" target="SYSTEM_OUT">
             <!--<PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [[%t] %c{5}] - %msg%n"/>-->
-            <PatternLayout pattern="%d %-5p [[%t][%c{10}] %F:%L] - %m%n"/>
+            <!--<PatternLayout pattern="%d %-5p [[%t][%c{10}] %F:%L] - %m%n"/>-->
+            <PatternLayout pattern="%d [%-5p][[%t][%c{10}]:%L] %m%n"/>
         </Console>
 
     </Appenders>
 
     <Loggers>
-        <Root level="DEBUG">
+        <Root level="TRACE">
             <appender-ref ref="console"/>
             <appender-ref ref="file-log"/>
         </Root>
