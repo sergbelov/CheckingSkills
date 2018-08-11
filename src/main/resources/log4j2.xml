@@ -1,52 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--<Configuration status="DEBUG">-->
 <Configuration>
+    
     <Properties>
-        <Property name="basepath">logs\CheckingSkills</Property>
-        <Property name="rootFileName">CheckingSkills</Property>
-        <Property name="logFileName">CheckingSkills</Property>
+        <Property name="log-path">logs</Property>
+        <Property name="log-name">logger</Property>
     </Properties>
+
     <Appenders>
-        <RollingFile name="RootFile" fileName="${basepath}/${rootFileName}.log"
-                     filePattern="${basepath}/${rootFileName}-stub.%d-%i.log">
+        <RollingFile name="file-log" fileName="${log-path}/${log-name}.log" filePattern="${log-path}/${log-name}-%d{yyyy-MM-dd-HH-mm-ss}.log">
+
             <PatternLayout>
-                <Pattern>%d %-5p [%t] %F:%L - %m%n</Pattern>
+                <!--<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [[%t] %c{5}] - %msg%n</pattern>-->
+                <Pattern>%d %-5p [[%t][%c{10}] %F:%L] - %m%n</Pattern>
             </PatternLayout>
+
             <Policies>
-                <OnStartupTriggeringPolicy />
-                <TimeBasedTriggeringPolicy />
                 <SizeBasedTriggeringPolicy size="10 MB" />
             </Policies>
+
             <DefaultRolloverStrategy>
-                <Delete basePath="${basepath}">
-                    <IfFileName glob="${rootFileName}.*" />
-                    <IfLastModified age="30d" />
+                <Delete basePath="${log-path}" maxDepth="1">
+                    <IfLastModified age="P4D"/>
                 </Delete>
             </DefaultRolloverStrategy>
+
         </RollingFile>
-        <RollingFile name="LogFile" fileName="${basepath}/${logFileName}.log"
-                     filePattern="${basepath}/${logFileName}.%d-%i.log">
-            <PatternLayout>
-                <Pattern>%d %-5p [%t] %F:%L - %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <OnStartupTriggeringPolicy />
-                <TimeBasedTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="10 MB" />
-            </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="${basepath}">
-                    <IfFileName glob="${logFileName}.*" />
-                    <IfLastModified age="30d" />
-                </Delete>
-            </DefaultRolloverStrategy>
-        </RollingFile>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <!--<PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [[%t] %c{5}] - %msg%n"/>-->
+            <PatternLayout pattern="%d %-5p [[%t][%c{10}] %F:%L] - %m%n"/>
+        </Console>
+
     </Appenders>
+
     <Loggers>
-        <Logger name="ru" level="trace" additivity="false">
-            <AppenderRef ref="LogFile"/>
-        </Logger>
-        <Root level="info">
-            <AppenderRef ref="RootFile"/>
+        <Root level="DEBUG">
+            <appender-ref ref="console"/>
+            <appender-ref ref="file-log"/>
         </Root>
     </Loggers>
+
 </Configuration>
+

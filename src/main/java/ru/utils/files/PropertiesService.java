@@ -47,7 +47,7 @@ public class PropertiesService {
                 pr.load(is);
 
                 for (Map.Entry<Object, Object> entry : pr.entrySet()){
-//                    System.out.println(entry.getKey());
+                    LOG.trace("{} = {}", entry.getKey().toString(), entry.getValue().toString());
                     if (addKey || propertyMap.get(entry.getKey()) != null) {
                         propertyMap.put(entry.getKey().toString(), entry.getValue().toString());
                     }
