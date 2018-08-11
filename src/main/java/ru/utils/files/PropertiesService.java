@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +37,10 @@ public class PropertiesService {
         this.propertyMap = propertyMap;
     }
 
+    public void readProperties(String fileName, Level level) {
+        Configurator.setLevel(LOG.getName(), level);
+        readProperties(fileName);
+    }
     public void readProperties(String fileName) {
         StringBuilder report = new StringBuilder();
         report.append("Параметры из файла ").append(fileName).append(":");

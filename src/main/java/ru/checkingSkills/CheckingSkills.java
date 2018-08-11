@@ -168,7 +168,7 @@ public class CheckingSkills {
 //        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 //        System.out.println(stackTraceElements[2].getMethodName());
 
-        propertiesService.readProperties(FILE_PROPERTIES); // параметры из файла
+        propertiesService.readProperties(FILE_PROPERTIES, propertiesService.getLevel("LOGGER_LEVEL")); // параметры из файла
 
         questions.readQuestions(
                 propertiesService.getInt("QUESTION_MAX"),
