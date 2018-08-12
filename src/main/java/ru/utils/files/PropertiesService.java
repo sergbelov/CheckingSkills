@@ -131,10 +131,13 @@ public class PropertiesService {
 
     public JSONObject getJson(String propertyName) {
         JSONObject jsonObject = null;
-        try {
-            jsonObject =  new JSONObject(propertyMap.get(propertyName));
-        } catch (JSONException e) {
-            LOG.error(e);
+        String value = propertyMap.get(propertyName);
+        if (value != null && !value.isEmpty()) {
+            try {
+                jsonObject = new JSONObject(value);
+            } catch (JSONException e) {
+                LOG.error(e);
+            }
         }
         return jsonObject;
     }
