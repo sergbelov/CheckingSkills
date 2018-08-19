@@ -106,6 +106,14 @@ public class PropertiesService {
         return Integer.parseInt(propertyMap.get(propertyName));
     }
 
+    public long getLong(String propertyName) {
+        return Long.parseLong(propertyMap.get(propertyName));
+    }
+
+    public double getDouble(String propertyName) { return Double.parseDouble(propertyMap.get(propertyName)); }
+
+    public float getFloat(String propertyName) { return Float.parseFloat(propertyMap.get(propertyName)); }
+
     public Date getDate(String propertyName) {
         return getDate(propertyName, "dd/MM/yyyy");
     }
