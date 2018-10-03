@@ -42,26 +42,33 @@ public class PropertiesService {
         Configurator.setLevel(LOG.getName(), level);
         readProperties(fileName);
     }
+
     public void readProperties(String fileName) {
         StringBuilder report = new StringBuilder();
-        report.append("Параметры из файла ").append(fileName).append(":");
+        report
+                .append("Параметры из файла ")
+                .append(fileName)
+                .append(":");
 
         boolean fileExists = false;
         File file = new File(fileName);
         if (file.exists()) { // найден файл с параметрами
             StringBuilder reportTrace = new StringBuilder();
-            reportTrace.append("Параметры в файле ").append(fileName).append(":");
+            reportTrace
+                    .append("Параметры в файле ")
+                    .append(fileName)
+                    .append(":");
 
             try (InputStream is = new FileInputStream(file)) {
                 Properties pr = new Properties();
                 pr.load(is);
 
-                for (Map.Entry<Object, Object> entry : pr.entrySet()){
+                for (Map.Entry<Object, Object> entry : pr.entrySet()) {
                     reportTrace
-                        .append("\r\n\t")
-                        .append(entry.getKey().toString())
-                        .append(": ")
-                        .append(entry.getValue().toString());
+                            .append("\r\n\t")
+                            .append(entry.getKey().toString())
+                            .append(": ")
+                            .append(entry.getValue().toString());
 
                     if (addKey || propertyMap.get(entry.getKey()) != null) {
                         propertyMap.put(entry.getKey().toString(), entry.getValue().toString());
@@ -85,7 +92,8 @@ public class PropertiesService {
                 .stream()
 //                .sorted(comparingByKey())
                 .forEach(x -> {
-                    report.append("\r\n\t")
+                    report
+                            .append("\r\n\t")
                             .append(x.getKey())
                             .append(": ")
                             .append(x.getValue());
@@ -110,9 +118,17 @@ public class PropertiesService {
         return Long.parseLong(propertyMap.get(propertyName));
     }
 
-    public double getDouble(String propertyName) { return Double.parseDouble(propertyMap.get(propertyName)); }
+    public double getDouble(String propertyName) {
+        return Double.parseDouble(propertyMap.get(propertyName));
+    }
 
-    public float getFloat(String propertyName) { return Float.parseFloat(propertyMap.get(propertyName)); }
+    public float getFloat(String propertyName) {
+        return Float.parseFloat(propertyMap.get(propertyName));
+    }
+
+    public boolean getBoolean(String propertyName) {
+        return Boolean.parseBoolean(propertyMap.get(propertyName));
+    }
 
     public Date getDate(String propertyName) {
         return getDate(propertyName, "dd/MM/yyyy");
@@ -129,12 +145,19 @@ public class PropertiesService {
         return date;
     }
 
-    public boolean getBoolean(String propertyName) {
-        return Boolean.parseBoolean(propertyMap.get(propertyName));
-    }
-
     public Level getLevel(String propertyName) {
         return Level.getLevel(propertyMap.get(propertyName));
+    }
+
+    public String[] getStringList(String propertyName) {
+        return propertyMap.get(propertyName).split(",");
+    }
+
+    public int[] getIntList(String propertyName) {
+        return Arrays
+                .stream(propertyMap.get(propertyName).split(","))
+                .mapToInt(Integer::parseInt)
+                .toArray();
     }
 
     public JSONObject getJson(String propertyName) {
